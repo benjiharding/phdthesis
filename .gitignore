@@ -1,0 +1,21 @@
+/0-Figures
+/1-Tables
+
+# Latex files
+*.acn
+*.acr
+*.alg
+*.aux
+*.bbl
+*.blg
+*.glg
+*.glo
+*.gls
+*.ist
+*.lof
+*.lot
+*.out
+*.toc
+*.pdf
+*.log
+*.synctex.gz

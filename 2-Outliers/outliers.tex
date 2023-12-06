@@ -1,0 +1,220 @@
+%!TEX root = ../Thesis_example_compile_this.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Outlier Management}
+\label{ch:predict}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Mitigating the impact of extreme values on resource estimation is a long-standing issue. The mining industry has no definitive consensus regarding outlier management, and many approaches are developed on an ad hoc basis. Should high grades be capped? Should sub-regions be delineated to isolate higher grades? Should we use decile analysis \citep{parrish1997geologist}, cumulative probability plots, cutting curves \citep{roscoe1996cutting}, coefficient of variation, production reconciliation, arbitrary percentiles, metal at risk, indicator correlations, multiple indicator kriging or no capping at all? If we cap, should it be before or after compositing? All of these questions influence the final metal content of our resource predictions. The impact of restricting outliers may be significant depending on the distribution of the available data.
+
+\section{Current Industry Practices}
+\label{sec:industry}
+
+The Canadian Institute of Mining, Metallurgy and Petroleum (CIM) mineral resource and mineral reserve best practices summarizes outlier management as \citep{cim2019}:
+
+\blockquote{\textit{``Recognition of the spatial extent of outlier values (a component of grade continuity) should be investigated and a procedure devised for incorporating such data appropriately into an estimate. Procedures including domaining, grade capping (also known as top cutting), spatially restricting the influence of high-grade assays, single and multiple indicator kriging, and Monte Carlo simulation methods all compensate in varying ways for potential overestimation. Regardless of the methodology selected, the Practitioners must provide documentation of the approach selected, along with justification and support for the decision, possibly including reconciliation of estimated block model grades with available production information. Comparisons of the outcome of the different approaches can be useful.'' (pg. 18)}}
+
+\cite{leuangthong2015dealing}, echoed by CIM best practices, break the process of outlier management into three categories: (1) choosing appropriate domains, (2) grade capping and (3) limiting the influence of outliers through the estimation process. This short note focuses on the second category. Grade capping or ``top-cutting'' is a common practice in the mining industry. Grades above a given threshold are reset to that threshold. The general idea is that uncapped grades may lead to unrealistic local estimates adjacent to high-grade composites \citep{nowak2013suggestions}. The ``smearing'' may be significant if sparse data are estimated with kriging. Due to the normal score transform, simulation is somewhat more robust in the presence of outliers though capping may still be required in some cases.
+
+The following section summarizes 125 NI 43-101 reports published by companies traded on Canadian securities exchanges. For each deposit, the decision to cap or not, the capping methodology if so, and the decision to cap either assays or composites is recorded. For producing operations, whether they are underground or open-pit, is also recorded. Numerous reports documented multiple outlier management strategies. Due to a large number of possible combinations of strategies, each is recorded separately. If one project uses cumulative probability plots and decile analysis, it contributes to the total methodology fraction twice. The left panel of Figure~\ref{fig:piechart} shows the results for capping methodology, and the right panel shows a summary of assays versus composites for those who capped. Unknown refers to reports which stated a grade cap was applied though no methodology is provided. 
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/piechart.png}
+    \caption{Summary of capping methodology (left) and if capped, the data support to which the cap is applied to (right) from 125 NI 43-101 reports. CPP - cumulative probability plot; P99 - $99^{th}$ percentile; CV - coefficient of variation; MIK - multiple indicator kriging; Parrish - decile analysis after \cite{parrish1997geologist}.}
+    \label{fig:piechart}
+\end{figure}
+
+The most common method is the analysis of cumulative probability plots (CPP). Practitioners look for infection points to identify multiple populations or look for a point where the upper tail ``degrades''. Figure~\ref{fig:cpp} shows an example of four CPPs from a gold project in Nevada \citep{fiore2021}. The red points are considered outliers. The choice of threshold is necessarily subjective though gaps and infection points are used to guide selection.   
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.45, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/cpp.png}
+    \caption{Cumulative probability plots with (red points) and without outliers for four gold deposits in Nevada. From \cite{fiore2021} (pg. 123)}
+    \label{fig:cpp}
+\end{figure}
+
+The second most common methodology is decile analysis developed by \cite{parrish1997geologist}. In this method, the samples are sorted by grade and then grouped into ``deciles'' with roughly equal samples. Typically the uppermost decile does not have a full complement of samples. The top decile is then split into percentiles 90-100 in the same fashion. Minimum, maximum, length weighted mean (applicable to assay data) and the fraction of total metal is calculated for each decile and the upper percentiles. Parrish states that if the top decile contains more than 40\% of the total metal capping is warranted. Furthermore, capping is also warranted if the top decile contains more than twice the metal of the previous decile. If the top percentile (99-100) contains more than 10\% of the total metal capping is also recommended. An example of a decile analysis plot from \cite{cartier2020} is shown in Figure~\ref{fig:decile}.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.45, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/decile_analysis.png}
+    \caption{Decile analysis plot (left) and cumulative metal content (right) where the upper decile contains more than 40\% of the total metal. From \cite{cartier2020} (pg. 110).}
+    \label{fig:decile}
+\end{figure}
+
+Multiple indicator kriging (MIK) is a risk-qualified estimation methodology that can manage highly skewed distributions without a need for grade capping \citep{journel1983nonparametric}. The non-linear transform of the original variable to indicators reduces the influence of extreme values in the upper tail, and practitioners suggest this removes the need for explicit grade capping \citep{pretium2020, ngm2020, tristar2021, cardinal2019}. \cite{pretium2020} describe the logic of not applying a grade cap as:
+\blockquote{\textit{``The positive tail of the grade distribution does
+not break down (tail decomposition method) until well into the multi-kilogram per tonne range, and even then, the more data that is collected, the higher the value before tail decomposition. Using a percentile-based approach results in an arbitrary and unjustifiable capping of extreme gold grades.'' (pg. 14-11)}}
+Though MIK is more robust concerning extreme values than traditional kriging algorithms, \cite{carvalho2017overview} suggest outlier values should still be managed in the usual (industry best practices) way. \cite{artemis2020} is an example of a project where both an explicit grade cap (CPP) and MIK are employed. 
+
+A small proportion of the projects report no grade capping \citep{medgold2021,pasofino2020,eldorado2020}. The justification of no grade capping is based primarily on a relatively low coefficient of variation and no ``tail decomposition'' in the CPPs. An example of a histogram and CPP of gold where capping was deemed unnecessary is shown in Figure~\ref{fig:nocap} \citep{medgold2021}.
+
+\begin{figure}[htb!]
+     \centering
+     \includegraphics[scale=0.50, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/hist_no_cap.png}
+     \caption{Histogram and CPP of gold where capping was deemed unnecessary. From \cite{medgold2021} (pg. 77).}
+     \label{fig:nocap}
+ \end{figure} 
+
+Indicator correlation as an outlier management method was developed by R.M. Srivastava \citep{leuangthong2015dealing}. This approach considers the degradation of the spatial correlation of grades above a threshold. For many increasing thresholds, the spatial correlation decreases. The choice of capping limit coincides with the threshold where the correlation is approximately zero. This approach was employed at the Cariboo Gold Project \citep{osiko2020} where the threshold corresponding to 99\% of the indicator variogram sill is taken as the capping limit. Figure~\ref{fig:indicators} shows an example of the indicator variograms.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/indicators.png}
+    \caption{Indicator variograms for various grade thresholds. From \cite{osiko2020} (pg. 158)}
+    \label{fig:indicators}
+\end{figure}
+
+The remaining outlier management strategies are relatively straightforward. Some projects utilize an experience-based CV or percentile threshold. The CV threshold, commonly 2.0, chooses a grade cap such that the remaining population has a CV equal to or less than the threshold. A percentile threshold, commonly the $98^{th}$ or $99^{th}$, sets all grade values greater than $F^{-1}(0.99)$ to that value. Production reconciliation involves an iterative estimation process with a range of grade caps. For each capping threshold, the estimated metal content is reconciled to available production data. The threshold that reconciles best is selected. Reconciliation seems like a reasonable approach, but it assumes that past production is indicative of future production.  
+
+Another point of general indecision is capping before or after compositing. In this survey, it is more or less a 50-50 split. One approach is not more correct than the other. The author generally believes it is more appropriate to apply a capping grade after assays have been brought to the same support. It seems logical to compare values that are effectively equally weighted. If much of the assay data is the same length, capping could be applied before compositing. 
+
+\section{Capping and Search Restrictions}
+\label{sec:capping}
+
+
+
+\section{High Grade Continuity}
+\label{sec:continuity}
+
+
+
+\section{Analytical Extreme Value Models}
+\label{sec:analytical}
+
+The geological processes that led to the precipitation and preservation of the grades under consideration in a particular deposit are complex and defy a simple deterministic assessment. The processes influence our understanding, but we adopt a statistical model since there is no way to understand the initial and boundary conditions of the non-linear and chaotic processes that led to the deposit under consideration. This section describes a trimodal model for mineralization: (1) mineralized - M, (2) high grade - HG, and (3) extreme high grade - EHG. Figure~\ref{fig:ehg} illustrates this. The three populations overlap, mix and are not exclusive, but we could reasonably define a range that represents them, for example, 0.1 to 1.0 g/t for mineralized (M), 5 to 20 g/t for high grade (HG), and 500+ g/t for extreme high grade (EHG).
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.70, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/EHG.png}
+    \caption{Trimodal distribution model of mineralized (M), high-grade HG) and extreme high grade (EHG).}
+    \label{fig:ehg}
+\end{figure}
+
+
+The concept of three populations is reasonable. The illustration in Figure~\ref{fig:ehg} appears discrete as three populations; however, the data distribution from this model would appear highly skewed. Considering one highly skewed population may be possible; however, a flexible parametric distribution is not available to satisfy observed data, explain outliers, and avoid unrealistically high grades. Considering more than three populations would be possible; however, it seems reasonable to have M, HG and EHG. Additional intermediate populations would complicate the model and could be grouped into one of the three.
+
+An assumption is that the M and HG are more pervasive while EHG is encountered rarely. The EHG, however, is assumed to have some reasonable thickness within the vein structures. A drill hole intersecting M, HG or EHG would be identified as such. We do not expect many EHG intersections.
+
+% \begin{figure}[htb!]
+%     \centering
+%     \includegraphics[scale=0.25, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/MHGEHG.png}
+%     \caption{Illustrations of M, HG and (barely) EHG from Monterde.}
+%     \label{fig:MHGEHG}
+% \end{figure}
+
+The model is parameterized by the probability of each population ($P_{M}$, $P_{HG}$,and $P_{EHG}$) and three lognormal distributions defined by mean values ($m_{M}$, $m_{HG}$,and $m_{EHG}$) and variance or standard deviation parameters for each ($\sigma_{M}$, $\sigma_{HG}$,and $\sigma_{EHG}$).  The sum of the proportions is unity:
+\[
+P_{M} + P_{HG} + P_{EHG}= 1
+\]
+The overall mean is defined as:
+\[
+m_{Overall} = P_{M} \cdot m_{M}  + P_{HG} \cdot m_{HG} + P_{EHG} \cdot m_{EHG}
+\]
+The variation of each distribution ($M$, $HG$, and $EHG$) is important and relevant, but the metal and resource are defined mainly by the proportions and mean values. There is a great challenge in inferring the parameters of this model. A key parameter is establishing the metal in the $HG$ population versus the $EHG$ population. A straightforward way to parameterize this is to assume that the metal in the $EHG$ population is a fraction of the metal in the $HG$ population. The fraction is essential to understand the probability of encountering extreme high grades and, ultimately, for spatial prediction. The total metal will be calibrated to historical mining or external information. Considering this fractional model leads to:
+\[
+P_{EHG} \cdot m_{EHG} = f \cdot P_{HG} \cdot m_{HG}
+\]
+\[
+P_{EHG} = \frac{f \cdot P_{HG} \cdot m_{HG}}{m_{EHG}}
+\]
+The precise value of the fractional metal in $EHG$ versus $HG$ (the $f$ parameter in the equations above) will be inferred from the data if there are enough. If there are too few data, then it could be assumed. For example, we could assume $f=1$ as a reasonable value; we could also perform a sensitivity study.
+
+Combining the equations above for the overall mean:
+\begin{align}
+m_{Overall} & = P_{M} \cdot m_{M}  + P_{HG} \cdot m_{HG} + P_{EHG} \cdot m_{EHG} \nonumber \\
+& = \left(1-P_{HG}-\frac{f \cdot P_{HG} \cdot m_{HG}}{m_{EHG}}\right) \cdot m_{M} + P_{HG} \cdot m_{HG} + \frac{f \cdot P_{HG} \cdot m_{HG}}{m_{EHG}} \ \cdot m_{EHG} \nonumber \\
+& = m_{M} + P_{HG} \cdot \left( -m_{M}-\frac{f \cdot m_{M}}{m_{EHG}}  + m_{HG} + f \cdot m_{HG} \right) \nonumber
+\end{align}
+So, the proportions of the populations are defined in sequence by the following:
+\[
+P_{HG} = 
+\frac{m_{Overall} - m_M}
+{
+-m_M \cdot \left( 1+\frac{f \cdot m_{HG}}{m_{EHG}}\right) + m_{HG}(1+f)
+}
+\]
+\[
+P_{EHG} = \frac{f \cdot P_{HG} \cdot m_{HG}}{m_{EHG}}
+\]
+\[
+P_{M} = 1 - P_{HG} - P_{EHG}
+\]
+The mean values of the three populations could be estimated with reasonable confidence. The overall mean could be estimated from historical mining. The fraction of metal in the EHG population relative to the HG population (the $f$ value) is a model parameter that could be inferred from available drilling if enough intersections are available. Given the mean values and $f$ we could infer the proportions of the populations and the contribution to metal from each population. 
+
+\subsection{Probability of Drilling EHG}
+\label{sec:prob}
+
+The probability of drilling $n$ successive drill holes without encountering EHG could be computed by:
+\[
+\left( 1 - P_{EHG} \right)^n
+\]
+This approach assumes the drill holes are independent, which is reasonable given the spacing of the drill holes. It also assumes the extreme high grade (EHG) will be seen in a drill hole with a significant thickness, that is, the EHG is not sprinkled around in very small nuggets. This assumption is reasonable since if the EHG were at a very small scale, it would be composited with other rock and end up as mineralized (M) or high grade (HG).
+
+Consider $m_{Overall} = 10 g/t$, $m_{M} = 0.1 g/t$, $m_{HG} = 10 g/t$, $m_{EHG} = 1000 g/t$, and $f=1$, that is, there is the same metal in the HG and the EHG.  These numbers appear reasonable given the intersections encountered at epithermal veins systems. Following the calculations described above:
+\[
+P_{HG} = 
+\frac{10 - 0.1}
+{
+-0.1 \cdot \left( 1+\frac{1 \cdot 10}{1000}\right) + 10(1+1) 
+}
+= 0.4975
+\]
+\[
+P_{EHG} = \frac{1 \cdot 0.4975 \cdot 10}{1000} = 0.0050
+\]
+\[
+P_{M} = 1 - 0.4975 - 0.0050 = 0.4975
+\]
+The overall mean of this model could be checked: $m_{Overall} = 0.4975 \cdot 0.1 + 0.4975 \cdot 10 + 0.0050 \cdot 1000 = 10$ as it must.
+
+So, for thirty ($n=30$) drill holes there is an $0.995^{30}=0.86=86\%$ chance of {\em not} intersecting EHG.  To get to a 50\% chance of encountering an EHG drill hole $log(0.5)/log(0.995)=138$ drill holes would be required.
+
+
+\FloatBarrier
+\subsection{Application}
+
+The following demonstrates the conceptual trimodal model for extreme high grades applied to an actual data set. The data consists of 61,027 channel samples across a gold-bearing Witwatersrand reef structure with cumulative grade (cmg/t) and thickness (cm) measurements. Gold values (g/t) are back-calculated from the other two measurements. A significant proportion of the samples are considered ``high grade''. The data set is sufficiently dense such that some \emph{valid} extreme values are likely observed, and the parameters of the extreme high-grade model can be inferred with reasonable confidence. 
+
+Distributions of cmg/t and Au are shown in Figure~\ref{fig:wits_hist}. The Au histogram is weighted by sample length. The overall distribution is high grade with multiple oz/t assays. Log probability plots are a useful tool for identifying multiple populations and visualizing the upper tail of the distribution. Figure~\ref{fig:wits_log_prob} shows log probability plots for the same two distributions. The Au plot shows a distinct inflection point near 0.1 g/t and tail decomposition around 30 g/t. These may be reasonable thresholds for the initial assessment of mineralized, high grade and extreme high grade. 
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/wits_hist.png}
+    \caption{Histogram of cmg/t (left) and Au g/t (right).}
+    \label{fig:wits_hist}
+\end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/wits_log_prob.png}
+    \caption{Log probability plots of cmg/t (left) and Au g/t (right). Tukey's fences are shown for reference.}
+    \label{fig:wits_log_prob}
+\end{figure}
+
+Parameterization of the extreme high-grade model requires four mean values (overall, mineralized, high grade and extreme high grade) and the fraction of extreme high-grade metal contributing to the overall high-grade metal. Thresholds must be selected to delineate sub-populations. A sub-sample of the full data set is used to calculate the proportions of each population. 80\% of the data is with held and the distribution of the remaining 20\% is used for inference to simulate a sparse sampling regime. Distribution quantiles are used to determine the thresholds. Mineralized is defined by 0.1-0.9, high grade from 0.95-0.9995 and extreme high grade 0.9999 and above. Though subjective, threshold selection is informed by log probability plots. The 0.1-0.9 quantile range roughly defines the ``inlier'' range based on Tukey's fences. 0.95 roughly defines the break between ``outlier'' and ``far outlier''. 0.9999 roughly defines the point of tail decomposition suggesting extreme values. Thresholds also consider the number of samples within each distribution; we do not expect to encounter many extreme values. Figure~\ref{fig:wits_ehg_loc} shows a location plot of all samples with the corresponding EHG locations highlighted in red.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/wits_ehg_loc.png}
+    \caption{Location plot of all samples with EHG locations highlighted in red.}
+    \label{fig:wits_ehg_loc}
+\end{figure}
+
+A sub-sample of the full data set is used to calculate the proportions of each population, summarized in Table~\ref{tab:ehg_model}. Table~\ref{tab:ehg_metal_prop} summarizes the proportion of metal contributed by each population. The overall mean of the model can be checked:
+\begin{align*}
+    m_{Overall} &= P_{M} \cdot m_{M}  + P_{HG} \cdot m_{HG} + P_{EHG} \cdot m_{EHG} \\
+    1.45 &= 0.9601 \cdot 1.15 + 0.0398 \cdot 8.55 + 0.0001 \cdot 48.35 \\
+    1.45 &= 1.45 \\
+\end{align*}
+\input{./0-Tables/ehg_model.tex}
+\input{./0-Tables/ehg_metal_prop.tex}
+
+In this scenario, the fractional EHG component, $f$, is quite small due to a significant number of samples in the HG population. The channel samples are narrow (tens of cm) and likely only sample mineralized material. If the samples were drill core, one would expect more internal dilution, overall lower grades, and a higher $f$ value. Given the proportions, we can calculate the probability of sampling extreme high grade with $n$ successive channel samples or the required number of samples for a $P_n$ probability of sampling EHG. For example, the probability of \emph{not} sampling EHG in 100 channel samples is $(1-0.0001)^{100} = 98.9\%$. In order to get a 50\% chance of observing an EHG sample, $log(0.5)/log(1-0.0001) = 6301$ additional channels are required. 
+
+The reasonableness of this model can be checked with a simple simulation study. For a given probability, say 0.1, 0.5 or 0.9, the number of additional samples required to intersect an EHG value with that probability is calculated analytically as above. High resolution simulated realizations of gold using all available data are considered the truth. If we randomly sample the realizations with the calculated number of samples for some number of trials, we can directly observe how many EHG intersections occur. Ten realizations are used for numerical stability. Each realization is sampled 1000 times with calculated number of samples. Table~\ref{tab:sim_props} summarizes the predicted number of samples required to have a 0.1, 0.5 and 0.9 probability of intersecting EHG and the corresponding expected probabilities from resampling. The simulation results closely reproduce the analytical predictions. 
+
+\input{./0-Tables/sim_props.tex}
+
+Access to a high resolution ``true'' model is rarely possible in practice. Often when data is sufficiently dense to be considered the truth, mining has already occurred. One does not have the luxury of calibrating their analytical model. Though the application of the proposed analytical model can never be verified in a practical scenario, the example presented highlights that the analytical model \emph{could} be reasonable. The simulation study shows that the model can predict the probability of intersecting EHG with good accuracy. Determining how many data are required to infer model parameters is a topic of future research. 

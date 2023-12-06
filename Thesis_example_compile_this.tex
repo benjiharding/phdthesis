@@ -1,0 +1,133 @@
+%!TEX program = xelatex
+\documentclass{Wthesis}
+
+% ------------------ KEY BINDINGS IN ST3 --------------
+% ### Removing temporary files from build ###
+% **Keybinding:** `C-l,backspace`
+% -----------------------------------------------------
+% ------------------ MAKE GLOSSARY --------------------
+% BASH: makeglossaries compile_page
+% makeglossaries <basename>
+% -----------------------------------------------------
+
+% -----------------------------------------------------
+% METADATA and CopyRight Info
+% -----------------------------------------------------
+
+\hypersetup{pdftitle={Thesis Title},
+            pdfauthor={CCG Student},
+            pdfsubject={Geostatistics},
+            pdfkeywords={Geostatistics},
+            pdfcopyright={\textcopyright CCG Student, 2022}}
+
+% -----------------------------------------------------
+% Load the list of abbreviations and symbols
+% -----------------------------------------------------
+
+\makeglossaries
+\setacronymstyle{long-short}
+\loadglsentries{./99-FrontPages/6_abbreviations}
+\loadglsentries{./99-FrontPages/7_symbols}
+
+\begin{document}
+
+%-----------------------------------------------------
+% Insert Front Pages
+%-----------------------------------------------------
+
+% Set the page style without a header
+\pagestyle{thesis}
+
+% Set-up page numbering
+\pagenumbering{roman}
+
+% Input Frontpage Content
+% \input{99-FrontPages/1_titlepage}
+% \input{99-FrontPages/2_abstract}
+% \input{99-FrontPages/3_dedication}
+% \input{99-FrontPages/4_acknowledgements}
+\clearpage
+
+
+%-----------------------------------------------------
+% Contents - Figures - and Such
+%-----------------------------------------------------
+% Add Table of Contents
+% \renewcommand{\contentsname}{Table of Contents} % Change the default title for the table f contents
+% \tableofcontents*
+% \clearpage
+
+%% Add List of Tables
+% \listoftables*
+% \clearpage
+
+%% Add List of Figures
+% \listoffigures*
+%\clearpage
+
+% % Set-up Glossary
+\setglossarystyle{superheader}
+\setlength{\glspagelistwidth}{0.1\linewidth} % Get the first use header on one line
+\setlength{\glsdescwidth}{0.9\linewidth} % Fill the page with the table
+\renewcommand*{\glsgroupskip}{} % Prevent the glossaries from being separated into alphabetical groups
+
+% List of Symbols
+\renewcommand*{\entryname}{Symbol}
+\glsaddallunused
+\printglossary[title={List of Symbols}]
+
+% List of Abbreviations
+\renewcommand*{\entryname}{Abbreviation}
+\glsaddallunused
+\printglossary[type=acronym, title={List of Abbreviations}]
+
+% -----------------------------------------------------
+% Custom commands for loops
+% -----------------------------------------------------
+
+% \newcommand{\vartuples}{Ni/nickle, SiO2/silica, Fe/iron}
+
+
+%-----------------------------------------------------
+% Insert Chapters
+%-----------------------------------------------------
+
+% Set the page style to have a header for the chapters
+\clearpage
+\pagenumbering{arabic}
+
+% Reset glossary indexs that may have been expaned in the TOC
+\glsresetall
+
+% Insert the chapters
+    \input{1-Introduction/intro}
+    \input{2-Outliers/outliers}
+    \input{3-NMRFramework/framework}
+    \input{4-Implementation/implementation}
+    \input{5-Imputation/imputation}
+    \input{6-CaseStudy/casestudy}
+    \input{7-Conclusions/conclusions}
+
+    %---------------------------------------------------
+    % Insert Bibliography
+    %---------------------------------------------------
+    % Set-up and insert the bibliography
+    \medskip
+
+    \bibliographystyle{apacite}
+        \bibliography{./999-References/Thesis}
+
+    \clearpage
+
+    %---------------------------------------------------
+    % Insert Appendices
+    %--------------------------------------------------
+
+    \begin{appendices}
+        \pagestyle{thesis}
+         % \input{8-Appendices/append}
+
+         % \input{9999-notes/notes}
+    \end{appendices}
+
+\end{document}

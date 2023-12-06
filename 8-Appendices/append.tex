@@ -1,0 +1,266 @@
+%!TEX root = ../Thesis_example_compile_this.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Appendices}
+\label{ch:append}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Using the CCG Parameter File Environment}
+\label{sect:parm_file}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    Below is the parameter file for \gls{HPO}. You can look in the append.tex document to see how use the ccgParameterfile Environment. It's pretty easy and straight forward.
+
+    The parameter file for \gls{HPO} is broken up into six different sections. With this format, the only section required for \gls{HPO} to run is the ``MAIN'' section. The order of the other sections do not matter, and any sections omitted will use the default values. A brief description for each section and the settings are reviewed below.
+
+    \begin{framed}
+    \begin{lstlisting}[style=ccgParameterfile]
+                   Parameters for HPO
+                  ********************
+
+    START OF MAIN:
+    bvtest01.dat            - (str) file with block values
+    1                       - (int) column number for value
+    100                     - (int) number of realizations
+    50      0.5    1.0      - grid definition: nx,xmn,xsiz
+    50      0.5    1.0      -                  ny,ymn,ysiz
+    50      0.5    1.0      -                  nz,zmn,zsiz
+    PitOpt-summaries.out    - (str) filename for summaries output
+    PitOpt-surfaces.out     - (str) filename for surfaces output
+    PitOpt-models.out       - (str) filename for optimized pit model output
+
+
+    -----------------------------
+    Start of Optional Parameters.
+    -----------------------------
+
+    START OF OBJ_FUNCT:
+    0.1                     - (float) factor to penalize uncertainty (0 = none, Default = 0.1)
+    0                       - (float) expected stripping ratio target (0 = none, Default = 0)
+    0                       - (float) factor to penalize stripping ratio uncertainty (0 = none, Default = 0)
+    1.0   1.0               - (flt, flt) ore and waste multipliers (Default = 1.0 1.0)
+
+    START OF GLOBAL_OPTIMA:
+    69069                   - (int) random number seed (Default = 69069)
+    soft_boundary.dat       - (str) file with boundary pit (optional) (Default = nofile)
+    10                      - (int) Maximum perturbation loops (Default = 10)
+    10  300                 - (int, int) random restarts: number, number locations (Default = 5  3)
+    5                       - (int) Number of Perturbation loop failures that will cause an early exit of the cycle (Default = 5)
+
+    START OF PRECEDANCE:
+    0                       - (int) Precedence Option (Default = 0)
+
+       : Precedence Notes:
+       : 0      - 1:5 pattern (~35-45 deg slopes)
+       : 1      - 1:9 pattern (~45-55 deg slopes)
+
+    START OF FILE FORMATS:
+    0                       - (int) Input File Formats (Default = 0)
+    0                       - (int) Output File Formats (Default = 0)
+
+       : File Formats Notes:
+       : 0      - traditional GSLIB format (ASCII based)
+       : 1      - GSB (intra Binary format)
+
+    START OF DEBUG:
+    0                        - (int) Debug Options (0, 1, 2): Default = 0
+    0                        - (int) How often to display messages
+
+       : Debug Notes:
+       : Debug Options (0) No Messages. (1) displays console messages
+       : for every N attempts to change pit. (2) displays console
+       : messages every N changes that are accepted
+       : How Often: Sets the N that determines how often the messages are displayed
+    \end{lstlisting}
+    \end{framed}
+
+    %%%%%%%%%%%%%%%%%%%%
+    \subsection{MAIN:}
+    %%%%%%%%%%%%%%%%%%%%
+
+        The main section is the only section with required settings. This section sets the I/O settings and model specifications.
+
+        \textit{file with block values (str)}: This is the input file name for the block value model in a GSLIB file format. See \cite{Deutsch1998} for specific file format specifications.
+
+        \textit{column number for values (int)}: With the GSLIB file format multiple variables in the same gridded block model are saved in separate columns. This parameter specifies the column number where the economic block values are saved in.
+
+        \textit{number of realizations (int)}: The number of realizations saved in the input block value model. The use of multiple realizations requires all realizations to be in the same file.
+
+        \textit{grid definition (int, float, float)}: The GSLIB style grid definition is used in this program. For each X, Y, Z, direction the number of cells in that direction (\textit{nx, ny, nz}), the starting location of the middle of the first block in each direction (\textit{xmn, ymn, zmn}), and the size of the block in each direction (\textit{xsiz, ysiz, zsiz}) are set with a grid definition.
+
+        \textit{file for optimized pit (str)}: Three output files are written by \texttt{HPO}. The names for each output file are set here.
+
+    %%%%%%%%%%%%%%%%%%%%
+    \subsection{OBJ\_FUNCT:}
+    %%%%%%%%%%%%%%%%%%%%
+
+        The objective function section has the main parameters relating to the objective function and the variables being optimized. The main variable being optimized over is the expected pit value. The ability to penalize the uncertainty for a variable is a key setting in \texttt{HPO}. The stripping ratio has been added as an optimization variable but is not fully tested.
+
+        \textit{factor to penalize uncertainty (float)}: This sets a penalization factor applied to the uncertainty in the pit values over all realizations. A negative of this value is applied to the standard deviation of the pit values. Setting this to zero means the uncertainty will not be used in the objective function.
+
+        \textit{expected stripping ratio target (float)}: Set a target for the stripping ratio.
+
+        \textit{factor to penalize stripping ratio uncertainty}: Set a penalization factor applied to the uncertainty in the stripping ratios over all realizations. Setting this to zero means it will not be used in the objective function.
+
+        \textit{ore and waste multipliers (float, float)}: A multiplier can be applied to either the ore blocks (positive block values) or the waste blocks (negative block values).
+
+    %%%%%%%%%%%%%%%%%%%%
+    \subsection{GLOBAL\_OPTIMA:}
+    %%%%%%%%%%%%%%%%%%%%
+
+        More generic optimization parameters are set in this section. These parameters deal with random paths, and the solution finding functions.
+
+        \textit{random number seed (int)}: The textit{acorni} random number generator is used to generate random numbers for the random paths and the random restarts. A random seed is required to start the random number generator. It is recommended that a large number ending with an odd number is used.
+
+        \textit{file with initial pit (str)}: The lower boundary limit can be set by the user by providing the file name for a surface style output file. See output file types in this paper to see further descriptions of the surface output files. This assumes the surface block depths are in the first column of the input file. If no file is found the program will find the largest possible pit as described in Section \ref{sect:Int-Scope}.
+
+        \textit{maximum perturbation loops (int)}: The maximum number of loops in each perturbation cycle is set here.
+
+        \textit{random restart (int, int)}: Random restarts are used to escape local optima. The number of restarts done, and the number of locations changed during each restart are set here. The number of restarts and restart locations needed to relatively assure finding the optimal solution depends on the complexity of the deposit. However more restarts increase the runtime of the program. See Chapter \ref{ch:Int} for tuning suggestions.
+
+        \textit{number of perturbation loop failures (int)}: This sets the maximum number of perturbation loop failures, no changes found, before exiting the perturbation cycle early. Currently at least two loop failures is recommended for \texttt{HPO} changes it's optimization approach after the first failure. The first loop failure causes \texttt{HPO} to switch to randomizing the direction and amount it tries to change the pit shell at each X/Y location.
+
+    %%%%%%%%%%%%%%%%%%%%
+    \subsection{PRECEDANCE:}
+    %%%%%%%%%%%%%%%%%%%%
+        Only two basic precedence rule sets are currently available in the \texttt{HPO} software.
+
+        \textit{precedence option (int)}: A setting of 0 will use the 1:5 block precedence rule set. With blocks of equal side lengths, this will produce 35\textdegree to 45\textdegree wall angles in a 3-D model. A setting of 1 will use the the 1:9 block precedence rule set. With blocks of equal side lengths, this will produce 45\textdegree to 55\textdegree wall angles in 3-D model.
+
+    %%%%%%%%%%%%%%%%%%%%
+    \subsection{FILE FORMATS:}
+    %%%%%%%%%%%%%%%%%%%%
+        Multiple file formats can used in the reading and writing of files. Currently the ASCII GSLIB format and the binary GSB format have been implemented.
+
+        \textit{input file formats (int)}: All input file formats must be of the same format. A setting of 0 uses the ASCII GSLIB format. See \cite{Deutsch1998} for format specifications. A setting of 1 uses the binary GSB format.
+
+        \textit{output file formats (int)}: All output file formats must be of the same format. A setting of 0 uses the ASCII GSLIB format. See \cite{Deutsch1998} for format specifications. A setting of 1 uses the binary GSB format.
+
+    %%%%%%%%%%%%%%%%%%%%
+    \subsection{DEBUG:}
+    %%%%%%%%%%%%%%%%%%%%
+        This section allows the display of debug options. For large models that require a long run time this can reassure the user that \texttt{HPO} is still running.
+
+        \textit{debug options (int)}: 0 turns off debug messages, 1 displays debug messages every N number of attempted changes during each of the perturbation loops. 2 displays debug messages every N successful changes during each of the perturbation loops.
+
+        \textit{how often to display messages (int)}: This sets how often to display the debug messages. Either every N attempts or every N successful changes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Note on the Use of Multiple Economic Block Models}
+\label{sect:mult_ebm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Traditional pit optimizers optimize with one block model at a time. If a stochastic modeling approach is used and multiple realizations of the geologic model are generated, then the models could be preprocessed before optimization.
+
+    \begin{figure}[hbt] % grade transfer function
+        \centering
+        \includegraphics[width=0.4\linewidth]{0-Figures/append/grade_trans_funct.pdf}
+        \caption[Simplified grade transfer function]{A simplified non-linear grade transfer function based off of a single cut-off grade. Zone (i) is the discontinuity associated with the cut-off grade. Zone (ii) shows the value if the grade is below the cut-off. Zone (iii) shows two different types of grade transfer functions for the block value of grades above the cut-off}
+        \label{fig:grade_tf}
+    \end{figure}
+
+    The transfer function to convert from a grade model to an economic block model is non-linear, see Figure \ref{fig:grade_tf}. A consequence of this non-linearity is that the revenue calculated from expected grade is not the same as the expected revenue. The difference depends on the distribution of grade and the cut-off grade. Calculating the block value at each location, $BV_i$, is based on the non-linear transfer function shown in Figure \ref{fig:grade_tf}. This transfer function can take the simplified expression in Equation \ref{eq:tf} which shows the calculation of the block value, $BV_i$, at any location.
+
+    %%%%%%%%%%%%%%%%%
+    \begin{equation} % Expected pit value equation
+        V_i =\begin{cases}
+        -cost_{mining} & \text{ if } g_i < g_z \\
+        g_i*recovery*sale\_price - cost_{mining} - cost_{processing} & \text{ if } g_i \geq g_z
+        \end{cases}
+        \label{eq:tf2}
+    \end{equation}
+    %%%%%%%%%%%%
+
+    In Equation \ref{eq:tf2}, $g_i$ represents the grade of the block at location $i$, and $g_z$ represents the cut-off grade being applied in the transfer function. The revenue for a single realization, $l$, is shown below:
+
+    %%%%%%%%%%%%%%%%%
+    \begin{equation}
+        revenue_{l} = \sum_{i}^{I}  V_{i;l}
+        \label{eq:exp_rev2}
+    \end{equation}
+    %%%%%%%%%%%%
+
+    In Equation \ref{eq:exp_rev2}, the revenue is the sum of the block values, $V_i$, for all blocks indexed from $i = 1,...,I$, where $I$ is the total number of blocks being summed up. The expected block value can also be calculated at each location. This is shown below:
+
+    %%%%%%%%%%%%%%%%%
+    \begin{equation}
+        E\left [ V_i \right ] = \frac{1}{L} \sum_{l}^{L} V_{l;i}
+        \label{eq:exp_bvalue2}
+    \end{equation}
+    %%%%%%%%%%%%
+
+    The expected block value for a block at location $i$, for each realization, $l$, is the sum of the blocks at that over all realizations; divided by the total number of realizations, $L$, as shown in Equation \ref{eq:exp_bvalue2}. Equations \ref{eq:exp_rev2} and \ref{eq:exp_bvalue2} can be combined into Equation \ref{eq:exp_rev3} to calculate the expected revenue, of a selected number of blocks, over all realizations.
+
+    %%%%%%%%%%%%%%%%%
+    \begin{equation}
+        E\left [ revenue \right ]_{L} = \frac{1}{L}\sum_{l}^{L}\sum_{i}^{I} V_{i;l}
+        \label{eq:exp_rev3}
+    \end{equation}
+    %%%%%%%%%%%%
+
+    To calculate the revenue on the expected grade, the equations would need to change. In this case, The transfer function would take the simplified expression in Equation \ref{eq:tf3} which shows the calculation of the average block value, $\overline{V}_i$, at any location.
+
+    %%%%%%%%%%%%%%%%%
+    \begin{equation} % Expected pit value equation
+        \overline{V}_i =\begin{cases}
+        -cost_{mining} & \text{ if }  \frac{1}{l} \sum_{l}^{L} g_{i} < g_z \\
+        g_i*recovery*sale\_price - cost_{mining} - cost_{processing} & \text{ if }  \frac{1}{l} \sum_{l}^{L} g_{i}\geq g_z
+        \end{cases}
+        \label{eq:tf3}
+    \end{equation}
+    %%%%%%%%%%%%
+
+    In Equation \ref{eq:tf3}, the block grade, $g_i$, at location, $i$, would need to be first averaged over all realizations. Then the average block value, $\overline{V}_i$, would be calculated using the transfer function. The Revenue for the expected grade could then be calculated using Equation \ref{eq:rev_eg}
+
+    %%%%%%%%%%%%%%%%%
+    \begin{equation}
+        Revenue_{E\left [ g \right ]} = \frac{1}{I}\sum_{i}^{I}revenue\left ( \overline{V}_i \right ) \qquad \forall L, \forall I
+        \label{eq:rev_eg}
+    \end{equation}
+    %%%%%%%%%%%%
+
+    Using the concept of the grade transfer function shown in Figure \ref{fig:grade_tf} and Equation \ref{eq:exp_rev3}, \glspl{CDF} of low grade, medium grad and high grade cut-offs are shown in Figure \ref{fig:ebv_cdf}. A small synthetic deposit with 250 simulated realizations was used to create the \glspl{CDF}. Three different types of \glspl{CDF} are shown in Figure \ref{fig:ebv_cdf}. The gray \glspl{CDF} represent individual realizations, the blue line shows the \gls{CDF} for the expected revenue, and the red line shows the \gls{CDF} for the revenue of the expected grade.
+
+    \begin{figure}[htb] % ebv_cdf
+        \centering
+        \includegraphics[width=0.9\linewidth]{./0-Figures/append/ebv_cdf.pdf}
+        \caption[CDF's of expected block value models from different grade transfer functions]{Plots of the cumulative distributive functions for economic value block models. From left to right - low grade cut-off, mean grade cut-off, high grade cut-off.}
+        \label{fig:ebv_cdf}
+    \end{figure}
+
+    Reviewing the \glspl{CDF} in Figure \ref{fig:ebv_cdf} shows that the revenue calculated from expected grade is not the same as the expected revenue. As the relatively lower grade cut-off's are used in the transfer function, the revenue calculated from the expected grade approaches the expected revenue. However, there is a large difference between the the \gls{CDF} of revenue of the expected grade and the \gls{CDF} of the expected revenue as the cut-off grade moves towards a relatively high grade.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Website Information for Reviewed Commercial Software}
+\label{sect:ap-soft}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Information about the algorithms used in commercially available software was gathered for this thesis from the software companies websites. The information was gathered in July of 2016 and the accuracy of the information was re-checked on January 18th of 2017. Table \ref{tab:software} shows the website addresses where the information was gathered from. Some of the information came directly from the websites and some information was gathered from brochures downloaded from the websites.
+
+    \begin{table}[!ht]
+        \centering
+        \begin{tabular}{ | m{2cm} | m{3.5cm} | m{9cm} | }
+        \hline
+        \begin{center}\textbf{Company}\end{center}  & \begin{center}\textbf{Software Package}\end{center} & \begin{center}\textbf{Website Address}\end{center} \\
+        \hline
+        GEOVIA      & Whittle           & \url{www.3ds.com/products-services/geovia/products/whittle/} \\
+        \hline
+        Micromine   & Pit Optimization  & \url{www.micromine.com/micromine-mining-software/pit-optimisation/} \\
+        \hline
+        Maptek      & Vulcan Pit Optimizer  & \url{www.maptek.com/vulcan10/} \\
+        \hline
+        Datamine    & NPV-Scheduler     & \url{www.dataminesoftware.com/software/open-pit-planning-software/} \\
+        \hline
+        Carlson     & Carlson Geology  &  \href{http://files.carlsonsw.com/mirror/manuals/Carlson\_2015/}{files.carlsonsw.com/mirror/manuals/Carlson\_2015/} \\
+        \hline
+        MineMax     & Planner  & \url{https://www.minemax.com/products/planner/} \\
+        \hline
+        MiningMath  & SimSched  & \url{www.simsched.com/} \\
+        \hline
+        MineSight & Economic Planner & \url{http://hexagonmining.com/products/all-products/minesight-economic-planner} \\
+        \hline
+        \end{tabular}
+        \caption[Website of commercial pit optimization software]{A list of the websites for the commercial pit optimization software mentioned in this thesis}
+        \label{tab:software}
+    \end{table}
+
+    The mining support industry is constantly changing. Thus, the information gathered on currently available pit optimization methods can change with any new update to the software. GEOVIA and Maptek in particular seem to sponsor multiple white papers that show interest in both uncertainty in pit optimization and in other optimization algorithms. GEOVIA has many white papers accessible from their website (\url{http://www.3ds.com/products-services/geovia/resource-center/}). Maptek recently sponsored a white paper on uncertainty in pit optimization \citep{Deutsch2015a} and another white paper on heuristic optimizers \citep{maptek2014}.

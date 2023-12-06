@@ -1,0 +1,50 @@
+%!TEX root = ../compile_page.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Notes}
+\label{ch:Notes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Key Ideas Chapter}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    \subsection{Management of Risk}
+    % Efficient Frontier and Segue out
+    The efficient frontier concept provides a way of ranking investments with the expected profit value on one axis and the standard deviation (or other measure of risk) of the profit values on the other axis, see schematic illustration on Figure \ref{fig:eff_front}. For any specific measure of risk the best option is the choice with the highest expected value. This is the ``efficient frontier'' and is shown in Figure \ref{fig:eff_front} as the dark green line. This provides an active means of choosing the best portfolio, or investment decision, given a specific risk tolerance. That is, a decision could be taken that is lower in expected value if the reduction in risk is considered important. Although initially proposed in the field of portfolio selection, this is a concept that can be adapted to other fields of decision making. \textbf{Comment on this in the algorithm development chapter in order to tie all of this together. Something about using the algorithm to plot the efficient frontier and provide a tool/method/means for choosing between options.}
+
+    \subsection{Pit Optimization in the Presence of Risk}
+
+    \subsubsection{Active Paradigm}
+        % Behrang
+        \cite{Koushavand2014a} proposed a similar method for optimizing the long term production planning by considering the grade uncertainty as a mixed integer optimization problem. Similar to \cite{Goodfellow2015} the \gls{NPV} of the project is maximized to push the risk off to later years in the mine plan with the understanding that new information will be gathered and those risks will be decreased before the high risk blocks are mined. \cite{Koushavand2014a} first uses a deterministic model for calculating the expected \gls{NPV}, and then accounts for grade uncertainty by using the realizations to calculate overproduction and underproduction and applying a cost per tonne to each. This condenses the realization information into summary in order to better manage the computation costs associated with the mixed integer programming approach. \textbf{NOTE: I need to add a sentence talking about the algorithms used by \cite{Koushavand2014a}. I believe it was simply a MIP implementation but I need to double check.}
+
+        % What the current active approaches seam to focus on?
+        The current commercially available active approach is through GEOVIA's Whittle software package with their ``Hybrid pits'' approach \citep{Whittle2004}. This uses a combination of set-theory and the \gls{LGA} to rate multiple pit shells. It produces an optimized shell for each realization, and then uses set-theory to determine best case, worse case, and a high-confidence hybrid pit shell. Some of the results later in this research suggests that this will produce sub-optimal pits by restricting the optimization algorithm to a limited number of options, see Chapter \ref{ch:Exploring_EF} for an exploration of the efficient frontier. \textbf{Remember to comment back on this during the exploring the efficient frontier chapter}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Development of a HPO}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Added a discussion about the precedence to the HPO chapter... I need to clarify that discussion some more
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{CCG Annual Meeting}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Matthew's comment comparing the approach to the ``proportional'' affect is something to consider. There is an inherent increased weighting to high uncertainty blocks on the edge of the pit. What happens if you have a highly uncertain area of ore in the middle of the pit? HPO probably won't give you good information on this, at least not until the penalization factor gets high enough to drop that out. Considering an ore tonnage constraint and uncertainty of ore tonnage might be important for this?
+
+    Would it be helpful to do a quick study where you make an area in the middle highly uncertain and see how the algorithm handles this? Or this might be something worth talking about either in the ``future work'' section or the ``other applications'' section.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Future Papers and Reorganization Notes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    The ``Note on the Use of Multiple Economic Block Models'' should probably be moved to the appendix. This is still an interesting problem to think about. Talk to Clayton and see if we should pull this section out as a small paper and add it to next years CCG report?
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Program Improvement Notes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Would it speed things up if you set initial z-change to say 3/4 of the depth between topo and max boundary for first perturbation cycle.... and then slowly decreased the z-change value until you hit 1 in each subsequent cycle? Would this be similar to a simulated annealing type schema?
+
+A max depth array could be pre-processed after both boundaries are found. This could then be used to speed up the random restart and the random depth change part of the code.
