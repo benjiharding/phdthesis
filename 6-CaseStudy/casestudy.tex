@@ -5,3 +5,78 @@
 \label{ch:casestudy}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+This chapter presents the application of the complete \gls{NMR} workflow to a real \gls{3D} dataset. The \gls{NMR} workflow is designed to capture the spatial features of non‐Gaussian distributions in a way that the multi-Gaussian assumption and a \gls{LMR} cannot. The goal of the case study is to construct an \gls{NMR} spatial model and compare it to a traditional model. The dataset comes from a copper deposit where the project operator have noted non-Gaussian characteristics within drillholes.
+
+The workflow consists of (1) inferring the parameters that map the latent space to the observed space with \texttt{NMROPT} and (2) imputing the latent factors at the data locations with \texttt{NMRIMP} that return the true values when mapped. The mapping is non-linear and inferred such that all desired two- and multi-point statistics are captured in the final realizations. The idea is that the \gls{NMR} realizations can capture non-Gaussian spatial features such as asymmetric indicator variograms and connectivity of extreme values. Twenty-five conditional realizations are generated with the \gls{NMR}, and pertinent model statistics are checked and compared to \gls{SGS}.
+
+\section{Exploratory Data Analysis}
+\label{sec:eda}
+
+The complete dataset consists of $27983$ values nominally composited to 5 meters. For cross-validation purposes, approximately 30\% of the data (predominantly drilled in higher-grade areas) is withheld as a `test set'. Figure \ref{fig:datasets} shows \glspl{CDF} and basic summary statistics for the `training' and `test' datasets. All subsequent modeling considers only the training dataset and the test set is utilized in Section \ref{sec:compare}.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/test_train_cdf.png}
+    \caption{ \glspl{CDF} for training and testing datasets. }
+    \label{fig:datasets}
+\end{figure}
+
+Experimental variograms are first calculated using an omni-directional search that informs the nugget effect. This search uses short lags to highlight shape and range of the short scale continuity. Figure \ref{fig:omni} suggests a nugget effect of near zero, and that an exponential variogram shape is appropriate for the modeled variable. Directional experimental variograms are calculated first in original units and fitted with a exponential model. Figure \ref{fig:orig_expvar} shows the fitted experimental points and and Table \ref{tab:orig_expvar} shows the model parameters. The original units variogram defines the search orientation and anisotropy for estimator based declustering. Indicator variograms are calculated for the 0.1, 0.5 and 0.9 quantiles of the grade distribution. Figures xx shows the fitted indicator variogram models and Table xx summarizes the model parameters.
+
+% \begin{table}[!htb]
+%     \centering
+%     \caption{Training and testing datasets.}
+%     \resizebox{1\width}{!}{\input{0-Tables/variables.tex}}
+%     \label{tab:datasets}
+% \end{table}
+
+
+\foreach \sec/\name in \sectuples
+{
+    \begin{figure}[htb!]
+        \centering
+        \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_\sec.png}
+        \caption{ \name \ sections through the training dataset. }
+        \label{fig:train_\sec}
+    \end{figure}
+}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_omni.png}
+    \caption{Omni-directional variogram for nugget inference. }
+    \label{fig:omni}
+\end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_variogram.png}
+    \caption{Fitted original unit variograms in the major, minor and tertiary directions. }
+    \label{fig:orig_expvar}
+\end{figure}
+
+\begin{table}[!htb]
+    \centering
+    \caption{Original unit variogram model parameters.}
+    \resizebox{1\width}{!}{\input{0-Tables/var_a_variogram.tex}}
+    \label{tab:orig_expvar}
+\end{table}
+
+\section{Network Parameter Inference}
+\label{sec:param}
+
+
+\section{Latent Factor Imputation}
+\label{sec:fact_imp}
+
+
+\section{Latent Factor Simulation}
+\label{sec:fact_sim}
+
+
+\section{Post Processing}
+\label{sec:post}
+
+
+\section{Model Comparison}
+\label{sec:compare}
