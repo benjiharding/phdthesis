@@ -1,0 +1,8 @@
+# Custom Dictionary Words
+variogram
+variograms
+declustering
+declustered
+omni-directional
+drillholes
+neighbourhood
