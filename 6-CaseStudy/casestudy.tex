@@ -5,23 +5,23 @@
 \label{ch:casestudy}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-This chapter presents the application of the complete \gls{NMR} workflow to a real \gls{3D} dataset. The \gls{NMR} workflow is designed to capture the spatial features of non‐Gaussian distributions in a way that the multi-Gaussian assumption and a \gls{LMR} cannot. The goal of the case study is to construct an \gls{NMR} spatial model and compare it to a traditional model. The dataset comes from a copper deposit where the project operator have noted non-Gaussian characteristics within drillholes.
+This chapter presents the application of the complete \gls{NMR} workflow to a real \gls{3D} dataset. The \gls{NMR} workflow is designed to capture the spatial features of non‐Gaussian distributions in a way that the multi-Gaussian assumption and a \gls{LMR} cannot. The goal of the case study is to construct an \gls{NMR} spatial model and compare it to a traditional model. The dataset comes from a mineral deposit where the project operator have noted non-Gaussian characteristics within drillholes.
 
-The workflow consists of (1) inferring the parameters that map the latent space to the observed space with \texttt{NMROPT} and (2) imputing the latent factors at the data locations with \texttt{NMRIMP} that return the true values when mapped. The mapping is non-linear and inferred such that all desired two- and multi-point statistics are captured in the final realizations. The idea is that the \gls{NMR} realizations can capture non-Gaussian spatial features such as asymmetric indicator variograms and connectivity of extreme values. Twenty-five conditional realizations are generated with the \gls{NMR}, and pertinent model statistics are checked and compared to \gls{SGS}.
+The workflow consists of (1) inferring the parameters that map the latent space to the observed space with \texttt{NMROPT} and (2) imputing the latent factors at the data locations with \texttt{NMRIMP} that return the true values when mapped. The mapping is non-linear and inferred such that all desired two- and multipoint statistics are captured in the final realizations. The idea is that the \gls{NMR} realizations can capture non-Gaussian spatial features such as asymmetric indicator variograms and connectivity of extreme values. Twenty-five conditional realizations are generated with the \gls{NMR}, and pertinent model statistics are checked and compared to \gls{SGS}.
 
 \section{Exploratory Data Analysis}
 \label{sec:eda}
 
-The complete dataset consists of $27983$ values nominally composited to 5 meters. For cross-validation purposes, approximately 30\% of the data (predominantly drilled in higher-grade areas) is withheld as a `test set'. Figure \ref{fig:datasets} shows \glspl{CDF} and basic summary statistics for the `training' and `test' datasets. All subsequent modeling considers only the training dataset and the test set is utilized in Section \ref{sec:compare}.
+The complete dataset consists of $27,983$ values nominally composited to 5 meters. All coordinates are transformed such that the spatial centroid of the data is $(x=0,y=0,z=0)$. For cross-validation purposes, approximately 30\% of the data (predominantly drilled in higher-grade areas) is withheld as a `test set'. Figure \ref{fig:datasets} shows \glspl{CDF} and basic summary statistics for the `training' and `test' datasets. All subsequent modeling considers only the training dataset and the test set is utilized in Section \ref{sec:compare}.
 
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/test_train_cdf.png}
-    \caption{ \glspl{CDF} for training and testing datasets. }
+    \caption{ \Glspl{CDF} for training and testing datasets. }
     \label{fig:datasets}
 \end{figure}
 
-Experimental variograms are first calculated using an omni-directional search that informs the nugget effect. This search uses short lags to highlight shape and range of the short scale continuity. Figure \ref{fig:omni} suggests a nugget effect of near zero, and that an exponential variogram shape is appropriate for the modeled variable. Directional experimental variograms are calculated first in original units and fitted with a exponential model. Figure \ref{fig:orig_expvar} shows the fitted experimental points and and Table \ref{tab:orig_expvar} shows the model parameters. The original units variogram defines the search orientation and anisotropy for estimator based declustering. Indicator variograms are calculated for the 0.1, 0.5 and 0.9 quantiles of the grade distribution. Figures xx shows the fitted indicator variogram models and Table xx summarizes the model parameters.
+Experimental variograms are first calculated using an omni-directional search that informs the nugget effect. This search uses short lags to highlight shape and range of the short scale continuity. Figure \ref{fig:omni} suggests a nugget effect of near zero, and that an exponential variogram shape is appropriate for the modeled variable. Directional experimental variograms are calculated first in original units and fitted with an exponential model. Figure \ref{fig:orig_expvar} shows the fitted experimental points and Table \ref{tab:orig_expvar} shows the model parameters. The original units variogram defines the search orientation and anisotropy for estimator based declustering. Indicator variograms are calculated for the 0.1, 0.5 and 0.9 quantiles of the grade distribution. Figures \ref{fig:ind_expvar} shows the fitted indicator variogram models and Table \ref{tab:ind_expvar} summarizes the model parameters.
 
 % \begin{table}[!htb]
 %     \centering
@@ -62,20 +62,109 @@ Experimental variograms are first calculated using an omni-directional search th
     \label{tab:orig_expvar}
 \end{table}
 
+\begin{figure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_ivariogram_0_1.png}
+        \caption{}
+    \end{subfigure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_ivariogram_0_5.png}
+        \caption{}
+    \end{subfigure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_ivariogram_0_9.png}
+        \caption{}
+    \end{subfigure}
+    \caption{Fitted experimental indicator variograms for the 0.1 (a), 0.5 (b) and 0.9 (c) quantiles.}
+    \label{fig:ind_expvar}
+\end{figure}
+
+\begin{table}[!htb]
+    \centering
+    \caption{Indicator variogram model parameters. All models have zero nugget.}
+    \resizebox{0.9\width}{!}{\input{0-Tables/ivario_models.tex}}
+    \label{tab:ind_expvar}
+\end{table}
+
+Transformation to Gaussian space requires a representative \gls{CDF}. Declustering weights are produced using \gls{ID2} estimation. A grid of 5x5x5 meter blocks is produced considering a 25-meter buffer in the x, y, and z directions around all available data (\gls{SMU} grid). \Gls{ID2} estimation weights for each data are accumulated during an estimation run and used as declustering weights. The idea is that data located in dense regions receive less total weight as many data are present in the search neighbourhood. In sparse areas data receive more weight as there are fewer data in the search neighbourhood. Estimator declustering is more robust than traditional cell declustering in the presence of irregular data configurations as the principal orientation of continuity can be captured by the search ellipse. The limits of the estimation grid must be well-defined to prevent unintended edge effects \cite{Wilde2007}. Figure \ref{fig:declus_cdf} shows the clustered (black) and declustered \gls{CDF}.
+
+After normal score transform the experimental variogram of the normal scores is calculated and fitted with a model. Figure \ref{fig:ns_expvar} shows the fitted experimental points and Table \ref{tab:ns_expvar} shows the model parameters. A normal score variogram permits calculation of accuracy metrics, particularly the actual fraction of true values that fall within specified probability intervals. Figure \ref{fig:ns_xval} shows a leave-one-drillhole out cross validation and accuracy plot for the fitted normal score variogram model. The scatter plot shows a reasonable \gls{SOR} and reproduction of the true mean. The accuracy plot suggests a reasonable space of uncertainty for the fitted model.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_declus_cdf.png}
+    \caption{ Declustered \gls{CDF} considering \gls{ID2} weights. }
+    \label{fig:declus_cdf}
+\end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/ns_var_a_variogram.png}
+    \caption{Fitted normal score variograms in the major, minor and tertiary directions. }
+    \label{fig:ns_expvar}
+\end{figure}
+
+\begin{table}[!htb]
+    \centering
+    \caption{Normal score variogram model parameters.}
+    \resizebox{1\width}{!}{\input{0-Tables/ns_var_a_variogram.tex}}
+    \label{tab:ns_expvar}
+\end{table}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/nsvario_xval.png}
+    \caption{Normal score variogram \gls{LOOCV} (left) and accuracy plot (right).}
+    \label{fig:ns_xval}
+\end{figure}
+
+The final step of \gls{EDA} is to generate a reference model for validation purposes. An exhaustive model is generated with \gls{OK} considering a minimum of 6 and a maximum of 40 composites using a search ellipse with ranges and angles aligned with the fitted original units variogram model (Table \ref{tab:orig_expvar}).
+
+
 \section{Network Parameter Inference}
 \label{sec:param}
+
+Parameterization of the \gls{NMR} requires the definition of (1) optimization targets, (2) a pool of latent Gaussian factors, (3) architecture of the network and (4) optimization hyperparameters.
+
+The continuous normal score, and indicator variograms from Section \ref{sec:eda} become optimization targets for parameterizing the \gls{NMR}. Target sequence and runs distributions are calculated internally from the drillhole data by \texttt{NMROPT}.
+
+Decomposition of the target variogram structures into individual components forms the initial latent Gaussian pool. That is, each nested variogram structure defines the covariance of a latent factor with zero nugget and a sill of 1.0. There are two nested structures in the continuous variogram model and two in each of the indicator variograms for an initial pool of $8 + 1 = 9$ (plus one for the nugget effect). Additional structures are added to pool that correspond with high-grade clusters. The distribution is thresholded at the $95^{th}$ quantile generating a binary indicator.
+
+% need reference for agglomerative clustering
+
+Gaussian pool
+Network architecture
+Variogram reproduction
+Sequence reproduction
 
 
 \section{Latent Factor Imputation}
 \label{sec:fact_imp}
 
+Imputation
+Data reproduction
+Factor cdf reproduction
+Factor variogram reproduction
 
 \section{Latent Factor Simulation}
 \label{sec:fact_sim}
 
+Point scale grid
+Factor simulation
+Factor mapping
+Gridded data reproduction
+Gridded variogram reproduction
+Gridded sequence reproduction
 
 \section{Post Processing}
 \label{sec:post}
+
+SMU grid
+E-type and conditional standard deviation
+Stope optimization
 
 
 \section{Model Comparison}
