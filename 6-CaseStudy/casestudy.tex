@@ -9,6 +9,7 @@ This chapter presents the application of the complete \gls{NMR} workflow to a re
 
 The workflow consists of (1) inferring the parameters that map the latent space to the observed space with \texttt{NMROPT} and (2) imputing the latent factors at the data locations with \texttt{NMRIMP} that return the true values when mapped. The mapping is non-linear and inferred such that all desired two- and multipoint statistics are captured in the final realizations. The idea is that the \gls{NMR} realizations can capture non-Gaussian spatial features such as asymmetric indicator variograms and connectivity of extreme values. Twenty-five conditional realizations are generated with the \gls{NMR}, and pertinent model statistics are checked and compared to \gls{SGS}.
 
+\FloatBarrier
 \section{Exploratory Data Analysis}
 \label{sec:eda}
 
@@ -50,7 +51,7 @@ Experimental variograms are first calculated using an omni-directional search th
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_variogram.png}
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_variogram.png}
     \caption{Fitted original unit variograms in the major, minor and tertiary directions. }
     \label{fig:orig_expvar}
 \end{figure}
@@ -65,18 +66,18 @@ Experimental variograms are first calculated using an omni-directional search th
 \begin{figure}
     \begin{subfigure}{1.0\textwidth}
         \centering
-        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_ivariogram_0_1.png}
-        \caption{}
+        \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_ivariogram_0_1.png}
+        \caption{0.1 Quantile}
     \end{subfigure}
     \begin{subfigure}{1.0\textwidth}
         \centering
-        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_ivariogram_0_5.png}
-        \caption{}
+        \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_ivariogram_0_5.png}
+        \caption{0.5 Quantile}
     \end{subfigure}
     \begin{subfigure}{1.0\textwidth}
         \centering
-        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_ivariogram_0_9.png}
-        \caption{}
+        \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_ivariogram_0_9.png}
+        \caption{0.9 Quantile}
     \end{subfigure}
     \caption{Fitted experimental indicator variograms for the 0.1 (a), 0.5 (b) and 0.9 (c) quantiles.}
     \label{fig:ind_expvar}
@@ -89,7 +90,7 @@ Experimental variograms are first calculated using an omni-directional search th
     \label{tab:ind_expvar}
 \end{table}
 
-Transformation to Gaussian space requires a representative \gls{CDF}. Declustering weights are produced using \gls{ID2} estimation. A grid of 5x5x5 meter blocks is produced considering a 25-meter buffer in the x, y, and z directions around all available data (\gls{SMU} grid). \Gls{ID2} estimation weights for each data are accumulated during an estimation run and used as declustering weights. The idea is that data located in dense regions receive less total weight as many data are present in the search neighbourhood. In sparse areas data receive more weight as there are fewer data in the search neighbourhood. Estimator declustering is more robust than traditional cell declustering in the presence of irregular data configurations as the principal orientation of continuity can be captured by the search ellipse. The limits of the estimation grid must be well-defined to prevent unintended edge effects \cite{Wilde2007}. Figure \ref{fig:declus_cdf} shows the clustered (black) and declustered \gls{CDF}.
+Transformation to Gaussian space requires a representative \gls{CDF}. Declustering weights are produced using \gls{ID2} estimation. A grid of 5x5x5 meter blocks is produced considering a 25-meter buffer in the x, y, and z directions around all available data (the \gls{SMU} grid). \Gls{ID2} estimation weights for each data are accumulated during an estimation run and used as declustering weights. The idea is that data located in dense regions receive less total weight as many data are present in the search neighbourhood. In sparse areas data receive more weight as there are fewer data in the search neighbourhood. Estimator declustering is more robust than traditional cell declustering in the presence of irregular data configurations as the principal orientation of continuity can be captured by the search ellipse. The limits of the estimation grid must be well-defined to prevent unintended edge effects \cite{Wilde2007}. Figure \ref{fig:declus_cdf} shows the clustered (black) and declustered \gls{CDF} (red).
 
 After normal score transform the experimental variogram of the normal scores is calculated and fitted with a model. Figure \ref{fig:ns_expvar} shows the fitted experimental points and Table \ref{tab:ns_expvar} shows the model parameters. A normal score variogram permits calculation of accuracy metrics, particularly the actual fraction of true values that fall within specified probability intervals. Figure \ref{fig:ns_xval} shows a leave-one-drillhole out cross validation and accuracy plot for the fitted normal score variogram model. The scatter plot shows a reasonable \gls{SOR} and reproduction of the true mean. The accuracy plot suggests a reasonable space of uncertainty for the fitted model.
 
@@ -102,7 +103,7 @@ After normal score transform the experimental variogram of the normal scores is 
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/ns_var_a_variogram.png}
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/ns_var_a_variogram.png}
     \caption{Fitted normal score variograms in the major, minor and tertiary directions. }
     \label{fig:ns_expvar}
 \end{figure}
@@ -123,34 +124,270 @@ After normal score transform the experimental variogram of the normal scores is 
 
 The final step of \gls{EDA} is to generate a reference model for validation purposes. An exhaustive model is generated with \gls{OK} considering a minimum of 6 and a maximum of 40 composites using a search ellipse with ranges and angles aligned with the fitted original units variogram model (Table \ref{tab:orig_expvar}).
 
-
+\FloatBarrier
 \section{Network Parameter Inference}
 \label{sec:param}
 
-Parameterization of the \gls{NMR} requires the definition of (1) optimization targets, (2) a pool of latent Gaussian factors, (3) architecture of the network and (4) optimization hyperparameters.
+Parameterization of the \gls{NMR} requires the definition of (1) optimization targets, (2) a pool of latent Gaussian factors, (3) architecture of the network and (4) optimization hyperparameters. The continuous normal score, and indicator variograms from Section \ref{sec:eda} become optimization targets for parameterizing the \gls{NMR}. Target sequence and runs distributions are calculated internally from the drillhole data by \texttt{NMROPT}.
 
-The continuous normal score, and indicator variograms from Section \ref{sec:eda} become optimization targets for parameterizing the \gls{NMR}. Target sequence and runs distributions are calculated internally from the drillhole data by \texttt{NMROPT}.
+The initial step in defining the Gaussian pool is checking how well a traditional simulation algortithm (e.g.\ \gls{SGS}) reproduces the optimization target only considering the continuous variogram. This ``base-case'' model provides insight into what features are required to achieve the desired targets. \Gls{SGS} performs well reproducing the continuous and all indicator variograms; this is likely due to the data density of the training dataset. Though variograms are well reproduced, there is a discrepancy between downhole sequences from the data and the base-case model. Figure \ref{fig:data_sgs_runs} shows cumulative run length frequencies above the 0.9 quantile calculated directly from the data (red) and the expected value of gridded \gls{SGS} realizations (black). This discrepancy suggests additional high-grade continuity is required up to a length of approximately 30m (six connected five-meter composites).
 
-Decomposition of the target variogram structures into individual components forms the initial latent Gaussian pool. That is, each nested variogram structure defines the covariance of a latent factor with zero nugget and a sill of 1.0. There are two nested structures in the continuous variogram model and two in each of the indicator variograms for an initial pool of $8 + 1 = 9$ (plus one for the nugget effect). Additional structures are added to pool that correspond with high-grade clusters. The distribution is thresholded at the $95^{th}$ quantile generating a binary indicator.
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/data_sgs_runs.png}
+    \caption{Cumulative run length frequencies above the 0.9 quantile from the drillhole data and the base-case \gls{SGS} model.}
+    \label{fig:data_sgs_runs}
+\end{figure}
 
-% need reference for agglomerative clustering
-
-Gaussian pool
-Network architecture
-Variogram reproduction
-Sequence reproduction
+Decomposition of the target variogram structures into individual components forms the initial latent Gaussian pool. That is, each nested variogram structure defines the covariance of a latent factor with zero nugget and sill of 1.0. As the continuous variogram also reproduces the indicator variograms the initial pool consists of the two nested structures in Table \ref{tab:ns_expvar} for a total of $2 + 1 = 3$ (plus one for the nugget effect) factors. Additional structures are added to pool that correspond with high-grade features of the conceptual geological model and the overall orientation of drilling. As a pure nugget factor is added to the pool, any structure with a major range less than 30 meters is pruned to prevent adding too much noise to the network inputs. Though the network can filter this noise, experiments show some level of pruning improves the final parameter inference. Table \ref{tab:pool} shows the covariance structure of each component in the final pool, excluding the nugget factor. Factors 3 and 4 correspond to high-grade structures.
 
 
+% Additional structures are added to pool that correspond with high-grade clusters. The grade distribution is thresholded at the $95^{th}$ quantile generating a binary indicator. Agglomerative clustering \citep{mullner2011modern} generates spatially coherent clusters using x, y, z coordinates and the continuous variable. Cluster orientations and anisotropies are determined from the eigenvectors and eigenvalues of the 3x3 covariance matrix of cluster coordinates. The x, y, and z components of the eigenvectors form \gls{GSLIB} style rotation angles as:
+% \begin{align}
+%     \text{azm} & = 90 - \text{atan2}(y, x) * 180/\pi               \\
+%     \text{dip} & = \text{atan2}(z, \sqrt{x^{2} + y^{2}}) * 180/\pi
+%     \label{eq:azmdip}
+% \end{align}
+
+\begin{table}[!htb]
+    \centering
+    \caption{Covariance structures of the Gaussian pool (excluding the nugget).}
+    \resizebox{0.9\width}{!}{\input{0-Tables/pool.tex}}
+    \label{tab:pool}
+\end{table}
+
+The choice of activation function exponent, $\omega$, controls each factor's influence on either high or low values. $\omega < 1$ emphasizes low values (<0 in Gaussian units) and $\omega > 1$ emphasizes high values (>0 in Gaussian units). Table \ref{tab:omega} shows the minimum and maximum bound for each trainable $\omega$ parameter. Factors 1 and 2 are constrained to be relatively neutral, that is influencing both high and low values but centered about $1.0$, while Factors 3 and 4 are constrained to influence high values only. The nugget effect factor is constrained to $\omega=1$.
+
+\begin{table}[!htb]
+    \centering
+    \caption{$\omega$ bounds by factor.}
+    \resizebox{0.9\width}{!}{\input{0-Tables/omega.tex}}
+    \label{tab:omega}
+\end{table}
+
+The network architecture is dictated by the number of factors in the Gaussian pool. The pool consists of 4 structures, plus one for the nugget, for a total of 5 latent Gaussian factors, resulting in an input layer of five nodes. Each input node has a single connection weight to a single hidden layer of the same dimension as the input. The network has a total of $2 \cdot M = 10$ trainable parameters; five connection weights and five $\omega$ values.
+
+Table \ref{tab:de_params} shows \gls{DE} parameters. The indicator thresholds used for optimization correspond to the indicator variograms in Section \ref{sec:eda}, that is, $G^{-1}([0.1, 0.5, 0.9])$ where $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. Runs and $n$-point connectivity are calculated up to a maximum of 10 steps ($\approx$50m).
+
+\begin{table}[!htb]
+    \centering
+    \caption{Differential Evolution parameters.}
+    \resizebox{0.9\width}{!}{\input{0-Tables/de_params.tex}}
+    \label{tab:de_params}
+\end{table}
+
+Network optimization is run for 1500 iterations resulting in a reasonably stable objective function value. The objective function value (Figure \ref{fig:fobj}) does not reach zero as it is the expected value across all realizations. Though the objective function components are weighted, any deviation in the number of runs can lead to larger objective function values. Table \ref{tab:opt_omega} shows the final optimized connection weight and  $\omega$ parameters. Figures \ref{fig:nmropt_uncond_real0_xy} to \ref{fig:nmropt_uncond_real0_yz} show the first unconditional realization at the data locations generated by \texttt{NMROPT}. Objective components are calculated using these realizations.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/fobj.png}
+    \caption{\Gls{DE} objective value versus iteration.}
+    \label{fig:fobj}
+\end{figure}
+
+\begin{table}[!htb]
+    \centering
+    \caption{Optimal connection weight and $\omega$ parameters.}
+    \resizebox{0.9\width}{!}{\input{0-Tables/opt_omega.tex}}
+    \label{tab:opt_omega}
+\end{table}
+
+\foreach \sec/\name in \sectuples
+{
+    \begin{figure}[htb!]
+        \centering
+        \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/nmropt_uncond_real0_\sec.png}
+        \caption{ \name \ sections through first unconditional realization of Gaussian values generated by \texttt{NMROPT}. Objective components are calculated using these realizations. }
+        \label{fig:nmropt_uncond_real0_\sec}
+    \end{figure}
+}
+
+A critical component of the \texttt{NMROPT} workflow is checking the reproduction of the optimization targets. Deviations from these targets will likely manifest in the imputed conditioning data and final realizations.  Figures \ref{fig:nmropt_repro_vario}, \ref{fig:nmropt_repro_ivario}, \ref{fig:nmropt_repro_runs} show variogram, indicator variogram and cumulative run-length frequency reproduction with the optimal \gls{NMR} parameters. Variogram and indicator variogram reproduction is reasonable though there is some deviation from the target model, particularly at shorter ranges in the principal directions. This deviation comes at the expense of increasing high-grade (0.9 quantile) continuity in the direction of drilling (roughly parallel to the tertiary variogram direction). This increased continuity is evident in the 0.9 quantile run-length frequency plot (Figure \ref{fig:nmropt_repro_runs} right) where the unconditional \texttt{NMROPT} realizations show continuity greater than that in the data. As a consequence the 0.1 and 0.5 quantiles show slightly decreased continuity relative to the data (Figure \ref{fig:nmropt_repro_runs} left and center). This increased continuity is advantageous as results show the effect of conditioning in the final realizations can reduce extreme value continuity.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_vario.png}
+    \caption{\texttt{NMROPT} continuous variogram reproduction for \csnreals \ realizations. Left to right are the major, minor and vertical directions, respectively.}
+    \label{fig:nmropt_repro_vario}
+\end{figure}
+
+\begin{figure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_ivario_0_1.png}
+        \caption{0.1 Quantile}
+    \end{subfigure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_ivario_0_5.png}
+        \caption{0.5 Quantile}
+    \end{subfigure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_ivario_0_9.png}
+        \caption{0.9 Quantile}
+    \end{subfigure}
+    \caption{\texttt{NMROPT} indicator variogram reproduction for \csnreals \ realizations for the 0.1 (a), 0.5 (b) and 0.9 (c) quantiles. Left to right are the major, minor and vertical directions, respectively.}
+    \label{fig:nmropt_repro_ivario}
+\end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_runs.png}
+    \caption{\texttt{NMROPT} cumulative run-length frequency reproduction for \csnreals \ realizations. Thresholds 1, 2, and 3 correspond to the 0.1, 0.5 and 0.9 quantiles, respectively.}
+    \label{fig:nmropt_repro_runs}
+\end{figure}
+
+
+\FloatBarrier
 \section{Latent Factor Imputation}
 \label{sec:fact_imp}
 
-Imputation
-Data reproduction
-Factor cdf reproduction
-Factor variogram reproduction
+The optimized \gls{NMR} parameters from Section \ref{sec:param} are the basis for latent factor imputation. The optimized parameters and the Gaussian pool are input to the program \texttt{NMRIMP} and realizations of latent factors are computed via \gls{SGRI}. \csnreals \ realizations are imputed for each factor specified in the Gaussian pool, plus the nugget effect. All imputed realizations are checked to ensure they (1) reproduce the data within the specified polishing tolerance (Table XX); (2) imputed realizations are on average univariate Gaussian; (3) imputed factors are on average uncorrelated; and (4) each imputed factor on average reproduces its single structure variogram model.
 
+Figure \ref{fig:imputed_vs_data} shows the scatter plot of hard data values and the corresponding imputed values in normal score units. The imputed values in this context are the five latent factors mixed through the optimal \gls{NMR} and normal score transformed. There is roughly perfect correlation between data and imputed values and no delta values exceed the specified polishing tolerance. Figure \ref{fig:factor_cdfs} shows that each imputed factor is on average univariate Gaussian and Figure \ref{fig:fact_corrmat} shows the imputed factors are effectively uncorrelated. The left matrix is randomly generated, independent Gaussian data as a reference, and the right matrix is the average correlation between imputed values over \csnreals \ realizations. Figure \ref{fig:nmrimp_repro_gvario} shows variogram reproduction for each imputed factor. There is some deviation from the specified target models though overall, variogram reproduction is reasonable.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/imputed_vs_data.png}
+    \caption{Scatter plot illustrating the relationship between the hard data values and imputed values in normal score units. }
+    \label{fig:imputed_vs_data}
+\end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/factor_cdfs.png}
+    \caption{\Gls{CDF} reproduction for the four latent factors. }
+    \label{fig:factor_cdfs}
+\end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/fact_corrmat.png}
+    \caption{Correlation matrices for collocated imputed latent factors. The left matrix is randomly generated Gaussian data as a reference, and the right matrix is the average correlation between imputed values over \csnreals \ realizations.}
+    \label{fig:fact_corrmat}
+\end{figure}
+
+\begin{figure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/expvario_fact1.png}
+        \caption{Factor 1}
+    \end{subfigure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/expvario_fact2.png}
+        \caption{Factor 2}
+    \end{subfigure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/expvario_fact3.png}
+        \caption{Factor 3}
+    \end{subfigure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/expvario_fact4.png}
+        \caption{Factor 4}
+    \end{subfigure}
+    \caption{Variogram reproduction for \csnreals \ imputed realizations of each factor. The variogram model is the model specified in the Gaussian pool in Table \ref{tab:pool}.}
+    \label{fig:nmrimp_repro_gvario}
+\end{figure}
+
+
+\FloatBarrier
 \section{Latent Factor Simulation}
 \label{sec:fact_sim}
+
+Imputed factor realizations from Section \ref{sec:fact_imp} become conditioning data for gridded factor realizations. Each univariate Gaussian factor realization is used to condition a gridded realization in a one-for-one fashion. That is, a unique data realization is used for each simulated realization. Gridded realizations in this case-study are simulated using \gls{SGS} though any conditional simulation algortithm is valid.
+
+The point scale simulation grid utilizes a cell size of 2.5 x 2.5 x 5m for a total of 2,236,948 nodes; Table \ref{tab:simgrid} summarizes its parameters. \csnreals \ realizations of each factor are simulated and checked similar to any other Gaussian simulation workflow. The realizations are on average univariate Gaussian and reproduce the variogram. Figure \ref{fig:gridded_factors} shows a plan-view section through the first realization of the gridded factors.
+
+\begin{table}[!htb]
+    \centering
+    \caption{Simulation grid parameters.}
+    \resizebox{0.9\width}{!}{\input{0-Tables/simgrid.tex}}
+    \label{tab:simgrid}
+\end{table}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/gridded_factors.png}
+    \caption{Plan-view section through the first realization of the gridded factors, excluding the nugget.}
+    \label{fig:gridded_factors}
+\end{figure}
+
+Once factors are defined at all grid nodes they are mapped from latent to observed space through application of the optimized \gls{NMR}. Mapping consists of interpolating the raw activation values (\gls{NMR} output) with the normal score reference distribution generated by \texttt{NMRIMP}. Using a single reference distribution ensures consistency between imputation and gridded simulation. The \gls{NMR} realizations are checked ensuring they reproduce the continuous variogram model, indicator variogram models and cumulative run-length frequencies, as well as being on average univariate Gaussian. Figures \ref{fig:ns_reals_xy} to \ref{fig:ns_reals_yz} show sections through the first \gls{NMR} realization mapped to Gaussian units.
+
+\foreach \sec/\name in \sectuples
+{
+    \begin{figure}[htb!]
+        \centering
+        \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/ns_reals_\sec.png}
+        \caption{ \name \ sections through the first \gls{NMR} realization mapped to Gaussian units. }
+        \label{fig:ns_reals_\sec}
+    \end{figure}
+}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_gridded_ns_cdf.png}
+    \caption{\gls{CDF} reproduction for \csnreals \ \gls{NMR} realizations mapped to Gaussian units. }
+    \label{fig:repro_gridded_ns_cdf}
+\end{figure}
+
+\foreach \sec/\name in \sectuples
+{
+    \begin{figure}[htb!]
+        \centering
+        \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/orig_reals_\sec.png}
+        \caption{ \name \ sections through the first \gls{NMR} realization back-transformed to original units. }
+        \label{fig:orig_reals_\sec}
+    \end{figure}
+}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_gridded_cdf.png}
+    \caption{ \gls{CDF} reproduction for \csnreals \ \gls{NMR} realizations back-transformed to original units. }
+    \label{fig:repro_gridded_cdf}
+\end{figure}
+
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_gridded_vario.png}
+    \caption{\gls{NMR} continuous variogram reproduction for \csnreals \ realizations. Left to right are the major, minor and vertical directions, respectively.}
+    \label{fig:repro_gridded_vario}
+\end{figure}
+
+\begin{figure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_gridded_ivario_0_1.png}
+        \caption{0.1 Quantile}
+    \end{subfigure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_gridded_ivario_0_5.png}
+        \caption{0.5 Quantile}
+    \end{subfigure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_gridded_ivario_0_9.png}
+        \caption{0.9 Quantile}
+    \end{subfigure}
+    \caption{\gls{NMR} indicator variogram reproduction for \csnreals \ realizations for the 0.1 (a), 0.5 (b) and 0.9 (c) quantiles. Left to right are the major, minor and vertical directions, respectively.}
+    \label{fig:repro_gridded_ivario}
+\end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_gridded_runs.png}
+    \caption{\gls{NMR} 0.9 quantile cumulative run-length frequency reproduction for \csnreals \ realizations. 0.9 quantile from \gls{SGS} is shown for reference.}
+    \label{fig:repro_gridded_runs}
+\end{figure}
+
+
 
 Point scale grid
 Factor simulation
@@ -159,6 +396,8 @@ Gridded data reproduction
 Gridded variogram reproduction
 Gridded sequence reproduction
 
+
+\FloatBarrier
 \section{Post Processing}
 \label{sec:post}
 
@@ -166,6 +405,6 @@ SMU grid
 E-type and conditional standard deviation
 Stope optimization
 
-
+\FloatBarrier
 \section{Model Comparison}
 \label{sec:compare}
