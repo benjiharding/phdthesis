@@ -243,7 +243,14 @@ A critical component of the \texttt{NMROPT} workflow is checking the reproductio
 \section{Latent Factor Imputation}
 \label{sec:fact_imp}
 
-The optimized \gls{NMR} parameters from Section \ref{sec:param} are the basis for latent factor imputation. The optimized parameters and the Gaussian pool are input to the program \texttt{NMRIMP} and realizations of latent factors are computed via \gls{SGRI}. \csnreals \ realizations are imputed for each factor specified in the Gaussian pool, plus the nugget effect. All imputed realizations are checked to ensure they (1) reproduce the data within the specified polishing tolerance (Table XX); (2) imputed realizations are on average univariate Gaussian; (3) imputed factors are on average uncorrelated; and (4) each imputed factor on average reproduces its single structure variogram model.
+The optimized \gls{NMR} parameters from Section \ref{sec:param} are the basis for latent factor imputation. The optimized parameters and the Gaussian pool are input to the program \texttt{NMRIMP} and realizations of latent factors are computed via \gls{SGRI}. \csnreals \ realizations are imputed for each factor specified in the Gaussian pool, plus the nugget effect. All imputed realizations are checked to ensure they (1) reproduce the data within the specified polishing tolerance (Table \ref{tab:imp_pars}); (2) imputed realizations are on average univariate Gaussian; (3) imputed factors are on average uncorrelated; and (4) each imputed factor on average reproduces its single structure variogram model.
+
+\begin{table}[!htb]
+    \centering
+    \caption{\texttt{NMRIMP} parameters.}
+    \resizebox{0.9\width}{!}{\input{0-Tables/imp_pars.tex}}
+    \label{tab:imp_pars}
+\end{table}
 
 Figure \ref{fig:imp_data_scatter} shows the scatter plot of hard data values and the corresponding imputed values in normal score units. The imputed values in this context are the five latent factors mixed through the optimal \gls{NMR} and normal score transformed. There is roughly perfect correlation between data and imputed values and no delta values exceed the specified polishing tolerance. Figure \ref{fig:factor_cdfs} shows that each imputed factor is on average univariate Gaussian and Figure \ref{fig:fact_corrmat} shows the imputed factors are effectively uncorrelated. The left matrix is randomly generated, independent Gaussian data as a reference, and the right matrix is the average correlation between imputed values over \csnreals \ realizations. Figure \ref{fig:nmrimp_repro_gvario} shows variogram reproduction for each imputed factor. There is some deviation from the specified target models though overall, variogram reproduction is reasonable.
 
