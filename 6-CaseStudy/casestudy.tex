@@ -92,7 +92,7 @@ Experimental variograms are first calculated using an omni-directional search th
 
 Transformation to Gaussian space requires a representative \gls{CDF}. Declustering weights are produced using \gls{ID2} estimation. A grid of 5x5x5 meter blocks is produced considering a 25-meter buffer in the x, y, and z directions around all available data (the \gls{SMU} grid). \Gls{ID2} estimation weights for each data are accumulated during an estimation run and used as declustering weights. The idea is that data located in dense regions receive less total weight as many data are present in the search neighbourhood. In sparse areas data receive more weight as there are fewer data in the search neighbourhood. Estimator declustering is more robust than traditional cell declustering in the presence of irregular data configurations as the principal orientation of continuity can be captured by the search ellipse. The limits of the estimation grid must be well-defined to prevent unintended edge effects \cite{Wilde2007}. Figure \ref{fig:declus_cdf} shows the clustered (black) and declustered \gls{CDF} (red).
 
-After normal score transform the experimental variogram of the normal scores is calculated and fitted with a model. Figure \ref{fig:ns_expvar} shows the fitted experimental points and Table \ref{tab:ns_expvar} shows the model parameters. A normal score variogram permits calculation of accuracy metrics, particularly the actual fraction of true values that fall within specified probability intervals. Figure \ref{fig:ns_xval} shows a leave-one-drillhole out cross validation and accuracy plot for the fitted normal score variogram model. The scatter plot shows a reasonable \gls{SOR} and reproduction of the true mean. The accuracy plot suggests a reasonable space of uncertainty for the fitted model.
+After normal score transform the experimental variogram of the normal scores is calculated and fitted with a model. Figure \ref{fig:ns_expvar} shows the fitted experimental points and Table \ref{tab:ns_expvar} shows the model parameters. A normal score variogram permits calculation of accuracy metrics, particularly the actual fraction of true values that fall within specified probability intervals. Figure \ref{fig:ns_xval} shows a leave-one-drillhole out cross validation and accuracy plot for the fitted normal score variogram model. The scatter plot shows a reasonable \gls{SOR} and reproduction of the true mean. The accuracy plot suggests a reasonable space of uncertainty for the fitted model. It is interesting to note the 0.1 and 0.9 indicator variograms are not highly asymmetric with this dataset.
 
 \begin{figure}[htb!]
     \centering
@@ -252,7 +252,7 @@ The optimized \gls{NMR} parameters from Section \ref{sec:param} are the basis fo
     \label{tab:imp_pars}
 \end{table}
 
-Figure \ref{fig:imp_data_scatter} shows the scatter plot of hard data values and the corresponding imputed values in normal score units. The imputed values in this context are the five latent factors mixed through the optimal \gls{NMR} and normal score transformed. There is roughly perfect correlation between data and imputed values and no delta values exceed the specified polishing tolerance. Figure \ref{fig:factor_cdfs} shows that each imputed factor is on average univariate Gaussian and Figure \ref{fig:fact_corrmat} shows the imputed factors are effectively uncorrelated. The left matrix is randomly generated, independent Gaussian data as a reference, and the right matrix is the average correlation between imputed values over \csnreals \ realizations. Figure \ref{fig:nmrimp_repro_gvario} shows variogram reproduction for each imputed factor. There is some deviation from the specified target models though overall, variogram reproduction is reasonable.
+Figure \ref{fig:imp_data_scatter} shows the scatter plot of hard data values and the corresponding imputed values in normal score units. The imputed values in this context are the five latent factors mixed through the optimal \gls{NMR} and normal score transformed. There is roughly perfect correlation between data and imputed values and no delta values exceed the specified polishing tolerance. Figure \ref{fig:factor_cdfs} shows that each imputed factor is on average univariate Gaussian and Figure \ref{fig:fact_corrmat} shows the imputed factors are effectively uncorrelated. The left matrix is randomly generated, independent Gaussian data as a reference, and the right matrix is the average correlation between imputed values over \csnreals \ realizations. Figure \ref{fig:nmrimp_repro_gvario} shows variogram reproduction for each imputed factor. There is some deviation from the specified target models though overall, variogram reproduction is reasonable. This is particularly true for factors three and four where the range in the major direction is long relative to the domain size in that orientation.
 
 \begin{figure}[htb!]
     \centering
@@ -402,7 +402,7 @@ Figure \ref{fig:repro_gridded_vario} shows gridded continuous variogram reproduc
 \section{Post Processing}
 \label{sec:post}
 
-Point scale realizations are block-averaged to the \gls{SMU} volume for comparison at a relevant scale. The \gls{SMU} scale grid is centered on the south-west corner of the point scale grid that encompasses the majority of the test data set. Table \ref{tab:smugrid} shows the parameters of the \gls{SMU} grid. As a goal of the \gls{NMR} is to improve local high-grade resources conditional to certain events, a simplified stope optimization process is implemented to mimic the selection of local high-grade resources at the \gls{SMU} scale. A reference \gls{OK} model is built on the \gls{SMU} grid using the training data set and the original units variogram model of the training set. Stopes with a fixed footprint of 30 x 30 m and a minimum height of 40 m are selected considering the \gls{OK} reference model and a cutoff grade of 2.0 units. An initial grid of stope footprint centroids is generated across the reference model. All valid footprints about the centroid are evaluated and the highest grade, minimum volume stope is selected. The initial stope's z-dimension is then expanded one grid level at a time until either the volume is no longer above cutoff grade or a maximum height of 80 m is reached. This process is highly simplified and the resulting volumes are not true optimums. Figure \ref{fig:stopes_testdata_xy} shows a plan view section through the reference \gls{OK} model showing the stope shapes and the test data locations.
+Point scale realizations are block-averaged to the \gls{SMU} volume for comparison at a relevant scale. The \gls{SMU} scale grid is centered on the south-west corner of the point scale grid that encompasses the majority of the test data set. Table \ref{tab:smugrid} shows the parameters of the \gls{SMU} grid. As a goal of the \gls{NMR} is to improve local high-grade resources conditional to certain events, a simplified stope optimization process is implemented to mimic the selection of local high-grade resources at the \gls{SMU} scale. A reference \gls{OK} model is built on the \gls{SMU} grid using the training data set and the original units variogram model of the training set. Stopes with a fixed footprint of 30 x 30 m and a minimum height of 40 m are selected considering the \gls{OK} reference model and a \gls{COG} of 2.0 units. An initial grid of stope footprint centroids is generated across the reference model. All valid footprints about the centroid are evaluated and the highest grade, minimum volume stope is selected. The initial stope's z-dimension is then expanded one grid level at a time until either the volume is no longer above \gls{COG} or a maximum height of 80 m is reached. This process is highly simplified and the resulting volumes are not true optimums. Figure \ref{fig:stopes_testdata_xy} shows a plan view section through the reference \gls{OK} model showing the stope shapes and the test data locations.
 
 \begin{table}[!htb]
     \centering
@@ -424,33 +424,65 @@ Stopes containing composites from the test dataset are used to evaluate the perf
 \section{Model Comparison}
 \label{sec:compare}
 
+The following section compares the \gls{NMR} and \gls{SGS} realizations conditional to high-grade stope volumes. Figure \ref{fig:nmr_sgs_gtcurve_all_stopes} shows \gls{GT} curves for all stope volumes for the \gls{NMR} (left) and \gls{SGS} (right) \gls{SMU} scale realizations. Test data tonnes and grade come from length weighted composites in the test set flagged within the stope volumes. This test shows how well each set of realizations reproduces data that the model has not seen. Over all stopes the \gls{SGS} model is both higher in grade and tonnage relative to the composites. \gls{NMR} realizations are overall lower in grade and tonnage relative to the \gls{SGS} realizations and more closely reproduce the test data. This is due to the anisotropies of the high-grade factors constraining high-grade features in particular directions, opposed to being controlled by a continuous variogram (that considers the full range of grade values) in the \gls{SGS} context.
+
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/nmr_sgs_gtcurve_all_stopes.png}
     \caption{\Gls{GT} curves for all stope volumes for the \gls{NMR} (left) and \gls{SGS} (right) models. }
-    \label{fig:nmr_sgs_gtcurve_all_stopes.png}
+    \label{fig:nmr_sgs_gtcurve_all_stopes}
 \end{figure}
+
+Table \ref{tab:nmr_sgs_stope_delta} shows more detailed grade and deviation data on a stope-by-stope basis. The table shows the number of test data in each stope, the mean grade of the composites, and the percent deviation from the test data mean for the \gls{OK}, \gls{SGS} and \gls{NMR} expected values. Values are sorted in
+ascending order by \gls{NMR} expected value. There are many stopes where all models perform poorly, both over and underestimating the test data mean. These large deviations occur in stopes where the training and testing data are unbalanced. That is there is significant deviation between the mean of the conditioning data and the mean of the hold-out data. Where the training and testing data are more balanced, the \gls{NMR} model performs well relative to \gls{SGS}, particularly stopes 81, 560, 38 and 44. The \gls{NMR} shows deviations less than 3.3\% from the test data for these stopes while the \gls{SGS} model shows deviations from 9.6-14.9\%. It should be noted that there are stopes where \gls{SGS} does outperform the \gls{NMR}, (particularly when the mean of the test data increases above \gls{COG}), and stopes where neither model performs well.
 
 \begin{table}[!htb]
     \centering
-    \caption{\% difference in expected value between test data, \gls{OK} mean, \gls{SGS} expected value and \gls{NMR} expected value by stope. Only stopes with greater than 20 test data are shown. Values are sorted in ascending order by \gls{NMR} expected value.}
+    \caption{\% difference in expected value between test data, \gls{OK} mean, \gls{SGS} expected value and \gls{NMR} expected value by stope (>2.0 unit \gls{COG}). Stopes with greater than 15 test data are shown. Values are sorted in ascending order by \gls{NMR} expected value.}
     \resizebox{0.9\width}{!}{\input{0-Tables/nmr_sgs_stope_delta.tex}}
-    \label{tab:nmr_sgs_stope_delta.tex}
+    \label{tab:nmr_sgs_stope_delta}
 \end{table}
 
+Figure \ref{fig:nmr_sgs_gtcurve_stope81} shows the \gls{NMR} vs \gls{SGS} \gls{GT} curve for stope 81. These \gls{GT} curves show similar characteristics to Figure \ref{fig:nmr_sgs_gtcurve_all_stopes} where the \gls{SGS} model is higher grade through virtually all cutoff grades. The \gls{NMR} model shows better reproduction of the test composites grades (below 2.5 units) and the fraction of total tonnes above \gls{COG}. Figure \ref{fig:stope81_test_data} shows east-west sections though the spatial centroid of stope 81 showing the reference \gls{OK} model, and the first realization of the \gls{SGS} and \gls{NMR} models with the test data. Visually the \gls{NMR} realization does a good job of reproducing the test data and vertical high-grade continuity imparted by factor three is apparent. Figure \ref{fig:stope310_test_data} shows sections through the volume of stope 310 where all models perform poorly. This discrepancy is due to a large deviation in grades between the training and testing data within the stope volume. The stope is centered on high-grade composites present in the training data however the mean of the test composites is below \gls{COG}.
 
 % good stope
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/nmr_sgs_gtcurve_stope81.png}
     \caption{\Gls{GT} curves for stope 81 for \gls{NMR} (left) and \gls{SGS} (right) models. }
-    \label{fig:nmr_sgs_gtcurve_stope81.png}
+    \label{fig:nmr_sgs_gtcurve_stope81}
 \end{figure}
 
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/stope81_test_data.png}
-    \caption{Sections through stope 81 showing the test data, \gls{OK} model, and the first block averaged realization of \gls{SGS} and \gls{NMR} models.}
-    \label{fig:stope81_test_data.png}
+    \caption{Sections through stope 81 showing the test data, \gls{OK} model, and the first block averaged realization of the \gls{SGS} and \gls{NMR} models.}
+    \label{fig:stope81_test_data}
 \end{figure}
+
+% % bad stope
+% \begin{figure}[htb!]
+%     \centering
+%     \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/nmr_sgs_gtcurve_stope310.png}
+%     \caption{\Gls{GT} curves for stope 310 for \gls{NMR} (left) and \gls{SGS} (right) models. }
+%     \label{fig:nmr_sgs_gtcurve_stope310}
+% \end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/stope310_test_data.png}
+    \caption{Sections through stope 310 showing the test data, \gls{OK} model, and the first block averaged realization of the \gls{SGS} and \gls{NMR} models.}
+    \label{fig:stope310_test_data}
+\end{figure}
+
+
+
+\FloatBarrier
+\section{Discussion}
+\label{sec:dicuss06}
+
+The \gls{NMR} shows the ability to reproduce high-grade continuity features that cannot be captured with a continuous variogram alone. The specification of $\omega$ bounds allows the practitioner to impart specific spatial features onto specific portions of the continuous grade range. The resulting \gls{NMR} realizations are univariate Gaussian, however they capture non-Gaussian connectivity features. In the context of this case-study, the connectivity of extreme values is of particular importance. A base-case \gls{SGS} model shows that realizations generated under a multivariate-Gaussian assumption cannot alone capture the high-grade continuity observed in the drillholes. The \gls{NMR} parameter inference workflow determines the optimal weight to each factor as well as the exponent $\omega$ for the network activation function. Parameters are optimized such that continuous, and indicator variograms and cumulative run-length frequencies observed in the drillhole data are reproduced in the final gridded realizations. The indicator variograms do not show significant asymmetry in this case-study though the \gls{NMR} possesses the ability to reproduce these non-Gaussian features. Addition high-grade continuity, above what is observed in the drillholes, is embedded in the \gls{NMR} through highly anisotropic factors where $\omega \ge 1$. This increased continuity seems to be required in some circumstances where the conditional simulation of the Gaussian factors leads to destructuring of extreme values even after being passed through the \gls{NMR}.
+
+Over all stope volumes, the \gls{NMR} realizations more accurately reproduce the grade and tonnage of the test dataset than the \gls{SGS} realizations. On a stope-by-stope basis the performance of the \gls{NMR} model is variable though major deviations in grade between the train and test composites within any given stope should be considered. Stopes with many test data such as stope 81, the \gls{NMR} expected values shows a 9.4\% improvement over the \gls{SGS} expected value. Comparison of composite averages to stope volume expected values is assumed to be an adequate proxy to production reconciliation data; this ``test'' dataset scenario is likely as close as we can get without having true as-mined shapes and production grade data. It is also important to note that the stope optimization workflow is not generating a true optimal shape. The stope shapes are simply a geotechnically feasible heuristic proxy to mimic the mining selectivity.
+
 
