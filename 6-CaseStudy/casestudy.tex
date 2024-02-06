@@ -13,7 +13,7 @@ The workflow consists of (1) inferring the parameters that map the latent space 
 \section{Exploratory Data Analysis}
 \label{sec:eda}
 
-The complete dataset consists of $27,983$ values nominally composited to 5 meters. All coordinates are transformed such that the spatial centroid of the data is $(x=0,y=0,z=0)$. For cross-validation purposes, approximately 30\% of the data is withheld as a `test set'. The test data is not exposed to any subsequent modeling step. Figure \ref{fig:datasets} shows \glspl{CDF} and basic summary statistics for the `training' and `test' datasets. All subsequent modeling considers only the training dataset and the test set is utilized in Section \ref{sec:compare}.
+The complete dataset consists of $27,983$ values nominally composited to 5 meters. All coordinates are transformed such that the spatial centroid of the data is $(x=0,y=0,z=0)$. For cross-validation purposes, approximately 30\% of the data is withheld as a `test set'. The test data is not exposed to any subsequent modeling step. Figure \ref{fig:datasets} shows \glspl{CDF} and basic summary statistics for the `training' and `test' datasets. All modeling considers only the training dataset and the test set is utilized in Section \ref{sec:compare}.
 
 \begin{figure}[htb!]
     \centering
@@ -434,48 +434,62 @@ The following section compares the \gls{NMR} and \gls{SGS} realizations conditio
 \end{figure}
 
 Table \ref{tab:nmr_sgs_stope_delta} shows more detailed grade and deviation data on a stope-by-stope basis. The table shows the number of test data in each stope, the mean grade of the composites, and the percent deviation from the test data mean for the \gls{OK}, \gls{SGS} and \gls{NMR} expected values. Values are sorted in
-ascending order by \gls{NMR} expected value. In some situations, all models perform poorly, both over- and under-estimating the test data mean. These large deviations occur in stopes where the training and testing data are unbalanced. That is, there is a significant deviation between the mean of the conditioning data and the mean of the hold-out data. Where the training and testing data are balanced concerning grade, the \gls{NMR} model performs well relative to \gls{SGS}, particularly stopes 81, 560, 38 and 44. The \gls{NMR} shows deviations less than 3.3\% from the test data for these stopes while the \gls{SGS} model shows deviations from 9.6-14.9\%. It should be noted that there are stopes where \gls{SGS} outperforms the \gls{NMR} (particularly when the mean of the test data increases above \gls{COG}).
+ascending order by \gls{NMR} expected value. In some situations, all models perform poorly, both over- and under-estimating the test data mean. These large deviations occur in stopes where the training and testing data are unbalanced. That is, there is a significant deviation between the mean of the conditioning data and the mean of the hold-out data. Figure \ref{fig:test_train_deviation} shows the percent deviation from the test data mean for the training data and \gls{NMR} and \gls{SGS} expected values within each stope. Subsequent comparisons consider stopes where this deviation is less than 20\%. Where the training and testing data are balanced concerning grade, the \gls{NMR} model performs well relative to \gls{SGS}, particularly stopes 45, 653, 38 and 885. The \gls{NMR} shows deviations less than 3.5\% from the test data for these stopes while the \gls{SGS} model shows deviations from 5-11\%. It should be noted that there are stopes where \gls{SGS} outperforms the \gls{NMR} (particularly when the mean of the test data increases above \gls{COG}).
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/test_train_deviation.png}
+    \caption{Percent deviation from the test data set by stope ID. Stopes where train/test deviation is less than 20\% are retained for comparison. }
+    \label{fig:test_train_deviation}
+\end{figure}
 
 \begin{table}[!htb]
     \centering
-    \caption{\% difference in expected value between test data, \gls{OK} mean, \gls{SGS} expected value and \gls{NMR} expected value by stope (>2.0 unit \gls{COG}). Stopes with greater than 15 test data are shown. Values are sorted in ascending order by \gls{NMR} expected value.}
+    \caption{\% difference in expected value between test data, \gls{OK} mean, \gls{SGS} expected value and \gls{NMR} expected value by stope (>2.0 unit \gls{COG}). Stopes with greater than 20 test data and test set deviation is less than 20\% are shown. Values are sorted in ascending order by \gls{NMR} expected value.}
     \resizebox{0.9\width}{!}{\input{0-Tables/nmr_sgs_stope_delta.tex}}
     \label{tab:nmr_sgs_stope_delta}
 \end{table}
 
-Figure \ref{fig:nmr_sgs_gtcurve_stope81} shows the \gls{NMR} vs \gls{SGS} \gls{GT} curve for stope 81. These \gls{GT} curves show similar characteristics to Figure \ref{fig:nmr_sgs_gtcurve_all_stopes} where the \gls{SGS} model is higher grade through virtually all cutoff grades. The \gls{NMR} model shows better reproduction of the test composites grades (below 2.5 units) and the fraction of total tonnes above \gls{COG}. Figure \ref{fig:stope81_test_data} shows east-west sections though the spatial centroid of stope 81 showing the reference \gls{OK} model, and the first realization of the \gls{SGS} and \gls{NMR} models with the test data. Visually, the \gls{NMR} realization does a good job of reproducing the test data, and vertical high-grade continuity imparted by factor three is apparent. Figure \ref{fig:stope310_test_data} shows sections through the volume of stope 310 where all models perform poorly. This discrepancy is due to a large grade deviation between the training and testing data within the stope volume. The stope is centred on high-grade composites in the training data; however, the mean of the test composites is below \gls{COG}.
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/stope_mean_grades.png}
+    \caption{Mean grades by stope ID where test set deviation is less than 20\%. }
+    \label{fig:stope_mean_grades}
+\end{figure}
+
+Figure \ref{fig:nmr_sgs_gtcurve_stope38} shows the \gls{NMR} vs \gls{SGS} \gls{GT} curve for stope 38. These \gls{GT} curves show similar characteristics to Figure \ref{fig:nmr_sgs_gtcurve_all_stopes} where the \gls{SGS} model is higher grade through virtually all cutoff grades. The \gls{NMR} model shows better reproduction of the test composites grades (below 2.5 units) and the fraction of total tonnes above \gls{COG}. Figure \ref{fig:stope38_test_data} shows east-west sections though the spatial centroid of stope 38 showing the reference \gls{OK} model, and the first realization of the \gls{SGS} and \gls{NMR} models with the test data. Visually, the \gls{NMR} realization does a good job of reproducing the test data, and vertical high-grade continuity imparted by factor 3 is apparent. Figure \ref{fig:stope246_test_data} shows sections through the volume of stope 246 where the \gls{NMR} model performs poorly. Againm factor 3 imparts strong vertical continuity that is clearly visible. This strong continuity constrains the high-grade mineralization resulting in underestimation of the true grades given the deterministic stope placement.
 
 % good stope
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/nmr_sgs_gtcurve_stope81.png}
-    \caption{\Gls{GT} curves for stope 81 for \gls{NMR} (left) and \gls{SGS} (right) models. }
-    \label{fig:nmr_sgs_gtcurve_stope81}
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/nmr_sgs_gtcurve_stope38.png}
+    \caption{\Gls{GT} curves for stope 38 for \gls{NMR} (left) and \gls{SGS} (right) models. }
+    \label{fig:nmr_sgs_gtcurve_stope38}
 \end{figure}
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/stope81_test_data.png}
-    \caption{Sections through stope 81 showing the test data, \gls{OK} model, and the first block averaged realization of the \gls{SGS} and \gls{NMR} models.}
-    \label{fig:stope81_test_data}
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/stope38_test_data.png}
+    \caption{Sections through stope 38 showing the test data, \gls{OK} model, and the first block averaged realization of the \gls{SGS} and \gls{NMR} models.}
+    \label{fig:stope38_test_data}
 \end{figure}
 
-% % bad stope
-% \begin{figure}[htb!]
-%     \centering
-%     \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/nmr_sgs_gtcurve_stope310.png}
-%     \caption{\Gls{GT} curves for stope 310 for \gls{NMR} (left) and \gls{SGS} (right) models. }
-%     \label{fig:nmr_sgs_gtcurve_stope310}
-% \end{figure}
+% bad stope
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/nmr_sgs_gtcurve_stope246.png}
+    \caption{\Gls{GT} curves for stope 246 for \gls{NMR} (left) and \gls{SGS} (right) models. }
+    \label{fig:nmr_sgs_gtcurve_stope246}
+\end{figure}
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/stope310_test_data.png}
-    \caption{Sections through stope 310 showing the test data, \gls{OK} model, and the first block averaged realization of the \gls{SGS} and \gls{NMR} models.}
-    \label{fig:stope310_test_data}
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/stope246_test_data.png}
+    \caption{Sections through stope 246 showing the test data, \gls{OK} model, and the first block averaged realization of the \gls{SGS} and \gls{NMR} models.}
+    \label{fig:stope246_test_data}
 \end{figure}
 
-
+Throughout all cutoff grades the \gls{NMR} realizations are lower grade than the \gls{SGS} realizations. This leads to better reproduction of the test data across all stope volumes, however discrepancies exists stope-by-stope. The \gls{NMR} outperforms \gls{SGS} when \gls{SGS} overestimates the true grade. If \gls{SGS} underestimates the true grade, typically the \gls{NMR} further underestimates, though not always (stopes 38, 885, 53). This phenomenon is likely due to strongly anisotropic latent factors imparting high-grade continuity (factors 3 and 4) that forms a ``hard'' boundary with background mineralization. This feature is evident in the bottom panel of Figure \ref{fig:stope246_test_data} where sharp boundaries are present between vertical high-grade structures (>3.0 units) and lower-grade background mineralization. Stope placement considering a smooth deterministic model may not be able to capture these features in probabilistic realizations.
 
 \FloatBarrier
 \section{Discussion}
@@ -483,6 +497,6 @@ Figure \ref{fig:nmr_sgs_gtcurve_stope81} shows the \gls{NMR} vs \gls{SGS} \gls{G
 
 The \gls{NMR} can reproduce high-grade continuity features that cannot be captured with a continuous variogram alone. The specification of $\omega$ bounds allows the practitioner to impart specific spatial features onto specific portions of the continuous grade range. The resulting \gls{NMR} realizations are univariate Gaussian, however they capture non-Gaussian connectivity features. In this case study, the connectivity of extreme values is particularly important. A base-case \gls{SGS} model shows that realizations generated under a multivariate-Gaussian assumption cannot alone capture the high-grade continuity observed in the drillholes. The \gls{NMR} parameter inference workflow determines the optimal weight to each factor and the exponent $\omega$ for the network activation function. Parameters are optimized to reproduce continuous, and indicator variograms and cumulative run-length frequencies observed in the drillhole data in the final gridded realizations. The indicator variograms do not show significant asymmetry in this case study, though the \gls{NMR} can reproduce these non-Gaussian features. In addition, high-grade continuity, above what is observed in the drillholes, is embedded in the \gls{NMR} through highly anisotropic factors where $\omega \ge 1$. This increased continuity seems required when the conditional simulation of the Gaussian factors leads to the destructuring of extreme values after passing through the \gls{NMR}.
 
-Across all stope volumes, the \gls{NMR} realizations more accurately reproduce the grade and tonnage of the test dataset than the \gls{SGS} realizations. On a stope-by-stope basis, the performance of the \gls{NMR} model is variable, though major deviations in grade between the train and test composites within any given stope should be considered. Stopes with many test data, such as stope 81, the \gls{NMR} expected values show a 9.4\% improvement over the \gls{SGS} expected value. Comparison of composite averages to stope volume expected values is assumed to be an adequate proxy to production reconciliation data; this ``test'' dataset scenario is likely as close as we can get without having true as-mined shapes and production grade information. It is also important to note that the stope optimization workflow is not generating a true optimal shape. The stope shapes are a geotechnically feasible heuristic proxy to mimic the mining selectivity.
+Across all stope volumes, the \gls{NMR} realizations more accurately reproduce the grade and tonnage of the test dataset than the \gls{SGS} realizations. On a stope-by-stope basis, the performance of the \gls{NMR} model is variable, though major deviations in grade between the train and test composites within any given stope should be considered. Stopes with many test data, such as stope 45, the \gls{NMR} expected values show a 10\% improvement over the \gls{SGS} expected value. Comparison of composite averages to stope volume expected values is assumed to be an adequate proxy to production reconciliation data; this ``test'' dataset scenario is likely as close as we can get without having true as-mined shapes and production grade information. It is also important to note that the stope optimization workflow is not generating a true optimal shape. The stope shapes are a geotechnically feasible, heuristic proxy to mimic the mining selectivity.
 
 
