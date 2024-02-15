@@ -1,25 +1,83 @@
+@article{arroyo2020iterative,
+  title = {Iterative Algorithms for Non-Conditional and Conditional Simulation of {{Gaussian}} Random Vectors},
+  author = {Arroyo, Daisy and Emery, Xavier},
+  year = {2020},
+  month = oct,
+  journal = {Stochastic Environmental Research and Risk Assessment},
+  volume = {34},
+  number = {10},
+  pages = {1523--1541},
+  issn = {1436-3259},
+  doi = {10.1007/s00477-020-01875-0},
+  urldate = {2024-02-13},
+  abstract = {The conditional simulation of Gaussian random vectors is widely used in geostatistical~applications to quantify uncertainty in regionalized phenomena that have been observed at finitely many sampling locations. Two iterative algorithms are presented to deal with such a simulation. The first one is a variation of the propagative version of the Gibbs sampler aimed at simulating the random vector without any conditioning data. The novelty of the presented algorithm stems from the introduction of a relaxation parameter that, if adequately chosen, allows quickening the rates of convergence and mixing of the sampler. The second algorithm is meant to convert the non-conditional simulation into a conditional one, based on the successive over-relaxation method. Again, a relaxation parameter allows quickening the convergence in distribution to the desired conditional random vector. Both algorithms are applicable in a very general setting and avoid the pivoting, inversion, square rooting or decomposition of the variance-covariance matrix of the vector to be simulated, thus reduce the computation costs and memory requirements with respect to other discrete~geostatistical simulation approaches.},
+  langid = {english},
+  keywords = {Gauss-Seidel method,Gaussian random fields,Gibbs sampler,Mixing,Successive over-relaxation method},
+  file = {D:\03 UofA\06 Reading\_zotfile\Arroyo_Emery\arroyo2020iterative.pdf}
+}
+
 @techreport{artemis2020,
   title = {Blackwater Gold Project British Columbia - {{NI}} 43-101 Technical Report on Pre-Feasibility Study},
   author = {{Artemis Gold Inc.}},
-  year = {2020}
+  year = {2020},
+  keywords = {thesis_02}
 }
 
 @techreport{banyan2020,
   title = {{{TECHNICAL REPORT ON THE AURMAC PROPERTY}}, {{MAYO MINING DISTRICT YUKON TERRITORY}}, {{CANADA}}},
   author = {{Banyan Gold Corp.}},
-  year = {2020}
+  year = {2020},
+  keywords = {thesis_02}
+}
+
+@article{barnett2014projection,
+  title = {Projection {{Pursuit Multivariate Transform}}},
+  author = {Barnett, Ryan M. and Manchuk, John G. and Deutsch, Clayton V.},
+  year = {2014},
+  month = apr,
+  journal = {Mathematical Geosciences},
+  volume = {46},
+  number = {3},
+  pages = {337--359},
+  issn = {1874-8953},
+  doi = {10.1007/s11004-013-9497-7},
+  urldate = {2022-09-20},
+  abstract = {Transforming complex multivariate geological data to a Gaussian distribution is an important and challenging problem in geostatistics. A~variety of transforms are available for this goal, but struggle with high dimensional data sets. Projection pursuit density estimation (PPDE) is a well-established nonparametric method for estimating the joint density of multivariate data. A~central component of the PPDE algorithm transforms the original data toward a multivariate Gaussian distribution. The PPDE approach is modified to map complex data to a multivariate Gaussian distribution within a geostatistical modeling context. Traditional modeling may then take place on the transformed Gaussian data, with a back-transform used to return simulated variables to their original units. This approach is referred to as the projection pursuit multivariate transform (PPMT). The PPMT shows the potential to be an effective means for modeling high dimensional and complex geologic data. The PPMT algorithm is developed before discussing considerations and limitations. A~case study compares modeling results against more common techniques to demonstrate the value and place of the PPMT within geostatistics.},
+  langid = {english},
+  keywords = {Geostatistical Modeling,Kernel Density Estimation,Projection Index,Projection Pursuit,Radial Point Interpolation Method},
+  file = {D:\03 UofA\06 Reading\_zotfile\Barnett et al\barnett2014projection.pdf}
+}
+
+@article{barnett2015multivariate,
+  title = {Multivariate {{Imputation}} of {{Unequally Sampled Geological Variables}}},
+  author = {Barnett, Ryan M. and Deutsch, Clayton V.},
+  year = {2015},
+  month = oct,
+  journal = {Mathematical Geosciences},
+  volume = {47},
+  number = {7},
+  pages = {791--817},
+  issn = {1874-8953},
+  doi = {10.1007/s11004-014-9580-8},
+  urldate = {2023-08-14},
+  abstract = {Unequally sampled data pose a practical and significant problem for geostatistical modeling. Multivariate transformations are frequently applied in modeling workflows to reproduce the multivariate relationships of geological data. Unfortunately, these transformations may only be applied to data observations that sample all of the variables. In the case of unequal sampling, practitioners must decide between excluding incomplete observations and imputing (inferring) the missing values. While imputation is recommended by missing data theorists, the use of deterministic methods such as regression is generally discouraged. Instead, techniques such as multiple imputation (MI) are advocated to increase the accuracy, decrease the bias, and capture the uncertainty of imputed values. As missing data theory has received little attention within geostatistical literature and practice, MI has not been adapted from its conventional form to be suitable for geological data. To address this, geostatistical algorithms are integrated within an MI framework to produce parametric and non-parametric methods. Synthetic and geometallurgical case studies are used to demonstrate the feasibility of each method, where techniques that use both spatial and colocated information are shown to outperform the alternatives.},
+  langid = {english},
+  keywords = {Geostatistics,Missing data analysis,Modeling,Statistics,thesis_05},
+  file = {D:\03 UofA\06 Reading\_zotfile\Barnett_Deutsch\barnett2015multivariate.pdf}
 }
 
 @techreport{cardinal2019,
   title = {Namdini Gold Project Feasibility Study {{NI}} 43-101 Technical Report, Ghana, West Africa},
   author = {{Cardinal Resources}},
-  year = {2019}
+  year = {2019},
+  keywords = {thesis_02}
 }
 
 @techreport{cartier2020,
   title = {{{NI}} 43-101 Technical Report and Mineral Resource Estimate for the Central, North and South Gold Corridors on the Chimo Mine Project, Qu{\'e}bec, Canada},
   author = {{Cartier Resources Inc.}},
-  year = {2020}
+  year = {2020},
+  keywords = {thesis_02}
 }
 
 @misc{carvalho2017overview,
@@ -29,6 +87,7 @@
   month = jan,
   urldate = {2022-10-03},
   howpublished = {https://geostatisticslessons.com/lessons/mikoverview},
+  keywords = {thesis_02},
   file = {C:\Users\benha\Zotero\storage\J53QYQC4\mikoverview.html}
 }
 
@@ -37,19 +96,100 @@
   author = {{CIM Mineral Resource \& Mineral Reserve Committee}},
   year = {2019},
   month = nov,
-  institution = {{Canadian Institute of Mining, Metallurgy and Petroleum}}
+  institution = {{Canadian Institute of Mining, Metallurgy and Petroleum}},
+  keywords = {thesis_02}
 }
 
 @techreport{eldorado2020,
   title = {Technical Report Ki{\c s}lada{\u g} Gold Mine Turkey},
   author = {{Eldorado Gold Corporation}},
-  year = {2020}
+  year = {2020},
+  keywords = {thesis_02}
+}
+
+@article{emery2014simulating,
+  title = {Simulating {{Large Gaussian Random Vectors Subject}} to {{Inequality Constraints}} by {{Gibbs Sampling}}},
+  author = {Emery, Xavier and Arroyo, Daisy and Pel{\'a}ez, Mar{\'i}a},
+  year = {2014},
+  month = apr,
+  journal = {Mathematical Geosciences},
+  volume = {46},
+  number = {3},
+  pages = {265--283},
+  issn = {1874-8953},
+  doi = {10.1007/s11004-013-9495-9},
+  urldate = {2023-08-14},
+  abstract = {The Gibbs sampler is an iterative algorithm used to simulate Gaussian random vectors subject to inequality constraints. This algorithm relies on the fact that the distribution of a vector component conditioned by the other components is Gaussian, the mean and variance of which are obtained by solving a kriging system. If the number of components is large, kriging is usually applied with a moving search neighborhood, but this practice can make the simulated vector not reproduce the target correlation matrix. To avoid these problems, variations of the Gibbs sampler are presented. The conditioning to inequality constraints on the vector components can be achieved by simulated annealing or by restricting the transition matrix of the iterative algorithm. Numerical experiments indicate that both approaches provide realizations that reproduce the correlation matrix of the Gaussian random vector, but some conditioning constraints may not be satisfied when using simulated annealing. On the contrary, the restriction of the transition matrix manages to satisfy all the constraints, although at the cost of a large number of iterations.},
+  langid = {english},
+  keywords = {Gaussian random field,Gibbs sampler,Kriging neighborhood,Markov chain,Restriction of transition matrix,Simulated annealing,thesis_05},
+  file = {D:\03 UofA\06 Reading\_zotfile\Emery et al\emery2014simulating.pdf}
+}
+
+@book{everitt2010cambridge,
+  title = {The Cambridge Dictionary of Statistics},
+  author = {Everitt, B.S. and Skrondal, A.},
+  year = {2010},
+  publisher = {{Cambridge University Press}},
+  isbn = {978-0-521-76699-9},
+  lccn = {2010502891},
+  keywords = {thesis_05}
 }
 
 @techreport{fiore2021,
   title = {{{NI}} 43-101 Updated Technical Report on Resources and Reserves Pan Gold Project White Pine County, Nevada},
   author = {{Fiore Gold Ltd.}},
-  year = {2021}
+  year = {2021},
+  keywords = {thesis_02}
+}
+
+@article{geman1984stochastic,
+  title = {Stochastic {{Relaxation}}, {{Gibbs Distributions}}, and the {{Bayesian Restoration}} of {{Images}}},
+  author = {Geman, Stuart and Geman, Donald},
+  year = {1984},
+  month = nov,
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume = {PAMI-6},
+  number = {6},
+  pages = {721--741},
+  issn = {1939-3539},
+  doi = {10.1109/TPAMI.1984.4767596},
+  abstract = {We make an analogy between images and statistical mechanics systems. Pixel gray levels and the presence and orientation of edges are viewed as states of atoms or molecules in a lattice-like physical system. The assignment of an energy function in the physical system determines its Gibbs distribution. Because of the Gibbs distribution, Markov random field (MRF) equivalence, this assignment also determines an MRF image model. The energy function is a more convenient and natural mechanism for embodying picture attributes than are the local characteristics of the MRF. For a range of degradation mechanisms, including blurring, nonlinear deformations, and multiplicative or additive noise, the posterior distribution is an MRF with a structure akin to the image model. By the analogy, the posterior distribution defines another (imaginary) physical system. Gradual temperature reduction in the physical system isolates low energy states (``annealing''), or what is the same thing, the most probable states under the Gibbs distribution. The analogous operation under the posterior distribution yields the maximum a posteriori (MAP) estimate of the image given the degraded observations. The result is a highly parallel ``relaxation'' algorithm for MAP estimation. We establish convergence properties of the algorithm and we experiment with some simple pictures, for which good restorations are obtained at low signal-to-noise ratios.},
+  keywords = {Additive noise,Annealing,Bayesian methods,Deformable models,Degradation,Energy states,Gibbs distribution,image restoration,Image restoration,line process,MAP estimate,Markov random field,Markov random fields,relaxation,scene modeling,spatial degradation,Stochastic processes,Temperature distribution,thesis_05},
+  file = {D\:\\03 UofA\\06 Reading\\_zotfile\\Geman_Geman\\geman1984stochastic.pdf;C\:\\Users\\benha\\Zotero\\storage\\YY8YSXS4\\4767596.html}
+}
+
+@article{goovaerts1992factorial,
+  title = {Factorial Kriging Analysis: A Useful Tool for Exploring the Structure of Multivariate Spatial Soil Information},
+  shorttitle = {Factorial Kriging Analysis},
+  author = {Goovaerts, P.},
+  year = {1992},
+  journal = {Journal of Soil Science},
+  volume = {43},
+  number = {4},
+  pages = {597--619},
+  issn = {1365-2389},
+  doi = {10.1111/j.1365-2389.1992.tb00163.x},
+  urldate = {2021-10-16},
+  abstract = {Most studies of relations between soil properties fail to take account of their regionalized nature because of the lack of appropriate methods. This paper describes a geostatistical technique, factorial kriging analysis, that bridges the gap between classical multivariate analysis and a univariate geostatistical approach. The basic feature of the method is the fitting of a linear model of coregionalization, i.e. all experimental simple and cross-variograms are modelled with a linear combination of basic variogram functions. A particular variance-covariance matrix, the coregionalization matrix, can then be associated with each spatial scale defined by the range of the basic variogram function. Each coregionalization matrix describes relationships between variables at a given spatial scale. A principal component analysis of these matrices produces a set of components, the regionalized factors, that reflect the main features of the multivariate information for each spatial scale and whose scores are estimated by cokriging. The technique is described and illustrated with three case studies based on a simulated data set and soil survey data. The results are compared with those of the principal component analysis of the variance-covariance matrix and the variogram matrices.},
+  langid = {english},
+  keywords = {thesis_05},
+  file = {D\:\\03 UofA\\04 Research\\02 PhD\\_zotfile\\Goovaerts\\goovaerts1992factorial.pdf;C\:\\Users\\benha\\Zotero\\storage\\RI54W7CF\\j.1365-2389.1992.tb00163.html}
+}
+
+@article{hadavand2023spatial,
+  title = {Spatial Multivariate Data Imputation Using Deep Learning and Lambda Distribution},
+  author = {Hadavand, Mostafa and Deutsch, Clayton V.},
+  year = {2023},
+  month = aug,
+  journal = {Computers \& Geosciences},
+  volume = {177},
+  pages = {105376},
+  issn = {0098-3004},
+  doi = {10.1016/j.cageo.2023.105376},
+  urldate = {2024-02-14},
+  abstract = {Artificial neural networks (ANNs) are often used to establish a mapping between an input data set and a corresponding output. There are many applications that rely on quantifying the conditional distribution of the output given the input data set. This is often referred to as aleatoric uncertainty associated with variability of the outcome due to inherently random effects. In this paper, deep learning is used to quantify moments of the conditional distribution of a missing variable based on homotopic multivariate observations. The lambda distribution is then used to parametrize the conditional distribution based on the provided moments. Geostatistical quantification of spatial continuity complements the multivariate conditional distribution through Bayesian updating to inform multiple data imputation that accounts for the uncertainty associated with the missing variable(s). Geological data are often incomplete, and data imputation is an essential step to avoid excluding heterotopic data. The proposed data imputation framework trains multi layer perceptron (MLP) neural networks to characterize multivariate relationships inferred from homotopic training data. A case study is conducted using geological data from a lateritic Nickle deposit to demonstrate application of the proposed methodology.},
+  keywords = {Gaussian mixture model,Geostatistics,Simulation},
+  file = {D\:\\03 UofA\\06 Reading\\_zotfile\\Hadavand_Deutsch\\hadavand2023spatial.pdf;C\:\\Users\\benha\\Zotero\\storage\\ZEKJPSLQ\\S0098300423000808.html}
 }
 
 @article{journel1983nonparametric,
@@ -66,6 +206,7 @@
   urldate = {2021-10-22},
   abstract = {The indicator approach, whereby the data are used through their rank order, allows a nonparametric approach to the data bivariate distribution. Such rich structural information allows a nonparametric risk-qualified, estimation of local and global spatial distributions.},
   langid = {english},
+  keywords = {thesis_02},
   file = {D:\03 UofA\04 Research\02 PhD\_zotfile\Journel\journel1983nonparametric.pdf}
 }
 
@@ -78,13 +219,47 @@
   number = {1},
   pages = {27--36},
   publisher = {{The Southern African Institute of Mining and Metallurgy}},
+  keywords = {thesis_02},
   file = {D\:\\03 UofA\\04 Research\\02 PhD\\_zotfile\\Leuangthong_Nowak\\leuangthong2015dealing.pdf;C\:\\Users\\benha\\Zotero\\storage\\MIJ9JM8Z\\scielo.html}
+}
+
+@book{little2002statistical,
+  title = {Statistical {{Analysis}} with {{Missing Data}}},
+  author = {Little, Roderick J. A. and Rubin, Donald B.},
+  year = {2002},
+  edition = {1},
+  publisher = {{John Wiley \& Sons, Ltd}},
+  doi = {10.1002/9781119013563},
+  urldate = {2023-08-14},
+  file = {D\:\\03 UofA\\06 Reading\\_zotfile\\Little_Rubin\\little2002statistical.pdf;C\:\\Users\\benha\\Zotero\\storage\\T5FRK54J\\9781119013563.html}
+}
+
+@book{little2019statistical,
+  title = {Statistical Analysis with Missing Data},
+  author = {Roderick J. A. Little, Donald B. Rubin},
+  year = {2019},
+  series = {Wiley Series in Probability and Statistics},
+  edition = {3},
+  publisher = {{Wiley}},
+  isbn = {0-470-52679-3 978-1-118-59601-2 978-1-118-59569-5 978-0-470-52679-8},
+  file = {D:\03 UofA\06 Reading\_zotfile\Roderick J. A. Little\little2019statistical.pdf}
+}
+
+@techreport{matheron1982factorial,
+  title = {Pour Une Analyse Krigeante Des Donn{\'e}es R{\'e}gionalis{\'e}es},
+  author = {Matheron, Georges},
+  year = {1982},
+  number = {N-732},
+  institution = {{Ecole des Mines de Paris}},
+  urldate = {2021-10-28},
+  file = {D:\03 UofA\04 Research\02 PhD\_zotfile\Matheron\matheron1982factorial.pdf}
 }
 
 @techreport{medgold2021,
   title = {{{PRELIMINARY ECONOMIC ASSESSMENT AND NI}} 43-101 {{TECHNICAL REPORT FOR THE MEDGOLD TLAMINO PROJECT LICENCES}}, {{SERBIA}}},
   author = {{Medgold Resources Corp.}},
-  year = {2021}
+  year = {2021},
+  keywords = {thesis_02}
 }
 
 @misc{mullner2011modern,
@@ -99,14 +274,15 @@
   urldate = {2023-12-11},
   abstract = {This paper presents algorithms for hierarchical, agglomerative clustering which perform most efficiently in the general-purpose setup that is given in modern standard software. Requirements are: (1) the input data is given by pairwise dissimilarities between data points, but extensions to vector data are also discussed (2) the output is a "stepwise dendrogram", a data structure which is shared by all implementations in current standard software. We present algorithms (old and new) which perform clustering in this setting efficiently, both in an asymptotic worst-case analysis and from a practical point of view. The main contributions of this paper are: (1) We present a new algorithm which is suitable for any distance update scheme and performs significantly better than the existing algorithms. (2) We prove the correctness of two algorithms by Rohlf and Murtagh, which is necessary in each case for different reasons. (3) We give well-founded recommendations for the best current algorithms for the various agglomerative clustering schemes.},
   archiveprefix = {arxiv},
-  keywords = {62H30,Computer Science - Data Structures and Algorithms,I.5.3,Statistics - Machine Learning},
+  keywords = {62H30,Computer Science - Data Structures and Algorithms,I.5.3,Statistics - Machine Learning,thesis_06},
   file = {D\:\\03 UofA\\06 Reading\\_zotfile\\Müllner\\mullner2011modern.pdf;C\:\\Users\\benha\\Zotero\\storage\\RBT9X7UZ\\1109.html}
 }
 
 @techreport{ngm2020,
   title = {{{TECHNICAL REPORT ON THE CARLIN COMPLEX}}, {{EUREKA AND ELKO COUNTIES}}, {{STATE OF NEVADA}}, {{USA}}},
   author = {{Nevada Gold Mines LLC}},
-  year = {2020}
+  year = {2020},
+  keywords = {thesis_02}
 }
 
 @inproceedings{nowak2013suggestions,
@@ -115,13 +291,15 @@
   author = {Nowak, M. and Leuangthong, O. and Srivastava, R. M.},
   year = {2013},
   publisher = {{Canadian Institute of Mining, Metallurgy and Petroleum Montreal}},
+  keywords = {thesis_02},
   file = {D:\03 UofA\04 Research\02 PhD\_zotfile\Nowak et al\nowak2013suggestions.pdf}
 }
 
 @techreport{osiko2020,
   title = {{{NI}} 43-101 Technical Report and Mineral Resource Estimate for the Cariboo Gold Project, British Columbia, Canada},
   author = {{Osisko Gold Royalties Ltd}},
-  year = {2020}
+  year = {2020},
+  keywords = {thesis_02}
 }
 
 @article{parrish1997,
@@ -131,6 +309,7 @@
   journal = {Mining Engineering},
   volume = {49},
   pages = {45--49},
+  keywords = {thesis_02},
   file = {D:\03 UofA\04 Research\02 PhD\_zotfile\Parrish\parrish1997geologist.pdf}
 }
 
@@ -143,7 +322,26 @@
 @techreport{pretium2020,
   title = {Technical Report on the Brucejack Gold Mine, Northwest British Columbia},
   author = {{Pretium Resources Inc.}},
-  year = {2020}
+  year = {2020},
+  keywords = {thesis_02}
+}
+
+@article{qu2018geostatistical,
+  title = {Geostatistical {{Simulation}} with a {{Trend Using Gaussian Mixture Models}}},
+  author = {Qu, Jianan and Deutsch, Clayton V.},
+  year = {2018},
+  month = jul,
+  journal = {Natural Resources Research},
+  volume = {27},
+  number = {3},
+  pages = {347--363},
+  issn = {1573-8981},
+  doi = {10.1007/s11053-017-9354-3},
+  urldate = {2022-09-20},
+  abstract = {Geostatistics applies statistics to quantitatively describe geological sites and assess the uncertainty due to incomplete sampling. Strong assumptions are required regarding the location independence of statistical parameters to construct numerical models with geostatistical tools. Most geological data exhibit large-scale deterministic trends together with short-scale variations. Such location dependence violates the common geostatistical assumption of stationarity. The trend-like deterministic features should be modeled prior to conventional geostatistical prediction and accounted for in subsequent geostatistical calculations. The challenge of using a trend in geostatistical simulation algorithms for the continuous variable is the subject of this paper. A stepwise conditional transformation with a Gaussian mixture model is considered to provide a stable and artifact-free numerical model. The complex features of the regionalized variable in the presence of a trend are removed in the forward transformation and restored in the back transformation. The Gaussian mixture model provides a seamless bin-free approach to transformation. Data from a copper deposit were used as an example. These data show an apparent trend unsuitable for conventional geostatistical algorithms. The result shows that the proposed algorithm leads to improved geostatistical models.},
+  langid = {english},
+  keywords = {Non-stationary regionalized variable,Sequential Gaussian simulation,Stepwise conditional transformation},
+  file = {D:\03 UofA\06 Reading\_zotfile\Qu_Deutsch\qu2018geostatistical.pdf}
 }
 
 @inproceedings{roscoe1996cutting,
@@ -153,13 +351,63 @@
   year = {1996},
   month = apr,
   publisher = {{Canadian Institute of Mining, Metallurgy and Petroleum}},
+  keywords = {thesis_02},
   file = {D:\03 UofA\04 Research\02 PhD\_zotfile\Roscoe\roscoe1996cutting.pdf}
+}
+
+@article{silva2017multiple,
+  title = {Multiple Imputation Framework for Data Assignment in Truncated Pluri-{{Gaussian}} Simulation},
+  author = {Silva, Diogo S. F. and Deutsch, Clayton V.},
+  year = {2017},
+  month = nov,
+  journal = {Stochastic Environmental Research and Risk Assessment},
+  volume = {31},
+  number = {9},
+  pages = {2251--2263},
+  issn = {1436-3259},
+  doi = {10.1007/s00477-016-1309-4},
+  urldate = {2023-08-14},
+  abstract = {Truncated pluri-Gaussian simulation (TPGS) is suitable for the simulation of categorical variables that show natural ordering as the TPGS technique can consider transition probabilities. The TPGS assumes that categorical variables are the result of the truncation of underlying latent variables. In practice, only the categorical variables are observed. This translates the practical application of TPGS into a missing data problem in which all latent variables are missing. Latent variables are required at data locations in order to condition categorical realizations to observed categorical data. The imputation of missing latent variables at data locations is often achieved by either assigning constant values or spatially simulating latent variables subject to categorical observations. Realizations of latent variables can be used to condition all model realizations. Using a single realization or a constant value to condition all realizations is the same as assuming that latent variables are known at the data locations and this assumption affects uncertainty near data locations. The techniques for imputation of latent variables in TPGS framework are investigated in this article and their impact on uncertainty of simulated categorical models and possible effects on factors affecting decision making are explored. It is shown that the use of single realization of latent variables leads to underestimation of uncertainty and overestimation of measured resources while the use constant values for latent variables may lead to considerable over or underestimation of measured resources. The results highlight the importance of multiple data imputation in the context of TPGS.},
+  langid = {english},
+  keywords = {Geomodeling,Geostatistics,Gibbs sampler,Missing data analysis,thesis_05},
+  file = {D:\03 UofA\06 Reading\_zotfile\Silva_Deutsch\silva2017multiple.pdf}
+}
+
+@misc{silva2018enhanced,
+  title = {Enhanced {{Geologic Modeling}} of {{Multiple Categorical Variables}}},
+  author = {Silva, Diogo},
+  year = 2018,
+  journal = {ERA},
+  doi = {10.7939/R30G3HD9R},
+  urldate = {2023-08-15},
+  abstract = {Widely spaced data sets from drilling are used in the mining and petroleum industries to model subsurface resources. These data sets have...},
+  howpublished = {https://era.library.ualberta.ca/items/9ab8ab60-cb8f-4d7d-9551-3c602956b0ad},
+  langid = {english},
+  keywords = {thesis_05},
+  file = {D:\03 UofA\06 Reading\_zotfile\Silva\silva2018enhanced.pdf}
+}
+
+@article{silva2018multivariate,
+  title = {Multivariate Data Imputation Using {{Gaussian}} Mixture Models},
+  author = {Silva, Diogo S. F. and Deutsch, Clayton V.},
+  year = {2018},
+  month = oct,
+  journal = {Spatial Statistics},
+  volume = {27},
+  pages = {74--90},
+  issn = {2211-6753},
+  doi = {10.1016/j.spasta.2016.11.002},
+  urldate = {2023-08-14},
+  abstract = {Availability of high dimensional geological data has become common in the mining and petroleum industries. Data sets are often complex and require advanced multivariate geostatistical techniques. Multivariate data transformation is a common step of such advanced workflows and its application requires equally sampled (isotopic) data at all data locations. Samples with missing variables are common in geological data sets for many reasons. The missing data must be imputed (inferred) to permit the measured data to be used to their full extent. Imputation methods for geological data should address spatial structure and multivariate complexity. The published techniques that account for these considerations make strong assumptions regarding conditional distributions and are computationally demanding in presence of many data. A Gaussian mixture model fitted to the multivariate data is proposed in this paper to provide stability in fitting multivariate data and to significantly improve computational efficiency. The proposed approach is demonstrated using a lateritic Nickel data set. The proposed improvement is shown to decrease computational time by two orders of magnitude for the example while also consistently enhancing results in several performance tests.},
+  keywords = {Geostatistics,Missing data analysis,Modeling,Semi-parametric,thesis_05},
+  file = {D\:\\03 UofA\\06 Reading\\_zotfile\\Silva_Deutsch\\silva2018multivariate.pdf;C\:\\Users\\benha\\Zotero\\storage\\NMCSMPRH\\S2211675316301300.html}
 }
 
 @techreport{tristar2021,
   title = {Mineral Resource Update for the Castelo de Sonhos Gold Project, Par{\'a} State, Brazil},
   author = {{TriStar Gold Inc.}},
-  year = {2021}
+  year = {2021},
+  keywords = {thesis_02}
 }
 
 @book{tukey1977exploratory,
@@ -168,6 +416,7 @@
   year = {1977},
   volume = {2},
   publisher = {{Reading, MA}},
+  keywords = {thesis_02},
   file = {D:\03 UofA\06 Reading\_zotfile\Tukey_others\tukey1977exploratory.pdf}
 }
 
@@ -178,5 +427,5 @@
   year = {2007},
   address = {{Edmonton AB}},
   institution = {{University of Alberta}},
-  keywords = {CCG}
+  keywords = {CCG,thesis_06}
 }

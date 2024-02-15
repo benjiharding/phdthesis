@@ -42,10 +42,10 @@
 \pagenumbering{roman}
 
 % Input Frontpage Content
-% \input{99-FrontPages/1_titlepage}
-% \input{99-FrontPages/2_abstract}
-% \input{99-FrontPages/3_dedication}
-% \input{99-FrontPages/4_acknowledgements}
+\input{99-FrontPages/1_titlepage}
+\input{99-FrontPages/2_abstract}
+\input{99-FrontPages/3_dedication}
+\input{99-FrontPages/4_acknowledgements}
 \clearpage
 
 
@@ -53,9 +53,10 @@
 % Contents - Figures - and Such
 %-----------------------------------------------------
 % Add Table of Contents
-% \renewcommand{\contentsname}{Table of Contents} % Change the default title for the table f contents
-% \tableofcontents*
-% \clearpage
+\setcounter{tocdepth}{1} % only show sections, no sub-sections
+\renewcommand{\contentsname}{Table of Contents} % Change the default title for the table f contents
+\tableofcontents*
+\clearpage
 
 %% Add List of Tables
 % \listoftables*
@@ -104,13 +105,13 @@
 \glsresetall
 
 % Insert the chapters
-% \input{1-Introduction/intro}
-% \input{2-Outliers/outliers}
-% \input{3-NMRFramework/framework}
-% \input{4-Implementation/implementation}
-% \input{5-Imputation/imputation}
+\input{1-Introduction/intro}
+\input{2-Outliers/outliers}
+\input{3-NMRFramework/framework}
+\input{4-Implementation/implementation}
+\input{5-Imputation/imputation}
 \input{6-CaseStudy/casestudy}
-% \input{7-Conclusions/conclusions}
+\input{7-Conclusions/conclusions}
 
 %---------------------------------------------------
 % Insert Bibliography
@@ -119,7 +120,7 @@
 \medskip
 
 \bibliographystyle{apacite}
-% \bibliography{./999-References/Thesis}
+\bibliography{./999-References/Thesis}
 
 \clearpage
 
