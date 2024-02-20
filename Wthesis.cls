@@ -46,10 +46,14 @@
 \usepackage{gensymb} %$\degree$ contained in this one - BH
 \usepackage{pgffor}  % permits for-loops in latex, \foreach \x {item1, item2, ... } {% do things with \x} - BH
 
+% extras for pseudocode
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
 \AddToShipoutPicture{%
-\makeatletter%
-\special{pdf: put @thispage <</Group << /S /Transparency /I true /CS /DeviceRGB>> >>}%
-\makeatother%
+    \makeatletter%
+    \special{pdf: put @thispage <</Group << /S /Transparency /I true /CS /DeviceRGB>> >>}%
+    \makeatother%
 }
 
 
@@ -146,9 +150,9 @@
 
 % Define the paramter file display format
 \lstdefinestyle{ccgParameterfile}{xleftmargin=0.5em, numbers=left,
-                                  breakatwhitespace=true, numbersep=-1em, breaklines=true,
-                                  numberstyle=\raggedright\ttfamily, basicstyle=\ttfamily,
-                                  framextopmargin=1em}
+    breakatwhitespace=true, numbersep=-1em, breaklines=true,
+    numberstyle=\raggedright\ttfamily, basicstyle=\ttfamily,
+    framextopmargin=1em}
 \setlength\topsep{0em}
 \FrameSep0pt
 
@@ -174,9 +178,9 @@
 %\everymath{\displaystyle}
 \newcommand\adddot[1]{#1.}
 \AtBeginEnvironment{easylist}
-    {\ListProperties(CtrCom=\adddot, FinalSpace=.5em, Hang=true, Mark=, Space=4pt, Space*=4pt,
-                     Align=move,  Margin1=1.2em,  Margin2=2.9em,
-                     Numbers2=l, Hide2=1,  Margin3=5.6em, Numbers3=r, Hide3=2,  Margin4=6.8em,
-                     Numbers4=L, Hide4=3, Start1=1)}
-    {}
-    {}
+{\ListProperties(CtrCom=\adddot, FinalSpace=.5em, Hang=true, Mark=, Space=4pt, Space*=4pt,
+    Align=move,  Margin1=1.2em,  Margin2=2.9em,
+    Numbers2=l, Hide2=1,  Margin3=5.6em, Numbers3=r, Hide3=2,  Margin4=6.8em,
+    Numbers4=L, Hide4=3, Start1=1)}
+{}
+{}
