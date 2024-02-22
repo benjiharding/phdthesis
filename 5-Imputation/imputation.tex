@@ -69,10 +69,10 @@ The three general steps of the \gls{SGRI} algorithm are as follows:
 \begin{enumerate}[noitemsep]
     \item Calculate $m=1,\dots,M$ conditional means and standard deviations at the imputation location $\mathbf{u}_{i}$.
     \item Repeatedly sample the Gaussian vector $\tilde{\mathbf{y}}(\mathbf{u}_{i}) = \{\tilde{y}_{m}(\mathbf{u}_{i}), m=1,\dots,M \}$ from the conditional distributions until $\left|\mathcal{F}_{\theta}(\tilde{\mathbf{y}}(\mathbf{u}_{i})) - z(\mathbf{u}_{i})\right|$ is within a specified first tolerance.
-    \item Iteratively refine the solution from (2) through stochastic perturbation until $\left|\mathcal{F}_{\theta}(\tilde{\mathbf{y}}(\mathbf{u}_{i})) - z(\mathbf{u}_{i})\right|$ is within a specified second tolerance.
+    \item Iteratively refine the solution from (2) until $\left|\mathcal{F}_{\theta}(\tilde{\mathbf{y}}(\mathbf{u}_{i})) - z(\mathbf{u}_{i})\right|$ is within a specified second tolerance.
 \end{enumerate}
 
-The normal score transform within the latent to observed mapping function $\mathcal{F}_{\theta}$ is slightly different than in the context of network parameter inference in Chapter \ref{ch:implement}. The \gls{SGRI} algorithm constructs a reference distribution for mapping trial latent vectors, $\tilde{\mathbf{y}}_{i}$,  to a scalar value in observed space, $\tilde{z}_{i}$. The reference distribution facilitates the normal score transform of a single NMR output value. The table is constructed by mapping a $1e^{7}$ x $M$ table of standard normal independent factors through  $\mathcal{F}_{\theta}$, resulting in an exhaustive table of outputs in raw activation units. This output table is normal score transformed, and $\tilde{z}_{i}$ values are calculated by linearly interpolating the normal score array. The notation $\mathcal{F}_{\theta}(\tilde{\mathbf{y}}_{i}^{(j)})$ implies a scalar, standard normal output. In the following sections the location vector $\mathbf{u}_{i}$ is replaced by the subscript $i$ for notation simplicity.
+The normal score transform within the latent to observed mapping function $\mathcal{F}_{\theta}$ is slightly different than in the context of network parameter inference in Chapter \ref{ch:implement}. The \gls{SGRI} algorithm constructs a reference distribution for mapping trial latent vectors, $\tilde{\mathbf{y}}_{i}$,  to a scalar value in observed space, $\tilde{z}_{i}$. The reference distribution facilitates the normal score transform of a single NMR output value. The table is constructed by mapping a $10^{6}$ x $M$ table of standard normal independent factors through  $\mathcal{F}_{\theta}$, resulting in an exhaustive table of outputs in raw activation units. This output table is normal score transformed, and $\tilde{z}_{i}$ values are calculated by linearly interpolating the normal score array. The notation $\mathcal{F}_{\theta}(\tilde{\mathbf{y}}_{i}^{(j)})$ implies a scalar, standard normal output. In the following sections the location vector $\mathbf{u}_{i}$ is replaced by the subscript $i$ to simplify notation.
 
 \subsection{Conditional Moments}
 \label{subsec:condmom}
@@ -132,7 +132,7 @@ Assessing latent sensitivity permits calculation of a measure of ``difficulty'' 
     \label{eq:aoverb}
 \end{equation}
 
-If the target delta fall within the sensitivity of one or more factors, $\frac{a}{b}<0$, and the correct vector can be solved with binary search. In this scenario solution polishing converges quickly. If the target delta falls outside the sensitivity of all factors, $\frac{a}{b}>0$, factor sensitivity must be repeatedly assessed, and convergence is more difficult. This ratio provides insight into locations or observed samples that are more difficult to impute. Data locations that are persistently challenging to impute across realization are subject to further investigation. Algorithm \ref{alg:sgri} summarizes the complete \gls{SGRI} algorithm.
+If the target delta fall within the sensitivity of one or more factors, $\frac{a}{b}<0$, and the correct vector can be solved with binary search. In this scenario solution polishing converges quickly. If the target delta falls outside the sensitivity of all factors, $\frac{a}{b}>0$, factor sensitivity must be repeatedly assessed, and convergence is more difficult. This ratio provides insight into locations or observed samples that are more difficult to impute. However, it is possible there are locations that are difficult to impute but require little polishing. Consider a location where resimulation is necessary in the coarse search, but the algorithm eventually generates a latent vector where $d_{1} \approx t_{2}$. This scenario is still difficult to impute, though $\frac{a}{b}$ does not reflect this. The number of resimulations at each data location should also be considered when evaluating problematic locations. Data locations that are persistently challenging to impute across realization are subject to further investigation. Algorithm \ref{alg:sgri} summarizes the complete \gls{SGRI} algorithm.
 
 \begin{algorithm}
     \caption{SGRI pseudo code.}\label{alg:sgri}
@@ -142,6 +142,7 @@ If the target delta fall within the sensitivity of one or more factors, $\frac{a
         \State initialize search parameters based on covariance
         \For{$\ell = 1, \dots, L$} \Comment{Main loop over realizations}
         \State establish a random path through data
+        \State $\text{nresim} = 0$
         \For{$i = 1, \dots, ndata$} \Comment{Loop over data locations}
         \For{$m = 1, \dots, M$} \Comment{Loop over factors at $i^{th}$ location}
         \State establish search neighbourhood $N_{m,i}$
@@ -154,11 +155,15 @@ If the target delta fall within the sensitivity of one or more factors, $\frac{a
         \State $y_{m, i} = r_{\in[0,1]} \times \sigma_{m,i} + \mu_{m,i}$ \Comment{Monte Carlo simulation}
         \EndFor
         \State $\tilde{z}_{i} = \mathcal{F}_{\theta}(\tilde{\mathbf{y}}_{i}^{{(j)}})$
-        \State $d_{1} = |\tilde{z}_{i} - z_{i}|$ \Comment{Compare to observed value}
+        \State $d_{1} = |\tilde{z}_{i}^{(j)} - z_{i}|$ \Comment{Compare to observed value}
         \If{$j > iter1$}
         \State break
         \EndIf
         \EndWhile \Comment{End coarse search}
+        \If{$d_{1} > t_{1}$}
+        \State $\text{nresim} = \text{nresim} + 1$
+        \State cycle data loop
+        \EndIf
         \State $j = 0$
         \State $d2 = d1$
         \While{$d_{2} < t_{2}$} \Comment{Start solution polishing}
@@ -171,24 +176,23 @@ If the target delta fall within the sensitivity of one or more factors, $\frac{a
         \State re-assess latent sensitivity
         \EndIf
         \State $\tilde{z}_{i} = \mathcal{F}_{\theta}(\tilde{\mathbf{y}}_{i}^{(j)})$
-        \If{$|\tilde{z}_{i}^{(j)} - z_{i}| < d_{2}$} \Comment{Compare to observed value}
-        \State $\tilde{y}_{m,i} = \tilde{y}_{m,i}^{(j)}$ \Comment{Retain the perturbed latent value}
-        \State $\tilde{z}_{i} =\tilde{z}_{i}^{(j)}$ \Comment{Retain the new observed value}
         \State $d_{2} = |\tilde{z}_{i}^{(j)} - z_{i}|$ \Comment{Retain new absolute difference}
-        \EndIf
         \If{$j > iter2$}
         \State break
         \EndIf
         \EndWhile \Comment{End solution polishing}
         \EndFor \Comment{End loop over data locations}
+        \If{$\text{nresim} > 0$}
+        \State resimulate at nresim locations
+        \EndIf
         \EndFor \Comment{End loop over realizations}
     \end{algorithmic}
 \end{algorithm}
 
 
 \FloatBarrier
-\section{Practical Details}
-\label{sec:details}
+\section{Imputation Checks}
+\label{sec:impcheck}
 
 There are any number of latent vectors $\tilde{\mathbf{y}}_{i}$ that can reproduce the observed value $z_{i}$. As the solution is highly non-unique, multiple imputed realizations of the latent factors should be considered. Considering a multiple imputation framework transfers the uncertainty in the latent variables to subsequent model realizations \citep{silva2017multiple}. \Gls{SGRI} imputes realizations of latent variables with the correct spatial structure, are standard normal and are independent. The minimum acceptance criteria of the imputed values in practice are:
 
@@ -199,11 +203,7 @@ There are any number of latent vectors $\tilde{\mathbf{y}}_{i}$ that can reprodu
     \item Latent factors reproduce their respective variogram model $\gamma_m(\mathbf{h}), \ \forall \ \mathbf{h}$
 \end{enumerate}
 
-Consider a small synthetic example imputing four latent factors at 746 data locations. Factor four is the nugget effect. The \gls{SGRI} algorithm is run using a search neighbourhood of 40 nodes, a maximum of 20,000 and 10,000 iterations for the coarse search and polishing steps, respectively, and rejection tolerances of 0.1 and 0.01 for the coarse search and polishing steps, respectively. Figure \ref{fig:fact_scatter_marginals} shows a scatter plot matrix between all imputed factors, the mapped values in observed space, $\tilde{z}$, and the true data values, $z$ for a single realization. As expected the correlation between $z$ and $\tilde{z}$ is 1.0. The top row of the matrix in Figure \ref{fig:fact_scatter_marginals} is somewhat redundant due to this perfect correlation however it highlights the exact data matching and validates item (1). The marginal distributions (histograms in \ref{fig:fact_scatter_marginals}) are all standard normal validating item (2). Deviation from the standard normal distribution is possible and one must consider the variogram range relative to the domain size. Long-range variogram structures may generate low variance imputed distributions. Imputed latent factors are clearly uncorrelated with $\lvert \rho \rvert < 0.10$ validating item (3). Figure \ref{fig:factor_varios} shows variogram reproduction for each imputed factor. As there is no nugget effect variogram model the reproduction is not shown. The red shaded area highlights uncertainty in the variogram across all imputed realizations. The expected imputed variograms reproduce the single structure variogram models reasonably well for 746 data.
-
-Something about resim flagging here - show a table with neighbouring samples
-Something about average a/b here - show a table with neighbouring samples
-Something about using a lookup table here
+Consider a small synthetic example imputing four latent factors at 746 data locations. Factor four is the nugget effect. The \gls{SGRI} algorithm is run using a search neighbourhood of 40 nodes, a maximum of 20,000 and 10,000 iterations for the coarse search and polishing steps, respectively, and rejection tolerances of 0.1 and 0.01 for the coarse search and polishing steps, respectively. Figure \ref{fig:fact_scatter_marginals} shows a scatter plot matrix between all imputed factors, the mapped values in observed space, $\tilde{z}$, and the true data values, $z$ for a single realization. As expected the correlation between $z$ and $\tilde{z}$ is 1.0. The top row of the matrix in Figure \ref{fig:fact_scatter_marginals} is somewhat redundant due to this perfect correlation however it highlights the exact data matching and validates item (1). The marginal distributions (histograms in Figure \ref{fig:fact_scatter_marginals}) are all standard normal validating item (2). Deviation from the standard normal distribution is possible and one must consider the variogram range relative to the domain size. Long-range variogram structures may generate low variance imputed distributions. Imputed latent factors are clearly uncorrelated with roughly concentric density contours and $\lvert \rho \rvert < 0.10$ validating item (3). Figure \ref{fig:factor_varios} shows variogram reproduction for each imputed factor. As there is no nugget effect variogram model the reproduction is not shown. The red shaded area highlights uncertainty in the variogram across all imputed realizations. The expected imputed variograms reproduce the single structure variogram models reasonably well for 746 data.
 
 \begin{figure}[htb!]
     \centering
@@ -218,6 +218,17 @@ Something about using a lookup table here
     \caption{Latent factor variogram reproduction for the first three factors. The expected variograms of the imputed realizations reproduce the models well given the data density. Variogram reproduction is the fourth minimum acceptance criteria for \gls{SGRI} imputed realizations.}
     \label{fig:factor_varios}
 \end{figure}
+
+Beyond the minimum acceptance criteria, one should investigate any data locations that require numerous resimulations. Samples at transitions between extreme grade ranges or local neighbourhood outliers may require multiple simulation passes for $\tilde{\mathbf{y}}_{i}$ to converge. Table \ref{tab:nresim} shows six adjacent samples from a single drillhole, where $z$ is the observed value, $\tilde{z}$ is the mapped standard normal value, Factors 1-4 are the imputed latent Gaussian values, $\frac{a}{b}$ is the ratio in Equation \ref{eq:aoverb}, and nresim is the number of resimulations at the given data location. The third sample represents a transition from 0.970 to -0.703 or approximately the $83^{rd}$ to the $24^{th}$ quantile of the Gaussian distribution. This immediate and drastic change is a challenge for the \gls{SGRI} algorithm though it is able to converge with a sufficient number of rejection iterations. It is noteworthy that $\frac{a}{b} < 0$, or the coarse search was able to produce a latent vector where $\tilde{\mathbf{y}}_{i}^{(j)}$ where minimal solution polishing is required. In the event of solution polishing not converging after a reasonable number of iterations, a valid Gaussian vector can be drawn from the internal \gls{SGRI} reference distribution. $\tilde{\mathbf{y}}_{i}$ is selected from the ``lookup table'' such that $|\tilde{z}_{i}^{(j)} - z_{i}|$ is minimized. A reference distribution with $10^{6}$ entries is sufficiently large to contain a latent vector that satisfies the polishing tolerance when mapped to observed space. Frequent use of a lookup table may affect multivariate and spatial properties of the latent factors, so \gls{SGRI} issues a warning if more than 1\% of the imputed samples are drawn from the reference distribution.
+
+
+\begin{table}[!htb]
+    \centering
+    \caption{Six adjacent samples from a single drillhole, where $z$ is the observed value, $\tilde{z}$ is the mapped standard normal value, Factors 1-4 are the imputed latent Gaussian values, $\frac{a}{b}$ is the ratio in Equation \ref{eq:aoverb} and nresim is the number of resimulations at the given data location. The polishing tolerance is 0.01. }
+    \resizebox{0.9\width}{!}{\input{0-Tables/nresim.tex}}
+    \label{tab:nresim}
+\end{table}
+
 
 \FloatBarrier
 \section{Latent Factor Simulation}
