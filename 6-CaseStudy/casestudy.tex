@@ -17,12 +17,12 @@ The complete dataset consists of $27,983$ values nominally composited to 5 meter
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/test_train_cdf.png}
+    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/test_train_cdf.png}
     \caption{ \Glspl{CDF} for training and testing datasets. }
     \label{fig:datasets}
 \end{figure}
 
-Experimental variograms are first calculated using an omni-directional search that informs the nugget effect. This search uses short lags to highlight the shape and range of the short-scale continuity. Figure \ref{fig:omni} suggests a nugget effect of near zero, and that an exponential variogram shape is appropriate for the modeled variable. Directional experimental variograms are calculated first in original units and fitted with an exponential model. Figure \ref{fig:orig_expvar} shows the fitted experimental points and Table \ref{tab:orig_expvar} shows the model parameters. The original unit variogram defines the search orientation and anisotropy for estimator-based declustering. Indicator variograms are calculated for the grade distribution's 0.1, 0.5 and 0.9 quantiles. Figures \ref{fig:ind_expvar} show the fitted indicator variogram models, and Table \ref{tab:ind_expvar} summarizes the model parameters. Interestingly, the 0.1 and 0.9 indicator variograms are not highly asymmetric with this dataset.
+Experimental variograms are first calculated using an omni-directional search that informs the nugget effect. This search uses short lags to highlight the shape and range of the short-scale continuity. The omni-directional variogram suggests a nugget effect of near zero, and that an exponential variogram shape is appropriate for the modeled variable. Directional experimental variograms are calculated first in original units and fitted with an exponential model. Figure \ref{fig:orig_expvar} shows the fitted experimental points and Table \ref{tab:orig_expvar} shows the model parameters. The original unit variogram defines the search orientation and anisotropy for estimator-based declustering. Indicator variograms are calculated for the grade distribution's 0.1, 0.5 and 0.9 quantiles. Figures \ref{fig:ind_expvar} show the fitted indicator variogram models, and Table \ref{tab:ind_expvar} summarizes the model parameters. Interestingly, the 0.1 and 0.9 indicator variograms are not highly asymmetric with this dataset.
 
 % \begin{table}[!htb]
 %     \centering
@@ -42,12 +42,12 @@ Experimental variograms are first calculated using an omni-directional search th
     \end{figure}
 }
 
-\begin{figure}[htb!]
-    \centering
-    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_omni.png}
-    \caption{Omni-directional variogram for nugget inference. }
-    \label{fig:omni}
-\end{figure}
+% \begin{figure}[htb!]
+%     \centering
+%     \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_omni.png}
+%     \caption{Omni-directional variogram for nugget inference. }
+%     \label{fig:omni}
+% \end{figure}
 
 \begin{figure}[htb!]
     \centering
@@ -96,7 +96,7 @@ After the normal score transformation, the experimental variogram of the normal 
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_declus_cdf.png}
+    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_declus_cdf.png}
     \caption{ Declustered \gls{CDF} considering \gls{ID2} weights. }
     \label{fig:declus_cdf}
 \end{figure}
@@ -252,28 +252,35 @@ The optimized \gls{NMR} parameters from Section \ref{sec:param} are the basis fo
     \label{tab:imp_pars}
 \end{table}
 
-Figure \ref{fig:imp_data_scatter} shows the scatter plot of hard data values and the corresponding imputed values in normal score units. The imputed values in this context are the five latent factors mixed through the optimal \gls{NMR} and normal score transformed. There is a roughly perfect correlation between data and imputed values, and no delta values exceed the specified polishing tolerance. Figure \ref{fig:factor_cdfs} shows that each imputed factor is, on average, univariate Gaussian, and Figure \ref{fig:fact_corrmat} shows the imputed factors are effectively uncorrelated. The left matrix is randomly generated, independent Gaussian data as a reference, and the right matrix is the average correlation between imputed values over \csnreals \ realizations. Figure \ref{fig:nmrimp_repro_gvario} shows variogram reproduction for each imputed factor. There is some deviation from the specified target models though overall, variogram reproduction is reasonable. This deviation is largely present for factors 3 and 4 where the range in the major direction is long relative to the domain size in that orientation.
+Figure \ref{fig:imputed_scatters} shows the scatter plot of hard data values and the corresponding imputed values in normal score units. The imputed values in this context are the five latent factors mixed through the optimal \gls{NMR} and normal score transformed. There is a roughly perfect correlation between data and imputed values, and no delta values exceed the specified polishing tolerance. Figure \ref{fig:factor_cdfs} shows that each imputed factor is, on average, univariate Gaussian, and Figure \ref{fig:fact_corrmat} shows the imputed factors are effectively uncorrelated. The left matrix is randomly generated, independent Gaussian data as a reference, and the right matrix is the average correlation between imputed values over \csnreals \ realizations. Figure \ref{fig:nmrimp_repro_gvario} shows variogram reproduction for each imputed factor. There is some deviation from the specified target models though overall, variogram reproduction is reasonable. This deviation is largely present for factors 3 and 4 where the range in the major direction is long relative to the domain size in that orientation.
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/imp_data_scatter.png}
+    \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/imputed_scatters.png}
     \caption{Scatter plot illustrating the relationship between the hard data values and imputed values in normal score units. }
-    \label{fig:imp_data_scatter}
+    \label{fig:imputed_scatters}
 \end{figure}
 
-\begin{figure}[htb!]
-    \centering
-    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/factor_cdfs.png}
-    \caption{\Gls{CDF} reproduction for the four latent factors. }
-    \label{fig:factor_cdfs}
-\end{figure}
+% \begin{figure}[htb!]
+%     \centering
+%     \includegraphics[scale=0.75, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/imp_data_scatter.png}
+%     \caption{Scatter plot illustrating the relationship between the hard data values and imputed values in normal score units. }
+%     \label{fig:imp_data_scatter}
+% \end{figure}
 
-\begin{figure}[htb!]
-    \centering
-    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/fact_corrmat.png}
-    \caption{Correlation matrices for collocated imputed latent factors. The left matrix is randomly generated Gaussian data as a reference, and the right matrix is the average correlation between imputed values over \csnreals \ realizations.}
-    \label{fig:fact_corrmat}
-\end{figure}
+% \begin{figure}[htb!]
+%     \centering
+%     \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/factor_cdfs.png}
+%     \caption{\Gls{CDF} reproduction for the four latent factors. }
+%     \label{fig:factor_cdfs}
+% \end{figure}
+
+% \begin{figure}[htb!]
+%     \centering
+%     \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/fact_corrmat.png}
+%     \caption{Correlation matrices for collocated imputed latent factors. The left matrix is randomly generated Gaussian data as a reference, and the right matrix is the average correlation between imputed values over \csnreals \ realizations.}
+%     \label{fig:fact_corrmat}
+% \end{figure}
 
 \begin{figure}
     \begin{subfigure}{1.0\textwidth}
@@ -346,7 +353,7 @@ Once factors are defined at all grid nodes, they are mapped from latent to obser
 {
     \begin{figure}[htb!]
         \centering
-        \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/orig_reals_\sec.png}
+        \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/orig_real0_\sec.png}
         \caption{ \name \ sections through the first \gls{NMR} realization back-transformed to original units. }
         \label{fig:orig_reals_\sec}
     \end{figure}
