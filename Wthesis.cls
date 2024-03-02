@@ -45,6 +45,7 @@
 \usepackage{enumitem} % allows for [noitemsep, nolistsep] in \enumerte or \itemize - BH
 \usepackage{gensymb} %$\degree$ contained in this one - BH
 \usepackage{pgffor}  % permits for-loops in latex, \foreach \x {item1, item2, ... } {% do things with \x} - BH
+\usepackage{array}
 
 % extras for pseudocode
 \usepackage{algorithm}
