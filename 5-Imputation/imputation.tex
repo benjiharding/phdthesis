@@ -5,7 +5,7 @@
 \label{ch:05impute}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-This chapter presents a novel algorithm for imputing latent factors called \gls{SGRI}. Imputation of latent factors implies a problem where all values are missing or unknown. Conditioning gridded realizations of latent factors requires assigning valid latent values at the data locations. The goal is to impute latent factors with a unique covariance structure that, when combined with inferred \gls{NMR} mapping, return the true observed values at the data locations within a tolerance. Traditionally, this problem has been approached through Gibbs sampling, though there are noted challenges in achieving stable convergence with spatially correlated variables. \gls{SGRI} is a simple approach that combines \gls{SGS}, rejection sampling and exact data matching. Conditional moments are calculated with \gls{SGS}, ensuring the spatial relationships are correct and iterative rejection sampling ensures the collocated multivariate relationships are correct. Realizations of latent factors are generated and become conditioning data for gridded realizations. When mapped to observed space, the realizations reproduce non-Gaussian spatial features specified by the \gls{NMR} as well as uni- and multivariate statistics. A small synthetic example demonstrates imputing latent factors, conditional simulation and mapping the latent space to observed space.
+This chapter presents a novel algorithm for imputing latent factors called \gls{SGRI}. Imputation of latent factors implies a problem where all values are missing or unknown. Conditioning gridded realizations of latent factors requires assigning valid latent values at the data locations. The goal is to impute latent factors with a unique covariance structure that, when combined with inferred \gls{NMR} mapping, return the true observed values at the data locations within a tolerance. Traditionally, this problem has been approached through Gibbs sampling, though there are noted challenges in achieving stable convergence with spatially correlated variables. \gls{SGRI} is a simple approach that combines \gls{SGS}, rejection sampling and exact data matching. Conditional moments are calculated with \gls{SGS}, ensuring the spatial relationships are correct and iterative rejection sampling ensures the collocated multivariate relationships are correct. Realizations of latent factors are generated and become conditioning data for gridded realizations. When mapped to observed space, the realizations reproduce non-Gaussian spatial features specified by the \gls{NMR} as well as uni- and multivariate statistics. A small synthetic example continued from Chapter \ref{ch:04implement} demonstrates imputing latent factors, conditional simulation and mapping the latent space to observed space.
 
 \FloatBarrier
 \section{Imputation Concepts}
@@ -68,7 +68,7 @@ The three general steps of the \gls{SGRI} algorithm are as follows:
     \item Iteratively refine the solution from (2) until $\left|\mathcal{F}_{\theta}(\tilde{\mathbf{y}}(\mathbf{u}_{i})) - z(\mathbf{u}_{i})\right|$ is within a specified second tolerance.
 \end{enumerate}
 
-The normal score transform within the latent to observed mapping function $\mathcal{F}_{\theta}$ is slightly different than in the context of network parameter inference in Chapter \ref{ch:04implement}. The \gls{SGRI} algorithm constructs a reference distribution for mapping trial latent vectors, $\tilde{\mathbf{y}}_{i}$,  to a scalar value in observed space, $\tilde{z}_{i}$. The reference distribution facilitates the normal score transform of a single NMR output value. The table is constructed by mapping a $10^{6}$ x $M$ table of standard normal independent factors through  $\mathcal{F}_{\theta}$, resulting in an exhaustive table of outputs in raw activation units. This output table is normal score transformed, and $\tilde{z}_{i}$ values are calculated by linearly interpolating the normal score array. The notation $\mathcal{F}_{\theta}(\tilde{\mathbf{y}}(\mathbf{u}_{i})^{(j)})$ implies a scalar, standard normal output. In the following sections the location vector $\mathbf{u}_{i}$ is replaced by the subscript $i$ to simplify notation.
+The normal score transform within the latent to observed mapping function $\mathcal{F}_{\theta}$ is slightly different than in the context of network parameter inference in Chapter \ref{ch:04implement}. The \gls{SGRI} algorithm constructs a reference distribution for mapping trial latent vectors, $\tilde{\mathbf{y}}_{i}$,  to a scalar value in observed space, $\tilde{z}_{i}$. The reference distribution facilitates the normal score transform of a single NMR output value. The table is constructed by mapping a $10^{6}$ x $M$ table of standard normal independent factors through  $\mathcal{F}_{\theta}$, resulting in an exhaustive table of outputs in unitless, raw activation units. This output table is normal score transformed, and $\tilde{z}_{i}$ values are calculated by linearly interpolating the normal score array. The notation $\mathcal{F}_{\theta}(\tilde{\mathbf{y}}(\mathbf{u}_{i})^{(j)})$ implies a scalar, standard normal output. In the following sections the location vector $\mathbf{u}_{i}$ is replaced by the subscript $i$ to simplify notation.
 
 \subsection{Factor Precedence}
 \label{subsec:precedence}
@@ -228,7 +228,7 @@ There are any number of latent vectors $\tilde{\mathbf{y}}_{i}$ that can reprodu
     \item Latent factors reproduce their respective variogram model $\gamma_m(\mathbf{h}), \ \forall \ \mathbf{h}$
 \end{enumerate}
 
-Consider the same small synthetic example from Chapter \ref{ch:04implement}; the problem involves imputing four latent factors at 746 data locations. Factor four is the nugget effect. The \gls{SGRI} algorithm is run using a search neighbourhood of 40 nodes, a maximum of 20,000 and 10,000 iterations for the coarse search and polishing steps, respectively, and rejection tolerances of 0.1 and 0.01 for the coarse search and polishing steps, respectively. Figure \ref{fig:fact_scatter_marginals} shows a scatter plot matrix between all imputed factors, the mapped values in observed space, $\tilde{z}$, and the true data values, $z$ for a single realization. As expected the correlation between $z$ and $\tilde{z}$ is 1.0. The top row of the matrix in Figure \ref{fig:fact_scatter_marginals} is somewhat redundant due to this perfect correlation however it highlights the exact data matching and validates item (1). The marginal distributions (histograms in Figure \ref{fig:fact_scatter_marginals}) are all standard normal validating item (2). Deviation from the standard normal distribution is possible and one must consider the variogram range relative to the domain size. Long-range variogram structures may generate low variance imputed distributions. Imputed latent factors are clearly uncorrelated with roughly concentric density contours and $\lvert \rho \rvert < 0.10$ validating item (3). Figure \ref{fig:factor_varios} shows variogram reproduction for each imputed factor. As there is no nugget effect variogram model the reproduction is not shown. The red shaded area highlights uncertainty in the variogram across all imputed realizations. The expected imputed variograms reproduce the single structure variogram models reasonably well for 746 data.
+Consider the same small synthetic example from Chapter \ref{ch:04implement}; the problem involves imputing three latent factors at 746 data locations. Factor three is the nugget effect. The \gls{SGRI} algorithm is run using a search neighbourhood of 40 nodes, a maximum of 20,000 and 10,000 iterations for the coarse search and polishing steps, respectively, and rejection tolerances of 0.1 and 0.01 for the coarse search and polishing steps, respectively. Figure \ref{fig:fact_scatter_marginals} shows a scatter plot matrix between all imputed factors, the mapped values in observed space, $\tilde{z}$, and the true data values, $z$ for a single realization. As expected the correlation between $z$ and $\tilde{z}$ is 1.0. The top row of the matrix in Figure \ref{fig:fact_scatter_marginals} is somewhat redundant due to this perfect correlation however it highlights the exact data matching and validates item (1). The marginal distributions (histograms in Figure \ref{fig:fact_scatter_marginals}) are all standard normal validating item (2). Deviation from the standard normal distribution is possible and one must consider the variogram range relative to the domain size. Long-range variogram structures may generate low variance imputed distributions. Imputed latent factors are clearly uncorrelated with roughly concentric density contours and $\lvert \rho \rvert < 0.10$ validating item (3). The relationships between factors 1 and 2 with the imputed value highlight the influence of the $\omega$ parameter. Factor 1 is correlated with the imputed value when it is low, and factor 2 is correlated when it is high. Figure \ref{fig:factor_varios} shows variogram reproduction for each imputed factor. As there is no nugget effect variogram model the reproduction is not shown. The red shaded area highlights uncertainty in the variogram across all imputed realizations. The expected imputed variograms reproduce the single structure variogram models reasonably well for 746 data.
 
 \begin{figure}[htb!]
     \centering
@@ -240,7 +240,7 @@ Consider the same small synthetic example from Chapter \ref{ch:04implement}; the
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/factor_varios.png}
-    \caption{Latent factor variogram reproduction for the first three factors. The expected variograms of the imputed realizations reproduce the models well given the data density. Variogram reproduction is the fourth minimum acceptance criteria for \gls{SGRI} imputed realizations.}
+    \caption{Latent factor variogram reproduction for the first two factors. The expected variograms of the imputed realizations reproduce the models well given the data density. Variogram reproduction is the fourth minimum acceptance criteria for \gls{SGRI} imputed realizations.}
     \label{fig:factor_varios}
 \end{figure}
 
@@ -259,22 +259,16 @@ Beyond the minimum acceptance criteria, one should investigate any data location
 \section{Latent Factor Simulation}
 \label{sec:latentsim}
 
-\gls{NMR} realizations are generated by conditionally simulating latent factors on a grid and then mapping the gridded factors to observed space. Latent factors imputed at the data locations become the conditioning data for any conditional simulation algorithm. Standard conditional simulation algorithms include \gls{SGS} \citep{gomez-hernandez1993joint}, turning-bands \citep{journel1974geostatistics} and LU simulation \citep{davis1987production}. \gls{SGS} is likely the most commonly implemented algorithm due to its simplicity and availability in commercial software \citep{rossi2013mineral}, though any conditional algorithm is valid.
+\gls{NMR} realizations are generated by conditionally simulating latent factors on a grid and then mapping the gridded factors to observed space. Latent factors imputed at the data locations become the conditioning data for any conditional simulation algorithm. Standard conditional simulation algorithms include \gls{SGS} \citep{gomez-hernandez1993joint}, turning-bands \citep{journel1974geostatistics} and LU simulation \citep{davis1987production}. \gls{SGS} is likely the most commonly implemented algorithm due to its simplicity and availability in commercial software \citep{rossi2013mineral}, though any conditional algorithm is valid. Figure \ref{fig:gridded_factors_real0_xy} shows plan view sections through the first conditional realization of the three factors on the grid.
 
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/gridded_factors_real0_xy.png}
-    \caption{}
+    \caption{Plan view sections through the first conditional realization of the three factors on the grid. The black nodes are the data locations.}
     \label{fig:gridded_factors_real0_xy}
 \end{figure}
 
-Once the latent factors are defined at every grid node, the realizations are mapped to the observed space by applying the function $\mathcal{F}_{\theta}$. At this point, the gridded \gls{NMR} realizations should reproduce the continuous variogram model, specified indicator variogram models, cumulative run frequencies and $n$-point connectivity functions. As the gridded models reproduce the data at the data locations (particularly implementations of \gls{SGS} that assign data to grid nodes), an additional step is required to check downhole statistics. For checking runs and $n$-point connectivity reproduction, the entire drillhole configuration is translated within the domain. This translation retains the drillhole configuration but allows simulated values to be sampled from the grid. The resampled values are then used to check multi-point statistical reproduction.
-
-\FloatBarrier
-\subsection{Simulation Checks}
-\label{subsec:simcheck}
-
-The minimum acceptance criteria for checking continuous realizations \citep{leuangthong2004minimum} must be applied, similar to any other geostatistical model. The gridded realizations must reproduce (1) the data values at data locations, (2) the declustered input \gls{CDF} and summary statistics for the latent Gaussian pool and the variogram of the original variable, and (3) the input covariance model, both for the latent Gaussian pool and the variogram of the original variable.
+Once the latent factors are defined at every grid node, the realizations are mapped to the observed space by applying the function $\mathcal{F}_{\theta}$. Figure \ref{fig:nmr_ns_real} shows sections through the first \gls{NMR} realization mapped to Gaussian units. The non-Gaussian characteristics of the realizations are evident in these sections. The localized high-grade values clearly overprint the longer range background low-grade values as designed by the Gaussian pool and $\omega$ constraints. These features are also evident in the back transformed realizations, shown in Figure \ref{fig:nmr_au_real}. The realizations show localized, but internally connected high-grade regions that correspond to the covariance structure of the 0.9 quantile indicator variogram.
 
 \begin{figure}
     \centering
@@ -303,18 +297,9 @@ The minimum acceptance criteria for checking continuous realizations \citep{leua
             \end{subfigure}%
         }\cr
     }
-    \caption{Plan (a), east-west (b) and north-south (c) sections through the first \gls{NMR} realization mapped to Gaussian space.}
+    \caption{Plan (a), east-west (b) and north-south (c) sections through the first \gls{NMR} realization mapped to Gaussian space with observed data values in Gaussian units.}
     \label{fig:nmr_ns_real}
 \end{figure}
-
-
-\begin{figure}[htb!]
-    \centering
-    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/repro_gridded_data.png}
-    \caption{}
-    \label{fig:repro_gridded_data}
-\end{figure}
-
 
 \begin{figure}
     \centering
@@ -343,23 +328,37 @@ The minimum acceptance criteria for checking continuous realizations \citep{leua
             \end{subfigure}%
         }\cr
     }
-    \caption{Plan (a), east-west (b) and north-south (c) sections through the first \gls{NMR} realization mapped to original units.}
+    \caption{Plan (a), east-west (b) and north-south (c) sections through the first \gls{NMR} realization back transformed to original units.}
     \label{fig:nmr_au_real}
 \end{figure}
 
+
+
+At this point, the gridded \gls{NMR} realizations should reproduce the continuous variogram model, specified indicator variogram models, cumulative run frequencies and $n$-point connectivity functions. As the gridded models reproduce the data at the data locations (particularly implementations of \gls{SGS} that assign data to grid nodes), an additional step is required to check downhole statistics. For checking runs and $n$-point connectivity reproduction, the entire drillhole configuration is translated within the domain. This translation retains the drillhole configuration but allows simulated values to be sampled from the grid. The resampled values are then used to check multi-point statistical reproduction.
+
+\FloatBarrier
+\subsection{Simulation Checks}
+\label{subsec:simcheck}
+
+The minimum acceptance criteria for checking continuous realizations \citep{leuangthong2004minimum} must be applied, similar to any other geostatistical model. The gridded realizations must reproduce (1) the data values at data locations, (2) the declustered input \gls{CDF} and summary statistics for the latent Gaussian pool and the original variable, and (3) the input covariance model, both for the latent Gaussian pool and the original variable.
+
+Figure \ref{fig:repro_gridded_data_ch5} shows \gls{CDF} reproduction (left) and data reproduction (center) for the gridded \gls{NMR} realizations in Gaussian units. The Gaussian realizations are on average standard normal and the data values are reproduced exactly at collocated grid nodes. There are some locations where more than one data value occupies a single grid node and there is deviation from the 1:1 line in the scatter plot. In this scenario the data value closest to the grid node centroid is retained for comparison. Figure \ref{fig:repro_gridded_data_ch5} (right) shows \gls{CDF} reproduction of the gridded realizations back transformed to original units. The realizations, on average, reproduce the declustered \gls{CDF}. The final component of the traditional model checks is checking continuous variogram reproduction. Figure \ref{fig:repro_gridded_vario_ch5} shows gridded continuous variogram reproduction for the \gls{NMR} realizations in Gaussian units. As the realizations are generated with a mapping function that considers multiple variogram components there are some deviations from the input continuous model. The 0.1 and 0.9 quantile indicator variograms influence the continuous variogram reproduction in the major and minor directions in this example. A slight increase in variance in the short range lags is introduced by the 0.9 indicator variogram and a slight decrease in the longer range lags from the 0.1 indicator variogram. Continuous variogram reproduction remains reasonable, though the influence of other objective components is evident in the covariance structure of the final gridded models.
+
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/repro_nmr_orig_cdf.png}
-    \caption{}
-    \label{fig:repro_nmr_orig_cdf}
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/repro_gridded_data.png}
+    \caption{\Gls{CDF} and data reproduction for the \gls{NMR} realizations in Gaussian units (left and center) and \gls{CDF} reproduction in original units (right). The original units reference distribution shown in red considers declustering weights.}
+    \label{fig:repro_gridded_data_ch5}
 \end{figure}
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/repro_gridded_vario.png}
-    \caption{}
-    \label{fig:repro_gridded_vario}
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/repro_gridded_vario.png}
+    \caption{\gls{NMR} continuous variogram reproduction. The black line is the variogram model, the red dots are the experimental variogram of the imputed data, the red line is the average variogram of the gridded \gls{NMR} realizations, the shaded red area encloses the minimum and maximum gridded \gls{NMR} variogram values. Left to right are the major, minor and vertical directions, respectively.}
+    \label{fig:repro_gridded_vario_ch5}
 \end{figure}
+
+Beyond the traditional simulation model checks, the \gls{NMR} realizations must be checked for reproduction of all components of the objective function. This includes indicator variograms and sequences. Figure \ref{fig:repro_gridded_ivario_ch5} shows gridded reproduction of the strongly asymmetric 0.1 and 0.9 quantile indicator variograms. The gridded models closely reproduce the non-Gaussian indicator structure that is apparent in Figures \ref{fig:nmr_ns_real} and \ref{fig:nmr_au_real}. In mining context, one is predominantly concerned with high values and in this example cumulative run frequencies are considered above the 0.9 quantile threshold. When considering sequences above a threshold the $n$-point connectivity function and cumulative run-length frequencies are analogous; one can be calculated from the other. Only cumulative run-length frequencies are considered for this reason. The chosen simulation algorithm may assign the data values to the grid resulting in a distribution of runs with zero uncertainty. To overcome this, the entire drillhole configuration is translated within the domain and values are sampled from the grid at the ``new'' data locations. Four translations are performed (25 meters to the NE, SE, SW and NW) and the final result is the expected value across translations. Figure \ref{fig:repro_gridded_runs_ch5} shows gridded cumulative run-length frequencies for the 0.9 quantile indicator. The expected value across translations is shown as the solid red line. The black line is the target value calculated from the drillholes. The expected value deviates from the target though the uncertainty bandwidth captures the target.
 
 \begin{figure}
     \begin{subfigure}{1.0\textwidth}
@@ -372,15 +371,15 @@ The minimum acceptance criteria for checking continuous realizations \citep{leua
         \includegraphics[scale=0.60, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/repro_gridded_ivario_0_9.png}
         \caption{0.9 Quantile}
     \end{subfigure}
-    \caption{}
-    \label{fig:repro_gridded_ivario}
+    \caption{\gls{NMR} indicator variogram reproduction for the 0.1 (a), 0.5 (b) and 0.9 (c) quantiles. The black line is the variogram model, the red dots are the experimental variogram of the imputed data, the red line is the average variogram of the gridded \gls{NMR} realizations, the shaded red area encloses the minimum and maximum gridded \gls{NMR} variogram values. Left to right are the major, minor and vertical directions, respectively.}
+    \label{fig:repro_gridded_ivario_ch5}
 \end{figure}
 
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/repro_gridded_runs.png}
-    \caption{}
-    \label{fig:repro_gridded_runs}
+    \caption{\gls{NMR} 0.9 quantile cumulative run-length frequency reproduction. The black line is the target calculated from the drillholes, the red line is the average gridded value, and the shaded red area encloses the minimum and maximum gridded values. }
+    \label{fig:repro_gridded_runs_ch5}
 \end{figure}
 
 \FloatBarrier
