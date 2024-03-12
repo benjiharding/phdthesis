@@ -1,6 +1,5 @@
 .vscode/
 /0-Figures
-/0-Tables
 
 # Latex files
 *.acn
@@ -23,3 +22,6 @@
 *.fdb*
 *.fls
 *.xdv
+
+# randoms
+*.zip
