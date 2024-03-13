@@ -5,17 +5,97 @@
 \label{ch:04implement}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Problem Statement}
-\label{sec:prob}
+This chapter presents the implementation details of the \gls{NMR} introduced in Chapter \ref{ch:03framework}. The network is the first component of \gls{NMR} simulation workflow and operates in conjunction with \gls{SGRI}, introduced in Chapter \ref{ch:05impute}. Inference of network parameters, $\theta$, is an inverse problem as only the true data values are known. A mapping function, $\mathcal{F}_{\theta}$, is therefore required to map the unknown latent space to the known observed space. The function is parameterized such that a pool of unconditional, latent Gaussian factors reproduce the known values and have the desired spatial features when mapped with $\mathcal{F}_{\theta}$. As the latent space is unknown, and ultimately a synthetic feature of the \gls{NMR} model, it is free to contain any number of components with any covariance structure. This flexibility permits creativity with latent factor design; combining latent covariance structures in unique ways allows a mixture of univariate Gaussian distributions to possess non-multivariate Gaussian spatial features. Practical implementation details include considerations for design of the network and the latent Gaussian pool as well as sensitivities associated with these model parameters. A small synthetic example demonstrates latent factor design, network parameter inference and non-uniqueness properties of the \gls{NMR}. This example highlights the network component of the complete \gls{NMR} workflow and is carried forward into Chapter \ref{ch:05impute} to illustrate the second imputation component.
 
+\FloatBarrier
 \section{Network Design}
 \label{sec:networkd}
 
+The \gls{NMR} is not a true neural-network, rather a model of regionalization inspired by neural-network structure. The network consists of an input layer where the number of latent factors determines the number of input nodes, a single ``hidden layer'' of the same dimension, and an output layer with a single node.  The single output node makes the \gls{NMR} univariate (analogous to the \gls{LMR}) however there is no reason it could not be extended to the multivariate case (analogous to the \gls{LMC}). However, with geospatial data, one commonly considers extreme values in the univariate context; it is not immediately clear what constitutes a multivariate extreme.
+
+\subsection{Architecture}
+\label{subsec:arch}
+
+Network architecture is controlled by the number of latent factors in the Gaussian pool. The current \gls{NMR} implementation restricts the architecture of the network to an input layer, a single hidden layer and a univariate output layer. The input and hidden layer both contain $M$ nodes. Figure \ref{fig:example_nmr} shows an example network configuration with $M=4$ input latent factors, $\{ Y_{1}, \dots, Y_{4}\}$. The hidden layer of the network if effectively a transformation layer, transforming the latent Gaussian values to unitless activation values. The network activation function $f(\dots)$ is a modified power-law function; the following subsection presents the details. The network output $Z_{1}$ is then a weighted linear combination of the activated latent factors.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.7, trim={0 1.5cm 0 1.5cm}, clip=true]{./0-Figures/04-Ch4/example_nmr.png}
+    \caption{Schematic representation of the \gls{NMR} with $M=4$ latent factors. $f(\dots)$ is a modified power-law activation function. }
+    \label{fig:example_nmr}
+\end{figure}
+
+The generalized forward pass through the network is defined as:
+\begin{align}
+    \label{eq:fpass1}
+    \mathbf{x} & = \sum_{m=1}^{M}a_{m} \cdot f_{m}(\mathbf{y}_{m}, \omega_{m}) \\
+    \label{eq:fpass2}
+    \mathbf{z} & = G^{-1}\left( F_{X}\left(x \right)\right) \ \  \forall x
+\end{align}
+
+Where $\mathbf{x}$ is an intermediary activation vector, $a_{m}$ is a weight applied to factor $m$, $f_{m}(\mathbf{y}_{m}, \omega_{m})$ is the modified power-law activation function with exponent $\omega$ applied to factor $m$, $F_{x}$ is the \gls{CDF} of $\mathbf{x}$ and $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. Alternatively, Equation \ref{eq:fpass1} can be rewritten in matrix notation as:
+\begin{equation}
+    \mathbf{x} = f\left( \mathbf{Y} \right) \mathbf{a}^{T}
+    \label{eq:fpass3}
+\end{equation}
+
+Where $\mathbf{a}$ is a row vector of factor weights and $f\left(\mathbf{Y} \right)$ is an $ndata$ x $M$ matrix of activated latent factors. The raw output of the network is units of activation that must be transformed to Gaussian space, necessitating the normal score transform.
+
+
+With the given architecture, the \gls{NMR} requires inference of $2 \cdot M$ parameters: a $1$ x $M$ dimensional vector of factor weights and a $1$ x $M$ dimensional vector of power-law exponents $\omega$. These $2 \cdot M$ network parameters are inferred through stochastic optimization.
+
+\begin{enumerate}[noitemsep]
+    \item Architecture
+    \item Gaussian transform
+    \item Activation function
+    \item Objective function
+\end{enumerate}
+
+
+\FloatBarrier
 \section{Latent Factor Design}
 \label{sec:factord}
 
+\begin{enumerate}[noitemsep]
+    \item Conceptual geologic model
+    \item Indicator asymmetry
+    \item Connectivity of extreme values
+    \item Precedence and weighting
+\end{enumerate}
+
+
+\FloatBarrier
+\section{Parameter Inference}
+\label{sec:paraminfer}
+
+\begin{enumerate}[noitemsep]
+    \item Differential evolution
+    \item Parameter inference
+    \item Constraints and precedence
+
+\end{enumerate}
+
+
+\FloatBarrier
+\section{Implementation Details}
+\label{sec:implementd}
+
+\begin{enumerate}[noitemsep]
+    \item Number of data
+    \item Number of uncond. reals
+    \item Variogram approximation
+\end{enumerate}
+
+
+\FloatBarrier
 \section{Sensitivity and Validation}
 \label{sec:valid}
 
+\begin{enumerate}[noitemsep]
+    \item Non-uniqueness
+\end{enumerate}
+
+
+\FloatBarrier
 \section{Discussion}
 \label{sec:discuss04}
