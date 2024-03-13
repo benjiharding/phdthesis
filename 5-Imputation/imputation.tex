@@ -9,7 +9,7 @@ This chapter presents a novel algorithm for imputing latent factors called \gls{
 
 \FloatBarrier
 \section{Imputation Concepts}
-\label{sec:impute}
+\label{sec:05imputation}
 
 Imputation is a method to ``fill in'' missing values \citep{little2019statistical}. Missing values may be uni- or multivariate, and multiple mechanisms or patterns of missingness may be possible. Multivariate transformations, common in modern geostatistical workflows, such as \gls{PPMT} \citep{barnett2014projection}, require homotopic sampling, necessitating imputation methods. Ignoring these missing values results in a loss of information or potential bias if the missingness mechanism is not random. The simplest deterministic approach to imputation is taking the global mean or median of sampled values or employing a regression model. This inference permits using all data in subsequent modeling; however, it captures no uncertainty in the imputed values.
 
@@ -22,7 +22,7 @@ A \textit{latent variable} is a variable that is not directly observed but is as
 
 \FloatBarrier
 \section{Gibbs Sampler}
-\label{sec:gibbs}
+\label{sec:05gibbs}
 
 The Gibbs sampler \citep{geman1984stochastic} is an iterative simulation algorithm designed to sample an $M$-dimensional multivariate distribution $f(y_{1}, \dots, y_{M})$ of $M$ random variables $\{Y_{1}, \dots, Y_{M}\}$ \citep{little2019statistical}. It is particularly useful where sampling the joint distribution is difficult, but sampling the marginal conditional distributions $f(y_{m}|y_{1},\dots,y_{m-1},y_{m+1},\dots,y_{M}), \ \ m=1,\dots,M$ is possible. The following general steps summarize the Gibbs sampler:
 
@@ -46,7 +46,7 @@ Over a sufficient number of iterations, the sampled vector converges on the join
 
 \FloatBarrier
 \section{Sequential Gaussian Rejection Imputation}
-\label{sec:sgri}
+\label{sec:05sgri}
 
 Generating Gaussian \gls{NMR} realizations requires inference of the latent factors at the data locations. These imputed factors become conditioning data for simulation on a regular grid. The problem involves assigning $M$ unknown latent Gaussian values with the correct spatial structure at the data locations. When mapped through the \gls{NMR}, these imputed values must also reproduce the observed regionalized random variable $Z(\mathbf{u})$. This solution is non-unique, and multiple combinations of latent factors could reproduce the observed values. In order to correctly transfer this latent uncertainty, a multiple imputation \citep{barnett2015multivariate} approach is adopted where each realization of $Z(\mathbf{u})$ is generated with a unique imputed realization, $\mathbf{y}$.
 
@@ -71,7 +71,7 @@ The three general steps of the \gls{SGRI} algorithm are as follows:
 The normal score transform within the latent to observed mapping function $\mathcal{F}_{\theta}$ is slightly different than in the context of network parameter inference in Chapter \ref{ch:04implement}. The \gls{SGRI} algorithm constructs a reference distribution for mapping trial latent vectors, $\tilde{\mathbf{y}}(\mathbf{u}_{i})$,  to a scalar value in observed space, $\tilde{z}(\mathbf{u}_{i})$. The reference distribution facilitates the normal score transform of a single NMR output value. The table is constructed by mapping a $10^{6}$ x $M$ dimensional table of standard normal independent factors through  $\mathcal{F}_{\theta}$, resulting in an exhaustive table of outputs of unitless, raw activation values. This output table is normal score transformed, and $\tilde{z}(\mathbf{u}_{i})$ values are calculated by linearly interpolating the normal score array. The notation $\mathcal{F}_{\theta}(\tilde{\mathbf{y}}(\mathbf{u}_{i}))$ implies a scalar Gaussian deviate. In the following sections, the subscript $i$ replaces the location vector $\mathbf{u}_{i}$ to simplify notation.
 
 \subsection{Factor Precedence}
-\label{subsec:precedence}
+\label{subsec:05precedence}
 
 Application of precedence is an optional component of the \gls{SGRI} algorithm. Precedence allows the spatial features of certain latent factors to be prioritized in the mapping function. A particular factor can be given precedence during imputation if one desires its spatial features in certain portions of the grade range. Precedence is achieved by employing a simple sigmoid weighting function where $s(y) = \frac{1}{1+e^{-y}}$. This function is the same weighting function optionally applied during network parameter inference in Chapter \ref{ch:04implement}. The weighting function modifies the forward pass through the network to:
 \begin{equation}
@@ -91,7 +91,7 @@ Where $a$ is the weight to the factor, subscript $p$ is the factor index with pr
 The sigmoid weighting function allows a certain factor to take precedence where the observed data takes on either high or low values. This increased control is particularly useful for capturing local high- or low-grade continuity with well-designed latent factors.
 
 \subsection{Constraints}
-\label{subsec:constraints}
+\label{subsec:05constraints}
 
 Application of constraints is an optional component of the \gls{SGRI} algorithm and is used in conjunction with factor precedence. The use of constraints enforces the values of a certain factor to be either above or below a chosen threshold. The goal of constraint application is to ensure that some high or low values of a chosen factor correspond with the high or low values of the observed data. When enforcing factor precedence, constraints are necessary as the mapping function $\mathcal{F}_{\theta}$ is inferred using unconditional realizations. There is no conditioning mechanism to ensure the low- or high-grade features of $\mathbf{y}_{p}$ align with low- or high-grade features in the data. $\mathcal{F}_{\theta}$ is non-unique and multiple latent vectors can reproduce $z_{i}$. Therefore, it is possible, for example, to have a negative value of $\mathbf{y}_{p}$ where $z_{i}$ is a large positive value. This scenario is not ideal if we explicitly want the spatial features of $\mathbf{y}_{p}$ where $z_{i}$ is high and warrants the use of constraints on $\mathbf{y}_{p}$ during imputation.
 
@@ -100,7 +100,7 @@ Constraints can be thought of as ``seeding'' some number of high or low values o
 The exclusion radius is an important parameter as the mean and variance of the imputed $\mathbf{y}_{p}$ distribution are sensitive to the number of constrained locations. For example, if the 0.9 quantile is used as a threshold with no exclusion radius, approximately 10\% of the imputation locations will be seeded. This strong degree of conditioning can inflate the mean and variance of the imputed values and cause a departure from the standard normal distribution. By enforcing an exclusion radius, only a subset of the locations are seeded, and the local effect of the conditioning is less pronounced. Seeding many locations may also negatively affect other factors or lead to non-convergence. Too strong of a constraint on $\mathbf{y}_{p}$ may lead to a scenario where the remaining factors lack sufficient flexibility to reproduce the observed value when mapped. Practice shows that an exclusion radius of 5-10 times the composite length is sufficient to impart the desired factors of $\mathbf{y}_{p}$ above or below the threshold without negatively affecting convergence.
 
 \subsection{Conditional Moments}
-\label{subsec:condmom}
+\label{subsec:05condmom}
 
 The algorithm begins by determining a random (unconstrained) or semi-random (constrained) path through all data locations to be imputed. At each imputation location, the conditional moments are solved using the normal equations:
 \begin{align}
@@ -113,7 +113,7 @@ The algorithm begins by determining a random (unconstrained) or semi-random (con
 Where $N_{m,i}$ is the neighbourhood about location $i$ using search anisotropy derived from $Y_{m}$; this could either be all neighbours or a restricted search around location $i$. $C_{m,j,k}$ is the covariance between spatial locations $j$ and $k$ for latent variable $m$. The system of equations is solved $M$ times under the assumption of zero mean and unit variance, resulting in a vector of conditional means and standard deviations. Retaining all conditional moments allows fast, repeated simulation of spatially correlated latent values in the coarse search phase.
 
 \subsection{Coarse Search}
-\label{subsec:coarse}
+\label{subsec:05coarse}
 
 The coarse search begins after calculating the $M$ conditional moments at location $i$. The goal of the coarse search is to find the trial vector $\tilde{\mathbf{y}}_{i}$ that closely reproduces $z_{i}$ and has the correct spatial covariance. Values are drawn from each valid conditional distribution through \gls{MCS} for a set number of iterations, $j$:
 \begin{align}
@@ -138,7 +138,7 @@ If the error, $e_{1}$, is less than the first rejection tolerance, $t_{1}$, the 
 
 
 \subsection{Solution Polishing}
-\label{subsec:polish}
+\label{subsec:05polish}
 
 Once an initial coarse solution is accepted, it can be refined to meet the collocated multivariate requirements. The imputed vector generated in the coarse search ensures $Y_{m}$ reproduces $\gamma_{m}(\mathbf{h})$ however $\mathcal{F}_{\theta}(\tilde{\mathbf{y}}_{i})$ must match $z_{i} \pm t_{2}$, where $t_{2}$ is the polishing tolerance. Solution polishing at the $i^{th}$ location begins by assessing the sensitivity of each component of  $\tilde{\mathbf{y}}_{i}^{(j)}$ on the target observed value $z_{i}$. Due to the nature of the learned mapping function, it is not immediately clear how each latent factor influences the observed value. $\tilde{y}_{m, i}^{(j)}$ can either be positively or negatively correlated with $\tilde{z}_{i}$ and the magnitude of the sensitivity depends on $\mathcal{F}_{\theta}$. To assess the sensitivity of each factor, a step size of $\Delta_{y} = G^{-1}(0.525)-G^{-1}(0.500)$, or 2.5\% in Gaussian probability space, is chosen. Perturbing a component, $m$, of $\tilde{\mathbf{y}}^{(j)}_{i}$ by $\pm \Delta_{y}$ results in two trial vectors $\tilde{\mathbf{y}}_{m+, i}^{(j)}$, and $\tilde{\mathbf{y}}_{m-,i}^{(j)}$. The trial vectors permit calculation of sensitivity as  $\Delta\tilde{z}_{m+,i} = \tilde{z}_{i} - \mathcal{F}_{\theta}(\tilde{\mathbf{y}}_{m+, i}^{(j)})$ and $\Delta\tilde{z}_{m-,i} = \tilde{z}_{i} - \mathcal{F}_{\theta}(\tilde{\mathbf{y}}_{m-,i}^{(j)})$. Iterating over $m=1,\dots,M$ components establishes the sensitivity and direction of change of $\tilde{z}_{i}$ with respect to $\tilde{y}_{m, i}^{(j)}$. Figure \ref{fig:tornado} shows this sensitivity graphically as a ``tornado'' chart.
 
@@ -217,7 +217,7 @@ If the target delta falls within the sensitivity of one or more factors, $\frac{
 
 \FloatBarrier
 \subsection{Imputation Checks}
-\label{subsec:impcheck}
+\label{subsec:05impcheck}
 
 There are any number of latent vectors $\tilde{\mathbf{y}}_{i}$ that can reproduce the observed value $z_{i}$. As the solution is highly non-unique, multiple imputed realizations of the latent factors should be considered. Considering a multiple imputation framework transfers the uncertainty in the latent variables to subsequent model realizations \citep{silva2017multiple}. \Gls{SGRI} imputes realizations of latent variables with the correct spatial structure, are standard normal, and are independent. The minimum acceptance criteria of the imputed values in practice are:
 
@@ -257,7 +257,7 @@ If solution polishing does not converge after a reasonable number of iterations,
 
 \FloatBarrier
 \section{Latent Factor Simulation}
-\label{sec:latentsim}
+\label{sec:05latentsim}
 
 \gls{NMR} realizations are generated by conditionally simulating latent factors on a grid and then mapping the gridded factors to observed space. Latent factors imputed at the data locations become the conditioning data for any conditional simulation algorithm. Standard conditional simulation algorithms include \gls{SGS} \citep{gomez-hernandez1993joint}, turning-bands \citep{journel1974geostatistics} and LU simulation \citep{davis1987production}. \gls{SGS} is likely the most commonly implemented algorithm due to its simplicity and availability in commercial software \citep{rossi2013mineral}, though any conditional algorithm is valid. Figure \ref{fig:gridded_factors_real0_xy} shows plan view sections through the first conditional realization of the three gridded factors.
 
@@ -338,7 +338,7 @@ At this point, the gridded \gls{NMR} realizations should reproduce the continuou
 
 \FloatBarrier
 \subsection{Simulation Checks}
-\label{subsec:simcheck}
+\label{subsec:05simcheck}
 
 The minimum acceptance criteria for checking continuous realizations \citep{leuangthong2004minimum} must be applied, similar to any other geostatistical model. The gridded realizations must reproduce (1) the data values at data locations, (2) the declustered input \gls{CDF} and summary statistics for the latent Gaussian pool and the original variable, and (3) the input covariance model, both for the latent Gaussian pool and the original variable.
 
@@ -386,7 +386,7 @@ Suppose the \gls{NMR} realizations meet the minimum acceptance criteria. In that
 
 \FloatBarrier
 \section{Discussion}
-\label{sec:discuss05}
+\label{sec:05discuss}
 
 \Gls{SGRI} is a novel algorithm for imputing latent Gaussian factors for use in the \gls{NMR} simulation framework. \Gls{SGRI} is an alternative to the Gibbs sampler approach and permits the imputation of any number of independent, standard normal Gaussian vectors with the correct spatial structure. When mapped from latent to observed space, the imputed factors reproduce the observed data value. The mapping function $\mathcal{F}_{\theta}$ is highly flexible and incorporates components of the conceptual geological model and features embedded in the design of the Gaussian pool. The algorithm is straightforward and incorporates elements of \gls{SGS} and rejection sampling. Simple kriging calculates the moments of local conditional \glspl{CDF}, and values are drawn with \gls{MCS} subject to rejection. The rejection step ensures that the imputed vector remains within a feasible solution space. The algorithm shows stable convergence in both constrained and unconstrained forms, though heavy constraints may lead to departure from the standard normal distribution. \Gls{SGRI} implements optional constraints by seeding some number of imputation locations with values above or below a threshold, ensuring the imputed values are extreme where observed values are extreme. The constraints are enforced through rejection where $\mathbf{y}_{p}$ values must be above or below the threshold.
 
