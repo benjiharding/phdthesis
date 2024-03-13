@@ -9,19 +9,19 @@ This chapter presents the implementation details of the \gls{NMR} introduced in 
 
 \FloatBarrier
 \section{Network Design}
-\label{sec:networkd}
+\label{sec:04networkd}
 
 The \gls{NMR} is not a true neural-network, rather a model of regionalization inspired by neural-network structure. The network consists of an input layer where the number of latent factors determines the number of input nodes, a single ``hidden layer'' of the same dimension, and an output layer with a single node.  The single output node makes the \gls{NMR} univariate (analogous to the \gls{LMR}) however there is no reason it could not be extended to the multivariate case (analogous to the \gls{LMC}). However, with geospatial data, one commonly considers extreme values in the univariate context; it is not immediately clear what constitutes a multivariate extreme.
 
 \subsection{Architecture}
-\label{subsec:arch}
+\label{subsec:04arch}
 
-Network architecture is controlled by the number of latent factors in the Gaussian pool. The current \gls{NMR} implementation restricts the architecture of the network to an input layer, a single hidden layer and a univariate output layer. The input and hidden layer both contain $M$ nodes. Figure \ref{fig:example_nmr} shows an example network configuration with $M=4$ input latent factors, $\{ Y_{1}, \dots, Y_{4}\}$. The hidden layer of the network if effectively a transformation layer, transforming the latent Gaussian values to unitless activation values. The network activation function $\phi(\dots)$ is a modified power-law function; the following subsection presents the details. The network output $Z_{1}$ is then a weighted linear combination of the activated latent factors.
+Network architecture is controlled by the number of latent factors in the Gaussian pool. The current \gls{NMR} implementation restricts the architecture of the network to an input layer, a single hidden layer and a univariate output layer. The input and hidden layer both contain $M$ nodes. Figure \ref{fig:example_nmr} shows an example network configuration with $M=4$ input latent factors, $\{ Y_{1}, \dots, Y_{4}\}$. The hidden layer of the network if effectively a transformation layer, transforming the latent Gaussian values to unitless activation values. The network activation function $\phi(\dots)$ is a \gls{MPL} function; the following subsection presents the details. The network output $Z_{1}$ is then a weighted linear combination of the activated latent factors.
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.7, trim={0 1.5cm 0 1.5cm}, clip=true]{./0-Figures/04-Ch4/example_nmr.png}
-    \caption{Schematic representation of the \gls{NMR} with $M=4$ latent factors. $\phi(\dots)$ is a modified power-law activation function. }
+    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/example_nmr.png}
+    \caption{Schematic representation of the \gls{NMR} with $M=4$ latent factors. $\phi(\dots)$ is a \gls{MPL} activation function. }
     \label{fig:example_nmr}
 \end{figure}
 
@@ -33,31 +33,64 @@ The generalized forward pass through the network is defined as:
     \mathbf{z} & = G^{-1}\left( F_{X}\left(\mathbf{x} \right)\right)
 \end{align}
 
-Where $\mathbf{x}$ is an intermediary activation vector, $a_{m}$ is a weight applied to factor $m$, $\phi_{m}(\mathbf{y}_{m}, \omega_{m})$ is the modified power-law activation function with exponent $\omega$ applied to factor $m$, $F_{X}$ is the \gls{CDF} of $\mathbf{x}$ and $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. Alternatively, Equation \ref{eq:fpass1} can be rewritten in matrix notation as:
+Where $\mathbf{x}$ is an intermediary activation vector, $a_{m}$ is a weight applied to factor $m$, $\phi_{m}(\mathbf{y}_{m}, \omega_{m})$ is the \gls{MPL} activation function with exponent $\omega$ applied to factor $m$, $F_{X}$ is the \gls{CDF} of $\mathbf{x}$ and $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. The weights $\{ a_{1}, \dots, a_{M}\}$ are constrained to be greater than or equal to zero and reflect the relative importance of each factor in the mapping function. Alternatively, Equation \ref{eq:fpass1} can be rewritten in matrix notation as:
 \begin{equation}
     \mathbf{x} = \phi\left( \mathbf{Y} \right) \mathbf{a}^{T}
     \label{eq:fpass3}
 \end{equation}
 
-Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y} \right)$ is an $ndata$ x $M$ matrix of activated latent factors. The raw output of the network is units of activation that must be transformed to Gaussian space, necessitating the normal score transform. With the given architecture, the \gls{NMR} requires inference of $2 \cdot M$ parameters: a $1$ x $M$ dimensional vector of factor weights and a $1$ x $M$ dimensional vector of power-law exponents $\omega$. These $2 \cdot M$ network parameters are inferred through stochastic optimization.
+Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y} \right)$ is an $ndata$ x $M$ matrix of activated latent factors. The raw output of the network is units of activation that must be transformed to Gaussian space, necessitating the normal score transform. With the given architecture, the \gls{NMR} requires inference of $2 \cdot M$ parameters: a $1$ x $M$ dimensional vector of factor weights and a $1$ x $M$ dimensional vector of power-law exponents $\omega$. These $2 \cdot M$ network parameters are inferred through stochastic optimization and discussed in Section \ref{sec:04paraminfer}.
 
 \subsection{Activation Function}
-\label{subsec:activation}
+\label{subsec:04activation}
 
+The goal of the \gls{NMR} is to parameterize the arbitrary mapping function, $\mathcal{F}_{\theta}$, between the latent and observed spaces. The form of this function is not obvious, hence the use of a network based approach as a function approximation. Given the complex spatial features we wish to capture in the final models, a polynomial of degree greater than one is useful. Suppose a linear activation function is used. As the forward pass through the network is a weighted, linear combination of the inputs, a linear activation function (or simply $c \cdot \mathbf{y}$ where $c$ is a constant) results in a linear output or single order polynomial \citep{sharma2020activation}. To achieve a non-linear network output, one must introduce a non-linearity in the form of an activation function. Real data commonly contain non-linearly separable features and a non-linear activation function permits projection of these features onto a non-linear feature space \citep{dubey2022activation}.
 
+In the traditional \gls{ML} context, the constraint of differentiability is placed on activation functions due to the back-propagation algorithm \citep{rojas1996backpropagation}. The \gls{NMR} is only inspired by the structure of a neural-network and its parameters are ``learned'' through gradient-free stochastic optimization. The gradient free approach, and a strength of the \gls{NMR}, is the use of virtually any activation function, differentiable or not. The \gls{NMR} activation function is a \gls{MPL} function with the form:
+\begin{equation}
+    \phi \left( \mathbf{y} \right) =
+    \begin{cases}
+        \mathbf{y}^{\omega},           & \text{if $\mathbf{y} > 0$} \\
+        \mathbf{y}^{\frac{1}{\omega}}, & \text{if $\mathbf{y} < 0$} \\
+    \end{cases}
+    \label{eq:power}
+\end{equation}
 
+Where $\omega$ is a trainable parameter. The magnitude of $\omega$ allows the activation function to emphasize certain regions of the latent distribution. If $\omega = 1$, the activation is linear and $\phi \left( \mathbf{y} \right)=\mathbf{y}$. If $\omega$ is less than one the function takes on a convex shape that emphasizes low values and mutes in the influence of high values. When $\omega$ is greater than one, the opposite is true. The function takes on a concave shape that emphasizes high values and mutes the influence of low values. Figure \ref{fig:power_activation} (left) shows the relationship between $\phi \left( \mathbf{y} \right)$ and $\mathbf{y}$ for various values of $\omega$. As the magnitude of $\omega$ increases, the activation function becomes steeper above zero, and flatter below zero. The magnitude of the high values are increased significantly, and low values are muted significantly. This non-linear amplification allows the network to embed high-grade features of latent factors in the mapping function $\mathcal{F}_{\theta}$. Low grade features are embedded in opposite fashion.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/power_activation.png}
+    \caption{The \gls{MPL} (left) and scaled \gls{MPL} (right) activation function for various values of $\omega$ and input $\mathbf{y} \in [-5,5]$. The scaled activation uses $\xi = G^{-1}(0.999) \approx 3.09$. }
+    \label{fig:power_activation}
+\end{figure}
+
+It is notable that the \gls{MPL} activation has three inflection points: at -1, 0, and 1. The inflections exist as $\pm 1^{\omega} = \pm 1$ and $0^{\omega} = 0$, regardless of $\omega$. No negative effects have been observed related to these inflections, however the points at -1 and 1 may be adjusted by introducing a scaling factor, $\xi$, to the \gls{MPL} activation function:
+\begin{equation}
+    \phi \left( \mathbf{y} \right) =
+    \begin{cases}
+        \xi \cdot \left(\frac{\mathbf{y}}{\xi}\right)^{\omega},           & \text{if $\mathbf{y} > 0$} \\
+        \xi \cdot \left(\frac{\mathbf{y}}{\xi}\right)^{\frac{1}{\omega}}, & \text{if $\mathbf{y} < 0$} \\
+    \end{cases}
+    \label{eq:power_scale}
+\end{equation}
+
+The scaling parameter $\xi$ allows a predetermined inflection point to be set while retaining the linear nature when $\omega = 1$. Figure \ref{fig:power_activation} (right) shows the scaled \gls{MPL} activation function where $\xi = G^{-1}(0.999) \approx 3.09$. It is not immediately clear when the \gls{MPL} should be scaled, however if the practitioner notices artifacts related to the activation function, $\xi$ can be tuned. The ranges of $\omega$ for each latent factor is an important component of latent factor design, discussed in Section \ref{sec:04factord}. Constraining $\omega_{m} > 1$ enforces higher-grade features of factor $m$ in the mapping. Conversely, constraining $\omega_{m} < 1$ enforces lower-grade features of factor $m$ in the mapping. Values of $\omega$ are practical within $[0.25, 4.0]$ and reflect the relative influence of on the high and low values of each latent factor.
+
+somethign about how dampening only occurs beyond $\xi$
 
 \begin{enumerate}[noitemsep]
     \item Architecture
     \item Gaussian transform
     \item Activation function
+    \item Recall kriging is linear, but results can be highly non-linear
 
 \end{enumerate}
 
 
 \FloatBarrier
 \section{Latent Factor Design}
-\label{sec:factord}
+\label{sec:04factord}
 
 \begin{enumerate}[noitemsep]
     \item Conceptual geologic model
@@ -69,7 +102,7 @@ Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y} \
 
 \FloatBarrier
 \section{Parameter Inference}
-\label{sec:paraminfer}
+\label{sec:04paraminfer}
 
 \begin{enumerate}[noitemsep]
     \item Differential evolution
@@ -81,7 +114,7 @@ Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y} \
 
 \FloatBarrier
 \section{Implementation Details}
-\label{sec:implementd}
+\label{sec:04implementd}
 
 \begin{enumerate}[noitemsep]
     \item Number of data
@@ -92,7 +125,7 @@ Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y} \
 
 \FloatBarrier
 \section{Sensitivity and Validation}
-\label{sec:valid}
+\label{sec:04valid}
 
 \begin{enumerate}[noitemsep]
     \item Non-uniqueness
@@ -101,4 +134,4 @@ Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y} \
 
 \FloatBarrier
 \section{Discussion}
-\label{sec:discuss04}
+\label{sec:04discuss}
