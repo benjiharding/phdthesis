@@ -75,11 +75,11 @@ The normal score transform within the latent to observed mapping function $\math
 
 Application of precedence is an optional component of the \gls{SGRI} algorithm. Precedence allows the spatial features of certain latent factors to be prioritized in the mapping function. A particular factor can be given precedence during imputation if one desires its spatial features in certain portions of the grade range. Precedence is achieved by employing a simple sigmoid weighting function where $s(y) = \frac{1}{1+e^{-y}}$. This function is the same weighting function optionally applied during network parameter inference in Chapter \ref{ch:04implement}. The weighting function modifies the forward pass through the network to:
 \begin{equation}
-    \tilde{\mathbf{z}} = a_{p} \cdot f(\mathbf{y}_{p}) + \sum_{m=1}^{M-1} f(\mathbf{y}_{m}) \cdot s(\mathbf{y}_{p} \cdot x), \ \ m \neq p
+    \tilde{\mathbf{z}} = a_{p} \cdot \phi(\mathbf{y}_{p}) + \sum_{m=1}^{M-1} \phi(\mathbf{y}_{m}) \cdot s(\mathbf{y}_{p} \cdot x), \ \ m \neq p
     \label{eq:wtpass}
 \end{equation}
 
-Where $a$ is the weight to the factor, subscript $p$ is the factor index with precedence, $f(\dots)$ is the power law activation function, $s(\dots)$ is the sigmoid function, and $x$ is a constant $\in [-10, 10]$. The sign and magnitude of $x$ controls what part of the grade range factor $\mathbf{y}_{p}$ influences. If $x<0$ $\mathbf{y}_{p}$ influences high values and $x>0$ influences low values. Figure \ref{fig:sigmoid} shows a weighting function where $x=-1.5$. The y-axis is the weight to the remaining factors for the range of values of $\mathbf{y}_{p}$. In this scenario $\mathbf{y}_{p}$ receives $\approx 95\%$ of the weight when equal to 2.0, $\approx 80\%$ of the weight when equal to 1.0 and so on. As the magnitude of $x$ increases, $s(\dots)$ tends towards a binary step function centered on zero.
+Where $a$ is the weight to the factor, subscript $p$ is the factor index with precedence, $\phi(\dots)$ is the power law activation function, $s(\dots)$ is the sigmoid function, and $x$ is a constant $\in [-10, 10]$. The sign and magnitude of $x$ controls what part of the grade range factor $\mathbf{y}_{p}$ influences. If $x<0$ $\mathbf{y}_{p}$ influences high values and $x>0$ influences low values. Figure \ref{fig:sigmoid} shows a weighting function where $x=-1.5$. The y-axis is the weight to the remaining factors for the range of values of $\mathbf{y}_{p}$. In this scenario $\mathbf{y}_{p}$ receives $\approx 95\%$ of the weight when equal to 2.0, $\approx 80\%$ of the weight when equal to 1.0 and so on. As the magnitude of $x$ increases, $s(\dots)$ tends towards a binary step function centered on zero.
 
 \begin{figure}[htb!]
     \centering

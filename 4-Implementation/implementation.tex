@@ -16,39 +16,42 @@ The \gls{NMR} is not a true neural-network, rather a model of regionalization in
 \subsection{Architecture}
 \label{subsec:arch}
 
-Network architecture is controlled by the number of latent factors in the Gaussian pool. The current \gls{NMR} implementation restricts the architecture of the network to an input layer, a single hidden layer and a univariate output layer. The input and hidden layer both contain $M$ nodes. Figure \ref{fig:example_nmr} shows an example network configuration with $M=4$ input latent factors, $\{ Y_{1}, \dots, Y_{4}\}$. The hidden layer of the network if effectively a transformation layer, transforming the latent Gaussian values to unitless activation values. The network activation function $f(\dots)$ is a modified power-law function; the following subsection presents the details. The network output $Z_{1}$ is then a weighted linear combination of the activated latent factors.
+Network architecture is controlled by the number of latent factors in the Gaussian pool. The current \gls{NMR} implementation restricts the architecture of the network to an input layer, a single hidden layer and a univariate output layer. The input and hidden layer both contain $M$ nodes. Figure \ref{fig:example_nmr} shows an example network configuration with $M=4$ input latent factors, $\{ Y_{1}, \dots, Y_{4}\}$. The hidden layer of the network if effectively a transformation layer, transforming the latent Gaussian values to unitless activation values. The network activation function $\phi(\dots)$ is a modified power-law function; the following subsection presents the details. The network output $Z_{1}$ is then a weighted linear combination of the activated latent factors.
 
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.7, trim={0 1.5cm 0 1.5cm}, clip=true]{./0-Figures/04-Ch4/example_nmr.png}
-    \caption{Schematic representation of the \gls{NMR} with $M=4$ latent factors. $f(\dots)$ is a modified power-law activation function. }
+    \caption{Schematic representation of the \gls{NMR} with $M=4$ latent factors. $\phi(\dots)$ is a modified power-law activation function. }
     \label{fig:example_nmr}
 \end{figure}
 
 The generalized forward pass through the network is defined as:
 \begin{align}
     \label{eq:fpass1}
-    \mathbf{x} & = \sum_{m=1}^{M}a_{m} \cdot f_{m}(\mathbf{y}_{m}, \omega_{m}) \\
+    \mathbf{x} & = \sum_{m=1}^{M}a_{m} \cdot \phi_{m}(\mathbf{y}_{m}, \omega_{m}) \\
     \label{eq:fpass2}
-    \mathbf{z} & = G^{-1}\left( F_{X}\left(x \right)\right) \ \  \forall x
+    \mathbf{z} & = G^{-1}\left( F_{X}\left(\mathbf{x} \right)\right)
 \end{align}
 
-Where $\mathbf{x}$ is an intermediary activation vector, $a_{m}$ is a weight applied to factor $m$, $f_{m}(\mathbf{y}_{m}, \omega_{m})$ is the modified power-law activation function with exponent $\omega$ applied to factor $m$, $F_{x}$ is the \gls{CDF} of $\mathbf{x}$ and $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. Alternatively, Equation \ref{eq:fpass1} can be rewritten in matrix notation as:
+Where $\mathbf{x}$ is an intermediary activation vector, $a_{m}$ is a weight applied to factor $m$, $\phi_{m}(\mathbf{y}_{m}, \omega_{m})$ is the modified power-law activation function with exponent $\omega$ applied to factor $m$, $F_{X}$ is the \gls{CDF} of $\mathbf{x}$ and $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. Alternatively, Equation \ref{eq:fpass1} can be rewritten in matrix notation as:
 \begin{equation}
-    \mathbf{x} = f\left( \mathbf{Y} \right) \mathbf{a}^{T}
+    \mathbf{x} = \phi\left( \mathbf{Y} \right) \mathbf{a}^{T}
     \label{eq:fpass3}
 \end{equation}
 
-Where $\mathbf{a}$ is a row vector of factor weights and $f\left(\mathbf{Y} \right)$ is an $ndata$ x $M$ matrix of activated latent factors. The raw output of the network is units of activation that must be transformed to Gaussian space, necessitating the normal score transform.
+Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y} \right)$ is an $ndata$ x $M$ matrix of activated latent factors. The raw output of the network is units of activation that must be transformed to Gaussian space, necessitating the normal score transform. With the given architecture, the \gls{NMR} requires inference of $2 \cdot M$ parameters: a $1$ x $M$ dimensional vector of factor weights and a $1$ x $M$ dimensional vector of power-law exponents $\omega$. These $2 \cdot M$ network parameters are inferred through stochastic optimization.
+
+\subsection{Activation Function}
+\label{subsec:activation}
 
 
-With the given architecture, the \gls{NMR} requires inference of $2 \cdot M$ parameters: a $1$ x $M$ dimensional vector of factor weights and a $1$ x $M$ dimensional vector of power-law exponents $\omega$. These $2 \cdot M$ network parameters are inferred through stochastic optimization.
+
 
 \begin{enumerate}[noitemsep]
     \item Architecture
     \item Gaussian transform
     \item Activation function
-    \item Objective function
+
 \end{enumerate}
 
 
@@ -70,7 +73,7 @@ With the given architecture, the \gls{NMR} requires inference of $2 \cdot M$ par
 
 \begin{enumerate}[noitemsep]
     \item Differential evolution
-    \item Parameter inference
+    \item Objective function
     \item Constraints and precedence
 
 \end{enumerate}
