@@ -16,30 +16,30 @@ The \gls{NMR} is not a true neural-network, rather a model of regionalization in
 \subsection{Architecture}
 \label{subsec:04arch}
 
-Network architecture is controlled by the number of latent factors in the Gaussian pool. The current \gls{NMR} implementation restricts the architecture of the network to an input layer, a single hidden layer and a univariate output layer. The input and hidden layer both contain $M$ nodes. Figure \ref{fig:example_nmr} shows an example network configuration with $M=4$ input latent factors, $\{ Y_{1}, \dots, Y_{4}\}$. The hidden layer of the network if effectively a transformation layer, transforming the latent Gaussian values to unitless activation values. The network activation function $\phi(\dots)$ is a \gls{MPL} function; the following subsection presents the details. The network output $Z_{1}$ is then a weighted linear combination of the activated latent factors.
+Network architecture is controlled by the number of latent factors in the Gaussian pool. The current \gls{NMR} implementation restricts the architecture of the network to an input layer, a single hidden layer and a univariate output layer. The input and hidden layer both contain $M$ nodes. Figure \ref{fig:example_nmr} shows an example network configuration with $M=3$ input latent factors, $\{ Y_{0}, \dots, Y_{3}\}$. By convention, the $0^{th}$ factor is the nugget effect. The hidden layer of the network if effectively a transformation layer, transforming the latent Gaussian values to unitless activation values. The network activation function $\phi(\dots)$ is a \gls{MPL} function; the following subsection presents the details. The network output $Z_{1}$ is then a weighted linear combination of the activated latent factors.
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/example_nmr.png}
-    \caption{Schematic representation of the \gls{NMR} with $M=4$ latent factors. $\phi(\dots)$ is the \gls{MPL} activation function. }
+    \includegraphics[scale=0.7, trim={0 1.5cm 0 1.5cm}, clip=true]{./0-Figures/04-Ch4/example_nmr.png}
+    \caption{Schematic representation of the \gls{NMR} with $M=3$ latent factors. $\phi(\dots)$ is the \gls{MPL} activation function. }
     \label{fig:example_nmr}
 \end{figure}
 
 The generalized forward pass through the network is defined as:
 \begin{align}
     \label{eq:fpass1}
-    \mathbf{x} & = \sum_{m=1}^{M}a_{m} \cdot \phi(\mathbf{y}_{m}, \omega_{m}) \\
+    \mathbf{x} & = \sum_{m=0}^{M}a_{m} \cdot \phi(\mathbf{y}_{m}, \omega_{m}) \\
     \label{eq:fpass2}
     \mathbf{z} & = G^{-1}\left( F_{X}\left(\mathbf{x} \right)\right)
 \end{align}
 
-Where $\mathbf{x}$ is an intermediary activation vector, $a_{m}$ is a weight applied to factor $m$, $\phi(\mathbf{y}_{m}, \omega_{m})$ is the \gls{MPL} activation function with exponent $\omega$ applied to factor $m$, $F_{X}$ is the \gls{CDF} of $\mathbf{x}$ and $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. The weights $\{ a_{1}, \dots, a_{M}\}$ are constrained to be greater than or equal to zero and reflect the relative importance of each factor in the mapping function. Alternatively, Equation \ref{eq:fpass1} can be rewritten in matrix notation as:
+Where $\mathbf{x}$ is an intermediary activation vector, $a_{m}$ is a weight applied to factor $m$, $\phi(\mathbf{y}_{m}, \omega_{m})$ is the \gls{MPL} activation function with exponent $\omega$ applied to factor $m$, $F_{X}$ is the \gls{CDF} of $\mathbf{x}$ and $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. The weights $\{ a_{0}, \dots, a_{M}\}$ are constrained to be greater than or equal to zero and reflect the relative importance of each factor in the mapping function. Alternatively, Equation \ref{eq:fpass1} can be rewritten in matrix notation as:
 \begin{equation}
     \mathbf{x} = \phi\left( \mathbf{Y} \right) \mathbf{a}^{T}
     \label{eq:fpass3}
 \end{equation}
 
-Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y} \right)$ is an $ndata$ x $M$ matrix of activated latent factors. The raw output of the network is units of activation that must be transformed to Gaussian space, necessitating the normal score transform. With the given architecture, the \gls{NMR} requires inference of $2 \cdot M$ parameters: a $1$ x $M$ dimensional vector of factor weights and a $1$ x $M$ dimensional vector of power-law exponents $\omega$. These $2 \cdot M$ network parameters are inferred through stochastic optimization and discussed in Section \ref{sec:04paraminfer}.
+Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y} \right)$ is an $ndata$ x $M+1$ matrix of activated latent factors. The raw output of the network is units of activation that must be transformed to Gaussian space, necessitating the normal score transform. With the given architecture, the \gls{NMR} requires inference of $2 \cdot (M+1)$ parameters: a $1$ x $M+1$ dimensional vector of factor weights and a $1$ x $M+1$ dimensional vector of power-law exponents $\omega$. These $2 \cdot (M+1)$ network parameters are inferred through stochastic optimization and discussed in Section \ref{sec:04paraminfer}.
 
 \subsection{Activation Function}
 \label{subsec:04activation}
@@ -77,13 +77,12 @@ It is notable that the \gls{MPL} activation has three inflection points: at -1, 
 
 The scaling parameter $\xi$ allows a predetermined inflection point to be set while retaining the linear nature of the function when $\omega = 1$. Figure \ref{fig:power_activation} (right) shows the scaled \gls{MPL} activation function where $\xi = G^{-1}(0.999) \approx 3.09$ and $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. $\xi$ effectively controls the threshold at which dampening or emphasizing a factor occurs at. When $\omega > 1$ and $0 < y < \xi$, the \gls{MPL} reduces the value of $y$ slightly, similar to an opportunity-seeking risk perspective \citep{eidsvik2015value}, saying ``we are only interested in values of $y > \xi$.'' When $\omega < 1$ and $0 < y < \xi$, the \gls{MPL} increases the value of $y$ slightly, similar to a risk-averse perspective, saying ``we are only interested in values of $y < \xi$.'' The opposite relationships hold true when $y < 0$. It is not immediately clear when the \gls{MPL} should be scaled, however if the practitioner notices artifacts related to the activation function, $\xi$ can be tuned. The range of $\omega$ for each latent factor is an important component of latent factor design, discussed in Section \ref{sec:04factord}. Constraining $\omega_{m} > 1$ enforces higher-grade features of the $m^{th}$ factor in the mapping. Conversely, constraining $\omega_{m} < 1$ enforces lower-grade features of the $m^{th}$ factor in the mapping. Values of $\omega$ are practical within $[0.25, 4.0]$ and reflect the relative influence of on the high and low values of each latent factor.
 
-\begin{enumerate}[noitemsep]
-    \item Architecture
-    \item Gaussian transform
-    \item Activation function
-    \item Recall kriging is linear, but results can be highly non-linear
-\end{enumerate}
-
+% \begin{enumerate}[noitemsep]
+%     \item Architecture
+%     \item Gaussian transform
+%     \item Activation function
+%     \item Recall kriging is linear, but results can be highly non-linear
+% \end{enumerate}
 
 \FloatBarrier
 \section{Latent Factor Design}
@@ -99,33 +98,121 @@ Latent factor design is a critical component of the \gls{NMR} workflow. The late
 
 Where the coefficient $b_{\ell}$ is the square root of the variance contribution of $\gamma_{\ell}$. The key difference between the \gls{NMR} and factorial kriging approaches, is that the regionalized \gls{NMR} variable is a weighted, non-linear combination of independent spatial component as Equation \ref{eq:fpass1} highlights. With the \gls{LMC} or factorial kriging, the $Y_{\ell}$ independent factors are synthetic features of the model and are not directly observed. The \gls{NMR} requires the explicit definition of a pool of independent Gaussian factors. The pool may contain any number of structures that define the network's input dimension. It is simple to generate realizations of the independent Gaussian factors with any unconditional simulation algorithm such as \gls{SGS} \citep{gomez-hernandez1993joint} or LU simulation \citep{davis1987production}.
 
-The choice of covariance structures for the Gaussian pool must consider the end goal of the spatial mixture. The latent factors must be reasonable in the sense that it is possible to achieve the objective. For example, the pool must contain short-range features if the final goal is short-range features. Long-range and short-range structures can produce a final mixture with medium-range features; however, a pool with only long-range structures cannot. Pool considerations include (1) the conceptual geological model, (2) the $L$ nested components of normal score variogram, (3) the $L$ nested components of each indicator variogram model and their potential asymmetry, (4) the down hole connectivity measures from the observed data and the potential connectivity of extreme values, and (5) the composition of the objective function, discussed in more detail in Section \ref{sec:04paraminfer}. The factorial kriging concept provides a reasonable starting point for the design of the Gaussian pool. An initial pool can be inferred through the decomposition of all variogram models into their basic components (as in Equation \ref{eq:gamma_comp}). Each basic variogram component is a single licit structure with three orientation parameters, three range parameters, a nugget of zero and sill of one.
+The choice of covariance structures for the Gaussian pool must consider the end goal of the spatial mixture. The latent factors must be reasonable in the sense that it is possible to achieve the objective. For example, the pool must contain short-range features if the final goal is short-range features. Long-range and short-range structures can produce a final mixture with medium-range features; however, a pool with only long-range structures cannot. Pool considerations include (1) the conceptual geological model, (2) the $L$ nested components of normal score variogram, (3) the $L$ nested components of each indicator variogram model and their potential asymmetry, (4) the down hole connectivity measures from the observed data and the potential connectivity of extreme values, and (5) the composition of the objective function, discussed in more detail in Section \ref{sec:04paraminfer}. The factorial kriging concept provides a reasonable starting point for the design of the Gaussian pool. An initial pool can be inferred through the decomposition of all variogram models into their basic components (as in Equation \ref{eq:gamma_comp}). Each basic variogram component is a single licit structure with three orientation parameters, three range parameters, a nugget of zero and sill of one. By convention a pure nugget latent factor is added as the $0^{th}$ factor.
 
-Consider a small \gls{2D} synthetic example where the goal of the \gls{NMR} is to generate gridded realizations with strongly asymmetric 0.1 and 0.9 quantile indicator variograms.
+Consider a small \gls{2D} synthetic example where the goal of the \gls{NMR} is to generate gridded realizations with strongly asymmetric 0.1 and 0.9 quantile indicator variograms. That is, the low-grade two-point spatial continuity differs drastically from the high-grade. This scenario is challenging for multivariate Gaussian simulation algorithms and has been discussed at length by many practitioners \citep{journel1983nonparametric, gomez-hernandez1998be, journel1993entropy,renard2011conditioning, guthke2013non}. The maximum entropy characteristic of the multivariate Gaussian distribution tends towards disconnected extremes and maximum connectivity of intermediate values. The destructuring of indicators away from the median is symmetric. The \gls{NMR} framework is able to overcome this challenge through the use of a well-designed Gaussian pool and $\omega$ bounds. Factor 1 is a highly anisotropic factor, oriented north-south direction and Factor two is isotropic with a range off $\approx \frac{1}{2}$ the domain size. The factors are activated using the \gls{MPL} with $\omega_{1}=4$ emphasizing the high values and $\omega_{2}=1/\omega_{1}$ emphasizing the low values, followed by linear combination (Equation \ref{eq:fpass1}) and normal score transform. The top row of Figure \ref{fig:pool_asymmetry} shows the factors in activated units (left and center), and the normal score transform of the linear mixture (right). The mixture model is univariate Gaussian but not multivariate Gaussian. Note the difference in activation units. The bottom row shows the 0.1 (black) and 0.9 (red) indicator variograms of the final \gls{NMR} mixture in the north-south and east-west directions. The longer range, more-isotropic, low-grade continuity is preserved through factor two and $\omega < 1$, and the highly-anisotropic, higher-grade continuity is preserved through factor one and $\omega > 1$. This small example is illustrative of three key concepts with respect to latent factor design:
+\begin{enumerate}[noitemsep]
+    \item Latent factors should be designed in conjunction with $\omega$ bounds, targeting specific ranges of continuity, and the final model goals.
+    \item The ranges of factors are reduced through mixing. Mixing of factors cannot increase continuity beyond the longest range structures in the pool. Factor two in Figure \ref{fig:pool_asymmetry} has an isotropic variogram range of 64 meters. The range of the 0.1 quantile indicator variogram is reduced to roughly 40 and 25 meters in the north-south and east-west directions, respectively.
+    \item Anisotropy ratios of factors are affected through mixing. The anisotropy ratio of factor one is roughly unchanged in Figure \ref{fig:pool_asymmetry} (4:1), however the anisotropy ratio of factor two is increased from 1:1 to $\approx$ 1.6:1. In general, isotropic factors will tend to become more anisotropic, and anisotropic factors will become more isotropic.
+\end{enumerate}
 
-There is no definitive recipe for latent factor design though the following rules of thumb apply:
+\begin{figure}[!htb]
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.60, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/f1_f2_grid.png}
+    \end{subfigure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.60, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/asymmetric_ind_vario.png}
+    \end{subfigure}
+    \caption{The top row shows factor one activated with $\omega_{1}=4$ (left), factor two activated with $\omega_{2}=1/\omega_{1}$ (center), and the normal score transform the mixture (right). The bottom row shows the gridded indicator variograms for the 0.1 quantile (black) and 0.9 quantile (red) in the north-south (left) and east-west (right) directions. }
+    \label{fig:pool_asymmetry}
+\end{figure}
+
+Overall, the Gaussian pool must be reasonable with respect to the optimization targets, discussed in Section \ref{sec:04paraminfer}. The inferred mapping function is non-unique, so there is no ``correct'' Gaussian pool; however, some latent factor combinations may be unreasonable. For example, one cannot expect a Gaussian pool composed entirely of long-range structures to generate short-range features in the \gls{NMR} model, and vice-versa. Similar is true for factor orientations. If certain spatial features are required in certain orientations, factors should be designed to address this. Factors aimed at generating high-order connectivity features should consider the major orientation of drilling. Factors with different orientations may be combined, for example, a north-south and an east-west factor can generate north-east striking features in the final model. This base-case requirement of ``reasonableness'' motivates variogram decomposition as the initial approach to latent factor design. There is no definitive recipe for latent factor design though the following rules of thumb apply:
 \begin{enumerate}[noitemsep]
     \item Decomposition of nested variogram models into their basic components   is a reasonable starting point.
     \item Add factors based on the conceptual geologic model and end goals of the \gls{NMR} model.
-    \item
     \item Prune any redundant factors. That is, the pool is only as complex as required.
     \item Anisotropy of factors is reduced through mixing. That is, the \gls{NMR} model is only as anisotropic as the most anisotropic factor.
     \item The range of factors is reduced through mixing. That is, the range of \gls{NMR} model is only as long as the longest range factor.
 \end{enumerate}
 
+Once a reasonable Gaussian pool is established, the objective function components can be initialized and the parameter vector $\theta$ can be optimized. The following section discusses details of objective function, optimization algorithm and \gls{NMR} parameter inference.
 
 
-
-\begin{enumerate}[noitemsep]
-    \item Conceptual geologic model
-    \item Indicator asymmetry
-    \item Connectivity of extreme values
-\end{enumerate}
+% \begin{enumerate}[noitemsep]
+%     \item Conceptual geologic model
+%     \item Indicator asymmetry
+%     \item Connectivity of extreme values
+%     \item nugget
+% \end{enumerate}
 
 
 \FloatBarrier
 \section{Parameter Inference}
 \label{sec:04paraminfer}
+
+The \gls{NMR} approximates the mapping function, $\mathcal{F}_{\theta}$, between latent and observed space. This function is parameterized by the unknown vector $\theta$. The unknown parameters are inferred from known features: (1) the observed data, (2) the specified latent pool, and (3) the objective function components. Features (2) and (3) are specified by the user and guide the parameter optimization process. $\theta$ is a vector of $2 \cdot (M+1)$ real values of factor weights and \gls{MPL} exponents:
+\begin{equation}
+    \theta = \{ a_{0}, \dots, a_{M}, \omega_{0}, \dots, \omega_{M} \}
+    \label{eq:theta}
+\end{equation}
+
+and is optimized with the heuristic, genetic algorithm \gls{DE} \citep{price2013differential}. A population of candidate solutions is initialized and then evolved in a process mimicking natural selection. Each member of the population has an associated ``fitness'' value, and the fittest members of the population are carried over to subsequent generations. Through multiple generations of mutation and crossover operations, the candidate solutions converge towards a solution that minimizes the objective function. Parameter inference begins by simulating a set of $L$ x $M+1$ unconditional realizations at the input data locations, where $L$ is the number of realizations and $M+1$ is the number of independent factors, including the nugget. These unconditional realizations permit the evaluation of the objective function as $\theta$ is evolved.
+
+\subsection{Differential Evolution}
+\label{subsec:04de}
+
+Optimization of network weights uses a gradient-free, heuristic genetic algorithm. Gradient-free methods are typically employed when information about the derivative of the objective function is either costly to obtain or unreliable and noisy \citep{conn2009introduction}. \Gls{DE} is a global stochastic search algorithm that is practical for non-linear, non-differentiable objective functions with a necessarily large search space \citep{rios2013derivativefree}. Any objective function is permissible, which is an advantage of \gls{DE}.
+
+\Gls{DE} is based on natural evolutionary processes where the fittest member of the population survives through a ``natural selection'' process. An initial population of size $NP$ x $D$ is generated by randomly sampling the objective function space within the defined constraints. $NP$ is the number of individuals in the population, and $ D $ is the dimensionality of the problem. Each vector from the initial population is passed through the objective function to evaluate its evolutionary ``fitness''. A mutant vector is then generated from the population by adding the scaled difference between two randomly selected vectors to a third randomly selected vector \citep{price2013differential}. A trial vector is generated by recombining the mutant vector with the initial population's current row vector considering a user-defined crossover probability. The trial vector's fitness is compared to the current population vector's fitness in an evolutionary sense. If the trial vector's fitness exceeds the current population vector's, it replaces the current population vector. Each iteration of the algorithm compares all population vectors to a randomly generated trial vector and accepts the trial vector if its fitness is greater than the current vector. The ``surviving'' vectors from each algorithm iteration become the parent vectors or the next iteration population.
+
+\Gls{DE} minimizes the objective function after simulation and scaling of the objective components. A population of candidate vectors (Equation \ref{eq:theta}) is randomly initialized, and each member's fitness is evaluated. A population size of 30-50 is a reasonable balance between sufficient diversity and algorithm runtime. Over a specified number of iterations, each member of the population is mutated with other members. Optimization employs a DE/current-to-best/1 mutation strategy. The mutated vector is described by \citep{georgioudakis2020comparative}:
+\begin{equation}
+    \mathbf{v}_{i} = \mathbf{x}_{i} + F(\mathbf{x}_{best}-\mathbf{x}_{i}) + F(\mathbf{x}_{r1} - \mathbf{x}_{r2})
+    \label{eq:mutation}
+\end{equation}
+
+Where $r1 \neq r2 \neq i$, $F$ is the scaling factor controlling the amplification of the difference vectors and $\mathbf{x}_{best}$ is the current best vector in the population. The mutation process learns from the current best vector (local searching of the solution space) while exploring the global search space through the randomly selected difference vector. The parameter $F$ is analogous to the learning rate in machine learning problems. A smaller $F$ value will lead to smaller mutation step sizes, and the algorithm will take longer to converge. Larger $F$ values increase the degree of solution exploration but may lead to divergence. \cite{price2013differential} suggests there is no upper limit for $F$, however effective values are almost always $F < 1.0$.
+
+This new mutated ``genetic information'' is crossed over to other population members based on a crossover probability, $CR$ and a binomial crossover scheme. The trial vector is built from two vectors: the mutant and another member of the population. The crossover is described by \citep{price2013differential}:
+\begin{equation}
+    \mathbf{t}_{i} =
+    \begin{cases}
+        \mathbf{v}_{i, j}, & \text{ if }rand_{j}(0,1) \leq CR \text{ or } j=j_{rand} \\
+        \mathbf{x}_{i, j}, & \text{ otherwise }
+    \end{cases}
+    \label{eq:crossover}
+\end{equation}
+
+Where $\mathbf{t}_{i}$ is the trial vector, $\mathbf{x}_{i, j}$ is the target vector, $j$ denotes the index of the $i^{th}$ member of the population, $rand_{j}(0,1)$ is a uniform random number $\in [0,1]$, and $j_{rand}$ is a random index. For each element in the target vector, if the uniform random number is less than $CR$, the element is copied from the mutant vector $\mathbf{v}_{i, j}$; otherwise, the target element remains. The random index $j_{rand}$ ensures the target vector is not copied completely; at least one element of the mutant vector passes to the trial vector. $CR$ influences the diversity of the evolving population. Larger $CR$ values introduce more variation in the population, resulting in a greater search of the global solution space, while smaller values may lead to stagnation \citep{georgioudakis2020comparative}. Optimization employs a non-linear crossover scheme following the work of \cite{mohamed2014rdel}:
+\begin{equation}
+    CR = CR_{hi} + (CR_{lo} - CR_{hi}) \cdot (1-i/N)^{4}, \ \ i=1,\dots, N
+    \label{eq:f(cross)}
+\end{equation}
+
+The idea behind the non-linear crossover scheme is that when population variance is high in early generations, the crossover rate is low. This crossover scheme prevents extreme diversity or potential divergence in the initial iterations. In subsequent generations, the variance of the population decreases as the vectors become similar, approaching the solution. In order to thoroughly explore this more local search space, the crossover should be high, encouraging a diverse population of ``good'' solutions.
+
+\subsection{Objective Function}
+\label{subsec:04objfunc}
+
+The parameter vector $\theta$ is optimized heuristically through an objective function and \gls{DE}. This approach is highly flexible as the objective function can contain any number of components. The practitioner provides target features of the final mixture from which a loss or objective value can be calculated for the candidate mixture. The objective value is minimized through successive iterations reproducing the target spatial features. The possible objective function components are: (1) the continuous variogram, (2) indicator variograms, (3) cumulative run length frequencies, and (4) the $n$-point connectivity function. Components may have multiple sub-components for each indicator threshold. Run length frequencies and the $n$-point connectivity function are higher-order multi-point statistics that better characterize non-Gaussian features than the two-point variogram. The objective function comprises a weighted combination of $C$ objective components:
+\begin{equation}
+    O = \sum_{c=1}^{C} w_{c}O_{c}
+    \label{eq:fobj}
+\end{equation}
+
+Where $w_{c}$ is the component weight and $O_{c}$ is component objective value. The objective function quantifies how different the desired feature is from the target feature. Weighting the objective function components is required as they may be represented in widely different units. For example a variogram component is expressed in units of variance squared ($\sum [ \gamma_{\text{target}} - \gamma_{\text{realization}}]^{2}$) while cumulative runs is expressed as the number of runs squared ($\sum [ R_{\text{target}} - R_{\text{realization}}]^{2}$), and may be orders of magnitude different. A weighting scheme follows the work of \cite{deutsch1992annealing}. The goal is to have each component contribute equally to the overall objective value where each weight is inversely proportional to the average change of that objective component \citep{deutsch1992annealing}:
+\begin{equation}
+    w_{c} = \frac{1}{\bar{|\Delta O_{c}|}}
+    \label{eq:fobj_wt}
+\end{equation}
+
+The average change of the objective component is approximated numerically by averaging the change of $J=1000$ independent forward passes through the network:
+\begin{equation}
+    \bar{|\Delta O_{c}|} = \frac{1}{J} \sum_{j=1}^{J} | O^{j}_{c} - O_{c}|, \ \ c=1,\dots, C
+    \label{eq:fobj_avg}
+\end{equation}
+
+Where $\bar{|\Delta O_{c}|}$ is the average change of component $c$, $O^{j}_{c}$ is the updated objective value for iteration $j$ and $O_{c}$ is the initial objective value of that component. Though any number of components can enter the objective function, one should consider contrasting objectives. For example, one cannot expect to closely reproduce continuous and indicator variograms if the principal directions of continuity are orthogonal. It is less clear how the specification of run frequencies or connectivity functions affect variograms, though there are likely confounding factors. The objective value is the \gls{MSE} between the experimental values calculated on the distribution derived from Equation \ref{eq:fpass1} and the initialized target values. The objective function (Equation \ref{eq:fobj}) is evaluated across all simulated realizations and minimized in expectation.
+
+\subsection{Precedence}
+\label{subsec:04precedence}
+
+\subsection{Checks}
+\label{subsec:04checks}
 
 \begin{enumerate}[noitemsep]
     \item Introduce 3D exmaple here?
