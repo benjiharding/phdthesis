@@ -21,19 +21,19 @@ Network architecture is controlled by the number of latent factors in the Gaussi
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/example_nmr.png}
-    \caption{Schematic representation of the \gls{NMR} with $M=4$ latent factors. $\phi(\dots)$ is a \gls{MPL} activation function. }
+    \caption{Schematic representation of the \gls{NMR} with $M=4$ latent factors. $\phi(\dots)$ is the \gls{MPL} activation function. }
     \label{fig:example_nmr}
 \end{figure}
 
 The generalized forward pass through the network is defined as:
 \begin{align}
     \label{eq:fpass1}
-    \mathbf{x} & = \sum_{m=1}^{M}a_{m} \cdot \phi_{m}(\mathbf{y}_{m}, \omega_{m}) \\
+    \mathbf{x} & = \sum_{m=1}^{M}a_{m} \cdot \phi(\mathbf{y}_{m}, \omega_{m}) \\
     \label{eq:fpass2}
     \mathbf{z} & = G^{-1}\left( F_{X}\left(\mathbf{x} \right)\right)
 \end{align}
 
-Where $\mathbf{x}$ is an intermediary activation vector, $a_{m}$ is a weight applied to factor $m$, $\phi_{m}(\mathbf{y}_{m}, \omega_{m})$ is the \gls{MPL} activation function with exponent $\omega$ applied to factor $m$, $F_{X}$ is the \gls{CDF} of $\mathbf{x}$ and $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. The weights $\{ a_{1}, \dots, a_{M}\}$ are constrained to be greater than or equal to zero and reflect the relative importance of each factor in the mapping function. Alternatively, Equation \ref{eq:fpass1} can be rewritten in matrix notation as:
+Where $\mathbf{x}$ is an intermediary activation vector, $a_{m}$ is a weight applied to factor $m$, $\phi(\mathbf{y}_{m}, \omega_{m})$ is the \gls{MPL} activation function with exponent $\omega$ applied to factor $m$, $F_{X}$ is the \gls{CDF} of $\mathbf{x}$ and $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. The weights $\{ a_{1}, \dots, a_{M}\}$ are constrained to be greater than or equal to zero and reflect the relative importance of each factor in the mapping function. Alternatively, Equation \ref{eq:fpass1} can be rewritten in matrix notation as:
 \begin{equation}
     \mathbf{x} = \phi\left( \mathbf{Y} \right) \mathbf{a}^{T}
     \label{eq:fpass3}
@@ -46,7 +46,7 @@ Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y} \
 
 The goal of the \gls{NMR} is to parameterize the arbitrary mapping function, $\mathcal{F}_{\theta}$, between the latent and observed spaces. The form of this function is not obvious, hence the use of a network based approach as a function approximation. Given the complex spatial features we wish to capture in the final models, a polynomial of degree greater than one is useful. Suppose a linear activation function is used. As the forward pass through the network is a weighted, linear combination of the inputs, a linear activation function (or simply $c \cdot \mathbf{y}$ where $c$ is a constant) results in a linear output or single order polynomial \citep{sharma2020activation}. To achieve a non-linear network output, one must introduce a non-linearity in the form of an activation function. Real data commonly contain non-linearly separable features and a non-linear activation function permits projection of these features onto a non-linear feature space \citep{dubey2022activation}.
 
-In the traditional \gls{ML} context, the constraint of differentiability is placed on activation functions due to the back-propagation algorithm \citep{rojas1996backpropagation}. The \gls{NMR} is only inspired by the structure of a neural-network and its parameters are ``learned'' through gradient-free stochastic optimization. The gradient free approach, and a strength of the \gls{NMR}, is the use of virtually any activation function, differentiable or not. The \gls{NMR} activation function is a \gls{MPL} function with the form:
+In the traditional \gls{ML} context, the constraint of differentiability is placed on activation functions due to use of the back-propagation algorithm \citep{rojas1996backpropagation}. The \gls{NMR} is only inspired by the structure of a neural-network and its parameters are ``learned'' through gradient-free stochastic optimization. This gradient free approach, and a strength of the \gls{NMR}, permits the use of virtually any activation function, differentiable or not. The \gls{NMR} activation function is a \gls{MPL} function with the form:
 \begin{equation}
     \phi \left( \mathbf{y} \right) =
     \begin{cases}
@@ -56,7 +56,7 @@ In the traditional \gls{ML} context, the constraint of differentiability is plac
     \label{eq:power}
 \end{equation}
 
-Where $\omega$ is a trainable parameter. The magnitude of $\omega$ allows the activation function to emphasize certain regions of the latent distribution. If $\omega = 1$, the activation is linear and $\phi \left( \mathbf{y} \right)=\mathbf{y}$. If $\omega$ is less than one the function takes on a convex shape that emphasizes low values and mutes in the influence of high values. When $\omega$ is greater than one, the opposite is true. The function takes on a concave shape that emphasizes high values and mutes the influence of low values. Figure \ref{fig:power_activation} (left) shows the relationship between $\phi \left( \mathbf{y} \right)$ and $\mathbf{y}$ for various values of $\omega$. As the magnitude of $\omega$ increases, the activation function becomes steeper above zero, and flatter below zero. The magnitude of the high values are increased significantly, and low values are muted significantly. This non-linear amplification allows the network to embed high-grade features of latent factors in the mapping function $\mathcal{F}_{\theta}$. Low grade features are embedded in opposite fashion.
+Where $\omega$ is a trainable parameter. The magnitude of $\omega$ allows the activation function to emphasize certain regions of the latent distribution. If $\omega = 1$, the activation is linear and $\phi \left( \mathbf{y} \right)=\mathbf{y}$. If $\omega$ is less than one the function takes on a concave shape that emphasizes low values and mutes the influence of high values. When $\omega$ is greater than one, the opposite is true. The function takes on a convex shape that emphasizes high values and mutes the influence of low values. Figure \ref{fig:power_activation} (left) shows the relationship between $\phi \left( \mathbf{y} \right)$ and $\mathbf{y}$ for various values of $\omega$. As the magnitude of $\omega$ increases, the activation function becomes steeper above zero, and flatter below zero. The magnitude of the high values are increased exponentially, and low values are muted significantly. This non-linear amplification allows the network to embed high-grade features of latent factors in the mapping function $\mathcal{F}_{\theta}$. Low grade features are embedded in opposite fashion.
 
 \begin{figure}[htb!]
     \centering
@@ -67,7 +67,7 @@ Where $\omega$ is a trainable parameter. The magnitude of $\omega$ allows the ac
 
 It is notable that the \gls{MPL} activation has three inflection points: at -1, 0, and 1. The inflections exist as $\pm 1^{\omega} = \pm 1$ and $0^{\omega} = 0$, regardless of $\omega$. No negative effects have been observed related to these inflections, however the points at -1 and 1 may be adjusted by introducing a scaling factor, $\xi$, to the \gls{MPL} activation function:
 \begin{equation}
-    \phi \left( \mathbf{y} \right) =
+    \phi \left( \mathbf{y}, \xi \right) =
     \begin{cases}
         \xi \cdot \left(\frac{\mathbf{y}}{\xi}\right)^{\omega},           & \text{if $\mathbf{y} > 0$} \\
         \xi \cdot \left(\frac{\mathbf{y}}{\xi}\right)^{\frac{1}{\omega}}, & \text{if $\mathbf{y} < 0$} \\
@@ -75,16 +75,13 @@ It is notable that the \gls{MPL} activation has three inflection points: at -1, 
     \label{eq:power_scale}
 \end{equation}
 
-The scaling parameter $\xi$ allows a predetermined inflection point to be set while retaining the linear nature when $\omega = 1$. Figure \ref{fig:power_activation} (right) shows the scaled \gls{MPL} activation function where $\xi = G^{-1}(0.999) \approx 3.09$. It is not immediately clear when the \gls{MPL} should be scaled, however if the practitioner notices artifacts related to the activation function, $\xi$ can be tuned. The ranges of $\omega$ for each latent factor is an important component of latent factor design, discussed in Section \ref{sec:04factord}. Constraining $\omega_{m} > 1$ enforces higher-grade features of factor $m$ in the mapping. Conversely, constraining $\omega_{m} < 1$ enforces lower-grade features of factor $m$ in the mapping. Values of $\omega$ are practical within $[0.25, 4.0]$ and reflect the relative influence of on the high and low values of each latent factor.
-
-somethign about how dampening only occurs beyond $\xi$
+The scaling parameter $\xi$ allows a predetermined inflection point to be set while retaining the linear nature of the function when $\omega = 1$. Figure \ref{fig:power_activation} (right) shows the scaled \gls{MPL} activation function where $\xi = G^{-1}(0.999) \approx 3.09$ and $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. $\xi$ effectively controls the threshold at which dampening or emphasizing a factor occurs at. When $\omega > 1$ and $0 < y < \xi$, the \gls{MPL} reduces the value of $y$ slightly, similar to an opportunity-seeking risk perspective \citep{eidsvik2015value}, saying ``we are only interested in values of $y > \xi$.'' When $\omega < 1$ and $0 < y < \xi$, the \gls{MPL} increases the value of $y$ slightly, similar to a risk-averse perspective, saying ``we are only interested in values of $y < \xi$.'' The opposite relationships hold true when $y < 0$. It is not immediately clear when the \gls{MPL} should be scaled, however if the practitioner notices artifacts related to the activation function, $\xi$ can be tuned. The range of $\omega$ for each latent factor is an important component of latent factor design, discussed in Section \ref{sec:04factord}. Constraining $\omega_{m} > 1$ enforces higher-grade features of the $m^{th}$ factor in the mapping. Conversely, constraining $\omega_{m} < 1$ enforces lower-grade features of the $m^{th}$ factor in the mapping. Values of $\omega$ are practical within $[0.25, 4.0]$ and reflect the relative influence of on the high and low values of each latent factor.
 
 \begin{enumerate}[noitemsep]
     \item Architecture
     \item Gaussian transform
     \item Activation function
     \item Recall kriging is linear, but results can be highly non-linear
-
 \end{enumerate}
 
 
@@ -92,11 +89,37 @@ somethign about how dampening only occurs beyond $\xi$
 \section{Latent Factor Design}
 \label{sec:04factord}
 
+Latent factor design is a critical component of the \gls{NMR} workflow. The latent factors form the pool from which the \gls{NMR} draws structure from. The univariate Gaussian factors are mixed with the goal of generating a spatial distribution that is univariate Gaussian, but not multivariate Gaussian. The mixture distribution can only contain features, or combination of features, present in the Gaussian pool. Therefore, it is critical that any feature required in the final model be present in the pool. The Gaussian pool is similar to the concept of factorial kriging \citep{goovaerts1997geostatistics}, where the nested variogram model is a composition of $L$ basic variogram structures, and the regionalized variable is a composition of $L$ independent, standard normal, spatial components operating at different geologic scales:
+\begin{align}
+    \label{eq:gamma_comp}
+    \gamma(\mathbf{h}) & = \sum_{\ell=1}^{L} \gamma_{\ell}(\mathbf{h})                     \\
+    \label{eq:z_comp}
+    Z(\mathbf{u})      & = \sum_{\ell=1}^{L}b_{\ell}Y_{\ell}(\mathbf{u}) + \mu(\mathbf{u})
+\end{align}
+
+Where the coefficient $b_{\ell}$ is the square root of the variance contribution of $\gamma_{\ell}$. The key difference between the \gls{NMR} and factorial kriging approaches, is that the regionalized \gls{NMR} variable is a weighted, non-linear combination of independent spatial component as Equation \ref{eq:fpass1} highlights. With the \gls{LMC} or factorial kriging, the $Y_{\ell}$ independent factors are synthetic features of the model and are not directly observed. The \gls{NMR} requires the explicit definition of a pool of independent Gaussian factors. The pool may contain any number of structures that define the network's input dimension. It is simple to generate realizations of the independent Gaussian factors with any unconditional simulation algorithm such as \gls{SGS} \citep{gomez-hernandez1993joint} or LU simulation \citep{davis1987production}.
+
+The choice of covariance structures for the Gaussian pool must consider the end goal of the spatial mixture. The latent factors must be reasonable in the sense that it is possible to achieve the objective. For example, the pool must contain short-range features if the final goal is short-range features. Long-range and short-range structures can produce a final mixture with medium-range features; however, a pool with only long-range structures cannot. Pool considerations include (1) the conceptual geological model, (2) the $L$ nested components of normal score variogram, (3) the $L$ nested components of each indicator variogram model and their potential asymmetry, (4) the down hole connectivity measures from the observed data and the potential connectivity of extreme values, and (5) the composition of the objective function, discussed in more detail in Section \ref{sec:04paraminfer}. The factorial kriging concept provides a reasonable starting point for the design of the Gaussian pool. An initial pool can be inferred through the decomposition of all variogram models into their basic components (as in Equation \ref{eq:gamma_comp}). Each basic variogram component is a single licit structure with three orientation parameters, three range parameters, a nugget of zero and sill of one.
+
+Consider a small \gls{2D} synthetic example where the goal of the \gls{NMR} is to generate gridded realizations with strongly asymmetric 0.1 and 0.9 quantile indicator variograms.
+
+There is no definitive recipe for latent factor design though the following rules of thumb apply:
+\begin{enumerate}[noitemsep]
+    \item Decomposition of nested variogram models into their basic components   is a reasonable starting point.
+    \item Add factors based on the conceptual geologic model and end goals of the \gls{NMR} model.
+    \item
+    \item Prune any redundant factors. That is, the pool is only as complex as required.
+    \item Anisotropy of factors is reduced through mixing. That is, the \gls{NMR} model is only as anisotropic as the most anisotropic factor.
+    \item The range of factors is reduced through mixing. That is, the range of \gls{NMR} model is only as long as the longest range factor.
+\end{enumerate}
+
+
+
+
 \begin{enumerate}[noitemsep]
     \item Conceptual geologic model
     \item Indicator asymmetry
     \item Connectivity of extreme values
-    \item Precedence and weighting
 \end{enumerate}
 
 
@@ -105,10 +128,13 @@ somethign about how dampening only occurs beyond $\xi$
 \label{sec:04paraminfer}
 
 \begin{enumerate}[noitemsep]
-    \item Differential evolution
+    \item Introduce 3D exmaple here?
+    \item Differential evolution with small example, PDE
     \item Objective function
     \item Constraints and precedence
-
+    \item Sigmoid weighting
+    \item Conflicting objectives
+    \item Checks
 \end{enumerate}
 
 
