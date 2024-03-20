@@ -70,30 +70,30 @@ The three general steps of the \gls{SGRI} algorithm are as follows:
 
 The normal score transform within the latent to observed mapping function $\mathcal{F}_{\theta}$ is slightly different than in the context of network parameter inference in Chapter \ref{ch:04implement}. The \gls{SGRI} algorithm constructs a reference distribution for mapping trial latent vectors, $\tilde{\mathbf{y}}(\mathbf{u}_{i})$,  to a scalar value in observed space, $\tilde{z}(\mathbf{u}_{i})$. The reference distribution facilitates the normal score transform of a single NMR output value. The table is constructed by mapping a $10^{6}$ x $M$ dimensional table of standard normal independent factors through  $\mathcal{F}_{\theta}$, resulting in an exhaustive table of outputs of unitless, raw activation values. This output table is normal score transformed, and $\tilde{z}(\mathbf{u}_{i})$ values are calculated by linearly interpolating the normal score array. The notation $\mathcal{F}_{\theta}(\tilde{\mathbf{y}}(\mathbf{u}_{i}))$ implies a scalar Gaussian deviate. In the following sections, the subscript $i$ replaces the location vector $\mathbf{u}_{i}$ to simplify notation.
 
-\subsection{Factor Precedence}
-\label{subsec:05precedence}
+% \subsection{Factor Precedence}
+% \label{subsec:05precedence}
 
-Application of precedence is an optional component of the \gls{SGRI} algorithm. Precedence allows the spatial features of certain latent factors to be prioritized in the mapping function. A particular factor can be given precedence during imputation if one desires its spatial features in certain portions of the grade range. Precedence is achieved by employing a simple sigmoid weighting function where $s(y) = \frac{1}{1+e^{-y}}$. This function is the same weighting function optionally applied during network parameter inference in Chapter \ref{ch:04implement}. The weighting function modifies the forward pass through the network to:
-\begin{equation}
-    \tilde{\mathbf{z}} = a_{p} \cdot \phi(\mathbf{y}_{p}) + \sum_{m=1}^{M-1} \phi(\mathbf{y}_{m}) \cdot s(\mathbf{y}_{p} \cdot x), \ \ m \neq p
-    \label{eq:wtpass}
-\end{equation}
+% Application of precedence is an optional component of the \gls{SGRI} algorithm. Precedence allows the spatial features of certain latent factors to be prioritized in the mapping function. A particular factor can be given precedence during imputation if one desires its spatial features in certain portions of the grade range. Precedence is achieved by employing a simple sigmoid weighting function where $s(y) = \frac{1}{1+e^{-y}}$. This function is the same weighting function optionally applied during network parameter inference in Chapter \ref{ch:04implement}. The weighting function modifies the forward pass through the network to:
+% \begin{equation}
+%     \tilde{\mathbf{z}} = a_{p} \cdot \phi(\mathbf{y}_{p}) + \sum_{m=1}^{M-1} \phi(\mathbf{y}_{m}) \cdot s(\mathbf{y}_{p} \cdot x), \ \ m \neq p
+%     \label{eq:wtpass}
+% \end{equation}
 
-Where $a$ is the weight to the factor, subscript $p$ is the factor index with precedence, $\phi(\dots)$ is the power law activation function, $s(\dots)$ is the sigmoid function, and $x$ is a constant $\in [-10, 10]$. The sign and magnitude of $x$ controls what part of the grade range factor $\mathbf{y}_{p}$ influences. If $x<0$ $\mathbf{y}_{p}$ influences high values and $x>0$ influences low values. Figure \ref{fig:sigmoid} shows a weighting function where $x=-1.5$. The y-axis is the weight to the remaining factors for the range of values of $\mathbf{y}_{p}$. In this scenario $\mathbf{y}_{p}$ receives $\approx 95\%$ of the weight when equal to 2.0, $\approx 80\%$ of the weight when equal to 1.0 and so on. As the magnitude of $x$ increases, $s(\dots)$ tends towards a binary step function centered on zero.
+% Where $a$ is the weight to the factor, subscript $p$ is the factor index with precedence, $\phi(\dots)$ is the power law activation function, $s(\dots)$ is the sigmoid function, and $x$ is a constant $\in [-10, 10]$. The sign and magnitude of $x$ controls what part of the grade range factor $\mathbf{y}_{p}$ influences. If $x<0$ $\mathbf{y}_{p}$ influences high values and $x>0$ influences low values. Figure \ref{fig:sigmoid} shows a weighting function where $x=-1.5$. The y-axis is the weight to the remaining factors for the range of values of $\mathbf{y}_{p}$. In this scenario $\mathbf{y}_{p}$ receives $\approx 95\%$ of the weight when equal to 2.0, $\approx 80\%$ of the weight when equal to 1.0 and so on. As the magnitude of $x$ increases, $s(\dots)$ tends towards a binary step function centered on zero.
 
-\begin{figure}[htb!]
-    \centering
-    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/sigmoid.png}
-    \caption{Sigmoid weighting function where $x=-1.5$. The x-axis is the range of $\mathbf{y}_{p}$ and the y-axis is the weight to the remaining M-1 factors. }
-    \label{fig:sigmoid}
-\end{figure}
+% \begin{figure}[htb!]
+%     \centering
+%     \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/sigmoid.png}
+%     \caption{Sigmoid weighting function where $x=-1.5$. The x-axis is the range of $\mathbf{y}_{p}$ and the y-axis is the weight to the remaining M-1 factors. }
+%     \label{fig:sigmoid}
+% \end{figure}
 
-The sigmoid weighting function allows a certain factor to take precedence where the observed data takes on either high or low values. This increased control is particularly useful for capturing local high- or low-grade continuity with well-designed latent factors.
+% The sigmoid weighting function allows a certain factor to take precedence where the observed data takes on either high or low values. This increased control is particularly useful for capturing local high- or low-grade continuity with well-designed latent factors.
 
-\subsection{Constraints}
+\subsection{Precedence and Constraints}
 \label{subsec:05constraints}
 
-Application of constraints is an optional component of the \gls{SGRI} algorithm and is used in conjunction with factor precedence. The use of constraints enforces the values of a certain factor to be either above or below a chosen threshold. The goal of constraint application is to ensure that some high or low values of a chosen factor correspond with the high or low values of the observed data. When enforcing factor precedence, constraints are necessary as the mapping function $\mathcal{F}_{\theta}$ is inferred using unconditional realizations. There is no conditioning mechanism to ensure the low- or high-grade features of $\mathbf{y}_{p}$ align with low- or high-grade features in the data. $\mathcal{F}_{\theta}$ is non-unique and multiple latent vectors can reproduce $z_{i}$. Therefore, it is possible, for example, to have a negative value of $\mathbf{y}_{p}$ where $z_{i}$ is a large positive value. This scenario is not ideal if we explicitly want the spatial features of $\mathbf{y}_{p}$ where $z_{i}$ is high and warrants the use of constraints on $\mathbf{y}_{p}$ during imputation.
+Application of precedence is an optional component of the \gls{SGRI} algorithm. Precedence is achieved by employing the same simgoid weighting function optionally applied during network parameter inference in Section \ref{subsec:04precedence}. Application of constraints is an optional component of the \gls{SGRI} algorithm that may be used in conjunction with factor precedence. The use of constraints enforces the values of a certain factor to be either above or below a chosen threshold. The goal of constraint application is to ensure that some high or low values of a chosen factor correspond with the high or low values of the observed data. When enforcing factor precedence, constraints are necessary as the mapping function $\mathcal{F}_{\theta}$ is inferred using unconditional realizations. There is no conditioning mechanism to ensure the low- or high-grade features of $\mathbf{y}_{p}$ align with low- or high-grade features in the data. $\mathcal{F}_{\theta}$ is non-unique and multiple latent vectors can reproduce $z_{i}$. Therefore, it is possible, for example, to have a negative value of $\mathbf{y}_{p}$ where $z_{i}$ is a large positive value. This scenario is not ideal if we explicitly want the spatial features of $\mathbf{y}_{p}$ where $z_{i}$ is high and warrants the use of constraints on $\mathbf{y}_{p}$ during imputation.
 
 Constraints can be thought of as ``seeding'' some number of high or low values of $\mathbf{y}_{p}$ prior to imputation by using a semi-random path. The constraint threshold and an exclusion radius parameter control the number of seeded values. A threshold is specified, and all values in the observed data, either above or below, are flagged. These data locations are the initial seed locations. The initial seed locations are sorted in descending (high values) or ascending (low values) order based on the observed grade value. The first seed location is visited, and the algorithm removes all other initial seed locations within the exclusion radius from the available possible seed locations. The next valid seed location is visited; again, the algorithm removes all other locations within the radius from the possible locations. This process continues until all initial seed locations are included or excluded. The included seed locations become the first $n$ locations in the imputation path. Imputed values of $\mathbf{y}_{p}$ at these locations are constrained to be above or below the threshold through rejection. The initial excluded seed locations and all other data locations become the remaining $\text{ndata} - n$ locations in the imputation path. Imputation of the remaining $M-1$ factors uses a strictly random path through the locations.
 
@@ -162,8 +162,6 @@ If the target delta falls within the sensitivity of one or more factors, $\frac{
 \begin{algorithm}
     \caption{SGRI pseudo code.}\label{alg:sgri}
     \begin{algorithmic}[1]
-        \State read parameter file
-        \State initialize random number generator
         \State initialize search parameters based on covariance
         \For{$\ell = 1, \dots, L$} \Comment{Main loop over realizations}
         \State establish a random or semi-random path through data
