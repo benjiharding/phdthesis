@@ -238,7 +238,7 @@ Consider the same small synthetic example from Chapter \ref{ch:04implement}; the
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/factor_varios.png}
-    \caption{Latent factor variogram reproduction for the first two factors. The expected variograms of the imputed realizations reproduce the models well, given the data density. Variogram reproduction is the fourth minimum acceptance criteria for \gls{SGRI} imputed realizations.}
+    \caption{Latent factor variogram reproduction for the first two factors in the major (left), minor (center) and vertical (right) directions, respectively. The expected variograms of the imputed realizations reproduce the models well, given the data density.}
     \label{fig:factor_varios}
 \end{figure}
 
@@ -356,7 +356,7 @@ Figure \ref{fig:repro_gridded_data_ch5} shows \gls{CDF} reproduction (left) and 
     \label{fig:repro_gridded_vario_ch5}
 \end{figure}
 
-Beyond the traditional simulation model checks, the \gls{NMR} realizations must be checked to reproduce all the objective function components. These checks include indicator variograms and sequences. Figure \ref{fig:repro_gridded_ivario_ch5} shows gridded reproduction of the strongly asymmetric 0.1 and 0.9 quantile indicator variograms. The gridded models closely reproduce the non-Gaussian indicator structure that is apparent in Figures \ref{fig:nmr_ns_real} and \ref{fig:nmr_au_real}. In a mining context, one is predominantly concerned with high values, and in this example, cumulative run frequencies are considered above the 0.9 quantile threshold. When considering sequences above a threshold, the $n$-point connectivity function and cumulative run-length frequencies are analogous; one can be calculated from the other. Only cumulative run-length frequencies are considered for this reason. The chosen simulation algorithm may assign the data values to the grid, resulting in a distribution of runs with zero uncertainty. To overcome this, the entire drillhole configuration is translated within the domain and values are sampled from the grid at the ``new'' data locations. Four translations are performed (25 meters to the NE, SE, SW and NW), and the final result is the expected value across translations. Figure \ref{fig:repro_gridded_runs_ch5} shows gridded cumulative run-length frequencies for the 0.9 quantile indicator. The solid red line is the expected value across translations. The black line is the target value calculated from the drillholes. The expected value deviates from the target, though the uncertainty bandwidth captures the target.
+Beyond the traditional simulation model checks, the \gls{NMR} realizations must be checked to reproduce all the objective function components. These checks include indicator variograms and sequences. Figure \ref{fig:repro_gridded_ivario_ch5} shows gridded reproduction of the strongly asymmetric 0.1 and 0.9 quantile indicator variograms. The gridded models closely reproduce the non-Gaussian indicator structure that is apparent in Figures \ref{fig:nmr_ns_real} and \ref{fig:nmr_au_real}, though there is some deviation at shorter lags. This deviation is attributed to shorter range lags having few pairs given the data configuration. In a mining context, one is predominantly concerned with high values, and in this example, cumulative run frequencies are considered above the 0.9 quantile threshold. When considering sequences above a threshold, the $n$-point connectivity function and cumulative run-length frequencies are analogous; one can be calculated from the other. Only cumulative run-length frequencies are considered for this reason. The chosen simulation algorithm may assign the data values to the grid, resulting in a distribution of runs with zero uncertainty. To overcome this, the entire drillhole configuration is translated within the domain and values are sampled from the grid at the ``new'' data locations. Four translations are performed (25 meters to the NE, SE, SW and NW), and the final result is the expected value across translations. Figure \ref{fig:repro_gridded_runs_ch5} shows gridded cumulative run-length frequencies for the 0.9 quantile indicator. The solid red line is the expected value across translations. The black line is the target value calculated from the drillholes. The expected value deviates slightly from the target, though the uncertainty bandwidth captures the target.
 
 \begin{figure}
     \begin{subfigure}{1.0\textwidth}
@@ -375,7 +375,7 @@ Beyond the traditional simulation model checks, the \gls{NMR} realizations must 
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/repro_gridded_runs.png}
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/05-Ch5/repro_gridded_runs.png}
     \caption{\gls{NMR} 0.9 quantile cumulative run-length frequency reproduction. The black line is the target calculated from the drillholes, the red line is the average gridded value, and the shaded red area encloses the minimum and maximum gridded values. }
     \label{fig:repro_gridded_runs_ch5}
 \end{figure}
