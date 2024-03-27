@@ -39,7 +39,7 @@ Where $\mathbf{x}$ is an intermediary activation vector, $a_{m}$ is a weight app
     \label{eq:fpass3}
 \end{equation}
 
-Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y} \right)$ is an $ndata$ x $M+1$ matrix of activated latent factors. The raw output of the network is units of activation that must be transformed to Gaussian space, necessitating the normal score transform. With the given architecture, the \gls{NMR} requires inference of $2 \cdot (M+1)$ parameters: a $1$ x $M+1$ dimensional vector of factor weights and a $1$ x $M+1$ dimensional vector of power-law exponents $\omega$. These $2 \cdot (M+1)$ network parameters are inferred through stochastic optimization and discussed in Section \ref{sec:04paraminfer}.
+Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y} \right)$ is an $ndata$ x $M+1$ matrix of activated latent factors. The raw output of the network is units of activation that must be transformed to Gaussian space, necessitating the normal score transform. With the given architecture, the \gls{NMR} requires inference of $2 \cdot (M+1)$ parameters: a $1$ x $M+1$ dimensional vector of factor weights and a $1$ x $M+1$ dimensional vector of power-law exponents $\omega$. These $2 \cdot (M+1)$ network parameters are inferred through stochastic optimization and discussed in Section \ref{sec:04paraminfer}. The univariate normal score transform from activation units to Gaussian units in Equation \ref{eq:fpass2} requires a representative distribution that is unique to the given state of the network. Each iteration of the stochastic optimization algorithm generates an updated parameter vector resulting in a new mapping. The iteration specific reference distribution is created by drawing a $1e^{4}$ x $M+1$ dimensional matrix of independent, standard normal Gaussian values and mapping them to a $1e^{4}$ x $1$ vector of activation values. These activation values are normal score transformed resulting in a temporary, iteration specific transformation table. The $G^{-1}$ operator in Equation \ref{eq:fpass2} is the linear interpolation of activation values using this transformation table.
 
 \subsection{Activation Function}
 \label{subsec:04activation}
@@ -88,7 +88,7 @@ The scaling parameter $\xi$ allows a predetermined inflection point to be set wh
 \section{Latent Factor Design}
 \label{sec:04factord}
 
-Latent factor design is a critical component of the \gls{NMR} workflow. The latent factors form the pool from which the \gls{NMR} draws structure from. The univariate Gaussian factors are mixed with the goal of generating a spatial distribution that is univariate Gaussian, but not multivariate Gaussian. The mixture distribution can only contain features, or combination of features, present in the Gaussian pool. Therefore, it is critical that any feature required in the final model be present in the pool. The Gaussian pool is similar to the concept of factorial kriging \citep{goovaerts1997geostatistics}, where the nested variogram model is a composition of $L$ basic variogram structures, and the regionalized variable is a composition of $L$ independent, standard normal, spatial components operating at different geologic scales:
+Latent factor design is a critical component of the \gls{NMR} workflow. The latent factors form the pool from which the \gls{NMR} draws structure from. The univariate Gaussian factors are mixed with the goal of generating a spatial distribution that is univariate Gaussian, but not multivariate Gaussian. The mixture distribution can only contain features, or combination of features, present in the Gaussian pool. Therefore, it is important that any feature required in the final model be present in the pool. The Gaussian pool is similar to the concept of factorial kriging \citep{goovaerts1997geostatistics}, where the nested variogram model is a composition of $L$ basic variogram structures, and the regionalized variable is a composition of $L$ independent, standard normal, spatial components operating at different geologic scales:
 \begin{align}
     \label{eq:gamma_comp}
     \gamma(\mathbf{h}) & = \sum_{\ell=1}^{L} \gamma_{\ell}(\mathbf{h})                     \\
@@ -158,7 +158,24 @@ and is optimized with the heuristic, genetic algorithm \gls{DE} \citep{price2013
 
 Optimization of network weights uses a gradient-free, heuristic genetic algorithm. Gradient-free methods are typically employed when information about the derivative of the objective function is either costly to obtain or unreliable and noisy \citep{conn2009introduction}. \Gls{DE} is a global stochastic search algorithm that is practical for non-linear, non-differentiable objective functions with a necessarily large search space \citep{rios2013derivativefree}. Any objective function is permissible, which is an advantage of \gls{DE}.
 
-\Gls{DE} is based on natural evolutionary processes where the fittest member of the population survives through a ``natural selection'' process. An initial population of size $NP$ x $D$ is generated by randomly sampling the objective function space within the defined constraints. $NP$ is the number of individuals in the population, and $D$ is the dimensionality of the problem. Each vector from the initial population is passed through the objective function to evaluate its evolutionary ``fitness''. A mutant vector is then generated from the population by adding the scaled difference between two randomly selected vectors to a third randomly selected vector \citep{price2013differential}. A trial vector is generated by recombining the mutant vector with the initial population's current row vector considering a user-defined crossover probability. The trial vector's fitness is compared to the current population vector's fitness in an evolutionary sense. If the trial vector's fitness exceeds the current population vector's, it replaces the current population vector. Each iteration of the algorithm compares all population vectors to a randomly generated trial vector and accepts the trial vector if its fitness is greater than the current vector. The ``surviving'' vectors from each algorithm iteration become the parent vectors or the next iteration population.
+\Gls{DE} is based on natural evolutionary processes where the fittest member of the population survives through a ``natural selection'' process. An initial population of size $NP$ x $D$ is generated by randomly sampling the objective function space within the defined constraints. $NP$ is the number of individuals in the population, and $D$ is the dimensionality of the problem. Each vector from the initial population is passed through the objective function to evaluate its evolutionary ``fitness''. A mutant vector is then generated from the population by adding the scaled difference between two randomly selected vectors to a third randomly selected vector \citep{price2013differential}. A trial vector is generated by recombining the mutant vector with the initial population's current row vector considering a user-defined crossover probability. The trial vector's fitness is compared to the current population vector's fitness in an evolutionary sense. If the trial vector's fitness exceeds the current population vector's, it replaces the current population vector. Each iteration of the algorithm compares all population vectors to a randomly generated trial vector and accepts the trial vector if its fitness is greater than the current vector. The ``surviving'' vectors from each algorithm iteration become the parent vectors or the next iteration population. The following general steps summarize the \gls{DE} algorithm:
+\begin{enumerate}[noitemsep]
+    \item Initialize counter $i=0$
+    \item Initialize a random population of size $j = 1, \dots, NP$
+    \item If $i < i_{MAX}$:
+          \begin{enumerate}
+              \item i = i + 1
+              \item For each member of the population, $\mathbf{x}_{j}$:
+                    \begin{enumerate}[noitemsep]
+                        \item Select $r$ other individuals where $\mathbf{x}_{r} \neq \mathbf{x}_{j}$ and $r$ is unique
+                        \item Generate mutant $\mathbf{v}_{j}$
+                        \item Generate trial $\mathbf{t}_{j}$ through crossover between $\mathbf{x}_{j}$ and $\mathbf{v}_{j}$
+                        \item If $f(\mathbf{t}_{j}) < f(\mathbf{x}_{j})$ replace $\mathbf{x}_{j}$ with $\mathbf{t}_{j}$
+                    \end{enumerate}
+              \item Finish if $i = i_{MAX}$
+          \end{enumerate}
+    \item Return $\text{argmin}_{j} \ f(\mathbf{t}_{j})$
+\end{enumerate}
 
 \Gls{DE} minimizes the objective function after simulation and scaling of the objective components. A population of candidate vectors (Equation \ref{eq:theta}) is randomly initialized, and each member's fitness is evaluated. A population size of 30-50 is a reasonable balance between sufficient diversity and algorithm runtime though there is no definitive guideline for population size \citep{piotrowski2017review}. Over a specified number of iterations, each member of the population is mutated with other members. Optimization employs a DE/current-to-best/1 mutation strategy. The mutated vector is described by \citep{georgioudakis2020comparative}:
 \begin{equation}
@@ -283,7 +300,7 @@ Inference of $\theta$ is relatively straightforward with only a handful of \gls{
 \subsection{Checks}
 \label{subsec:04checks}
 
-To highlight the concepts of parameter checking a small \gls{3D} synthetic example with 746 data is generated. The data set is simulated such that there is asymmetric destructuring of the indicator variograms away from the median and connectivity of high-grade values. These features provide a reasonable test case of the application of the \gls{NMR} workflow. Imputation concepts are presented using the same data set in Chapter \ref{ch:05impute}. Figure \ref{fig:synthetic_sections} shows a plan-view and long-section through the synthetic data in Gaussian units. Figure \ref{fig:synthetic_varios} shows experimental variogram points and fitted models for the normal score variable (a), the 0.1 indicator (b) and 0.9 indicator (c). For brevity the median indicator variogram is not shown however the indicator variograms show asymmetric destructuring about the median. Figure \ref{fig:synthetic_npoint} shows the $n$-point connectivity function which approaches zero at six connected steps.
+The quality of the \gls{NMR} parameter inference is measured based on reproduction of the objective function components. Generally, these components come directly from the observed data, so the inferred parameters reproduce observed geologic features. To highlight the concepts of parameter checking a small \gls{3D} synthetic example with 746 data is generated. The data set is simulated such that there is asymmetric destructuring of the indicator variograms away from the median and connectivity of high-grade values. These features provide a reasonable test case of the application of the \gls{NMR} workflow. Imputation concepts are presented using the same data set in Chapter \ref{ch:05impute}. Figure \ref{fig:synthetic_sections} shows a plan-view and long-section through the synthetic data in Gaussian units. Figure \ref{fig:synthetic_varios} shows experimental variogram points and fitted models for the normal score variable (a), the 0.1 indicator (b) and 0.9 indicator (c). For brevity the median indicator variogram is not shown however the indicator variograms show asymmetric destructuring about the median. Figure \ref{fig:synthetic_npoint} shows the $n$-point connectivity function which approaches zero at five connected steps. The objective function components are the normal score variogram model, the 0.1 indicator variogram model and the 0.9 indicator variograms (Figure \ref{fig:synthetic_varios} (a), (b), and (c)), and the $n$-point connectivity function (Figure \ref{fig:synthetic_npoint}).
 
 \begin{figure}[htb!]
     \centering
@@ -319,27 +336,129 @@ To highlight the concepts of parameter checking a small \gls{3D} synthetic examp
     \label{fig:synthetic_npoint}
 \end{figure}
 
-The latent factor pool contains two structures: the long-range structure from the 0.1 quantile indicator model and the single structure from the 0.9 quantile indicator model. The goal of the pool is to have the long-range structure spatially control the lower grades and have the short range structure spatially control the highs. The omega parameters are constrained such that $0.25 < \omega_{1} \leq 1.0$ and $2.0 < \omega_{2} \leq 4.0$.
+The latent factor pool contains two structures: the long-range structure from the 0.1 quantile indicator model and the single structure from the 0.9 quantile indicator model. The goal of the pool is to have the long-range structure spatially control the lower grades and have the short range structure spatially control the highs. Some degree of mixing between the structures permits reproduction of the normal score variogram model. The omega parameters are constrained such that $0.25 < \omega_{1} \leq 1.0$ and $2.0 < \omega_{2} \leq 4.0$. No precedence is given to either factor. The algorithm is run for 1500 \gls{DE} iterations. The primary \gls{NMR} parameter check is reproduction of objective function components. The mapped unconditional realizations, $\mathcal{F}_{\theta}\left(\mathbf{Y}\right)$, must reproduce, on average, the input objective targets. Figure \ref{fig:ex5_ivariogram} shows normal score variogram reproduction for the inferred mapping function. Reproduction is reasonable for shorter lags though there is some deviation at lags beyond where the variogram reaches the sill. Figure \ref{fig:ex5_ivariogram} shows variogram reproduction for the 0.1 (a) and 0.9 (b) quantile indicators. The indicators show a wider band of uncertainty, particularly at shorter lag distances, which is related to data density. Figure \ref{fig:ex5_runs_1} shows $n$-point connectivity reproduction for the 0.9 quantile indicator.
 
-The primary \gls{NMR} parameter check is reproduction of objective function components. The mapped unconditional realizations, $\mathcal{F}_{\theta}\left(\mathbf{Y}\right)$, must reproduce, on average, the input objective targets. The objective function components are the normal score variogram model, the 0.1 indicator variogram model and the 0.9 indicator variograms (Figure \ref{fig:synthetic_varios} (a), (b), and (c)), and the $n$-point connectivity function (Figure \ref{fig:synthetic_npoint}).
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.60, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/ex5_variogram.png}
+    \caption{Continuous variogram reproduction for 25 realizations. The black line is the variogram model, the red line is the average variogram, and the shaded red area encloses the minimum and maximum variogram values. Left to right are the major, minor and vertical directions, respectively.}
+    \label{fig:ex5_variogram}
+\end{figure}
+
+\begin{figure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.60, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/ex5_ivariogram_0_1.png}
+        \caption{0.1 Quantile}
+    \end{subfigure}
+    \begin{subfigure}{1.0\textwidth}
+        \centering
+        \includegraphics[scale=0.60, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/ex5_ivariogram_0_9.png}
+        \caption{0.9 Quantile}
+    \end{subfigure}
+    \caption{Indicator variogram reproduction for 25 realizations for the 0.1 (a), and 0.9 (b) quantiles. Left to right are the major, minor and vertical directions, respectively. The black line is the variogram model, the red line is the average variogram, and the shaded red area encloses the minimum and maximum variogram values.}
+    \label{fig:ex5_ivariogram}
+\end{figure}
 
 
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.50, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/ex5_runs_1.png}
+    \caption{$N$-point connectivity function reproduction for 25 realizations for the 0.9 quantile indicator. The black line is the target model, the red line is the average experimental value, and the shaded red area encloses the minimum and maximum experimental values.}
+    \label{fig:ex5_runs_1}
+\end{figure}
+
+At this point the inferred parameters are a reasonable approximation of the mapping function between latent and observed space. The unconditional Gaussian realizations reproduce the objective function components on average when mapped through $\mathcal{F}_{\theta}$. Any deviations between the optimization targets and mapped latent factors will manifest in the final \gls{NMR} realizations as latent factor imputation (Chapter \ref{ch:05impute}) uses $\mathcal{F}_{\theta}$. If present, these deviations are transferred to the imputed data realizations that condition the gridded factor realizations. This same synthetic data configuration is used to check imputed realization in Chapter \ref{ch:05impute}.
 
 
-\begin{enumerate}[noitemsep]
-    \item Introduce 3D example here?
-    \item Differential evolution with small example, PDE
-    \item Objective function
-    \item Constraints and precedence
-    \item Sigmoid weighting
-    \item Conflicting objectives
-    \item Checks
-\end{enumerate}
+% \begin{enumerate}[noitemsep]
+%     \item Introduce 3D example here?
+%     \item Differential evolution with small example? PDE
+%     \item Objective function
+%     \item Constraints and precedence
+%     \item Sigmoid weighting
+%     \item Conflicting objectives
+%     \item Checks
+% \end{enumerate}
 
 
 \FloatBarrier
 \section{Implementation Details}
 \label{sec:04implementd}
+
+The goal of the \gls{NMR} model is to infer the best possible mapping between latent and observed spaces. Given the data configuration, the design of the latent pool and the objective function components there may be uncertainty, both qualitative and quantitative, in the parameter vector $\theta$. This section discusses some practical implementation details of \gls{NMR} parameter inference that may contribute to, or mitigate parameter uncertainty. Topics in this section include the non-uniqueness of the inferred solution, the number of data, the possibility of conflicting objectives, and overall computational considerations.
+
+\FloatBarrier
+\subsection{Non-Uniqueness}
+\label{subsec:04nonunique}
+
+Solutions to inverse problems are often non-unique. Experimental variograms in the presence of sparse data are inherently uncertain statistics. Considering these facts, it is reasonable to assume that there are multiple (possibly infinite) network configurations and pools of Gaussian factors that approximate the objective function targets. This non-uniqueness emphasizes the importance of considering the conceptual geological model when designing latent factors. Some latent pools are feasible from a numerical perspective, but they should also be geologically reasonable. The following section highlights examples of non-uniqueness in \gls{NMR} parameter inference. Potential non-unique scenarios are summarized as follows:
+\begin{enumerate}[noitemsep]
+    \item The \gls{NMR} solution may be an arbitrary mixture of factors even if the variogram objective targets exist within the Gaussian pool.
+    \item A mix of short and long-range factors can reproduce a medium-range target.
+    \item A mix of only short-range factors cannot reproduce a medium or long-range target, and vice versa.
+    \item A mix of factors with NS and EW orientations can reproduce a target orientation of NNE, NNW, SSE, SSW, and so on.
+\end{enumerate}
+
+Consider the same data configuration from Section \ref{subsec:04checks}. Synthetic data values are simulated using the \gls{NMR} with a known parameter vector, $\theta$. For clarity of the example, only reproduction of the continuous variogram is measured. Different pools of latent factors are mixed to highlight the non-uniqueness scenarios mentioned above. The weight to each factor, $a_{m}$, is interpreted as the relative importance of each factor to the fit of $\theta$. This weight can be compared to the known weight used to simulate the data to get a measure of similarity. If multiple latent pools with varying weights can reproduce the target, the solution is non-unique. Another approach to understand the dependence of each latent factor on $\theta$ is a measure of \gls{PFI} \citep{fisher2019all}. Feature importance can be calculated by permuting the input latent factors and calculating the increase in error in the output of the fitted model. Features that are pertinent to the network output will show more significant errors when they are permuted. A caveat is that shorter-range structures (more random) will always show less feature importance than longer-range structures (less random) as permutation introduces randomness. Shorter range structures may still contribute to the final fit of the model without showing high permutation feature importance.
+
+Consider the first scenario listed above. The latent pool consists of the long-range structure of the normal score variogram model, the long-range structure of the 0.1 quantile indicator variogram model, the single structure of the 0.9 quantile indicator variogram model, and the nugget effect for $M = 3+1$ latent factors.  Intuition suggests that if that variogram model (or its elemental components) exists within the Gaussian pool, the network will filter all irrelevant factors and weight the important components appropriately. In practice, this is not always the case. Table \ref{tab:optwts_c01} shows the $a$ and $\omega$ elements of $\theta$, plus \gls{PFI} for comparison. Figure \ref{fig:nonunq_c01_variogram} shows the corresponding variogram reproduction. Factor weights show much of the weight is given factors two and three which correspond to the nested structures of the indicator variograms. This is further backed up by the \gls{PFI} which shows factors two and three and most important. Granted there is similarity between the low-grade indicator and normal score variogram models, the resulting variogram of the mixture model may be an arbitrary mixture of latent factors.
+
+\begin{figure}
+    \begin{subfigure}{1.\textwidth}
+        \centering
+        \includegraphics[scale=0.70, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/nonunq_c01_variogram.png}
+        \caption{}
+        \label{fig:nonunq_c01_variogram}
+    \end{subfigure}
+    \begin{subtable}{1.\textwidth}
+        \centering
+        \resizebox{1\width}{!}{\input{0-Tables/optwts_c01.tex}}
+        \caption{}
+        \label{tab:optwts_c01}
+    \end{subtable}
+    \caption{Normal score variogram reproduction (a) in the major, minor and vertical directions, respectively, and the components of $\theta$ (b). PFI=permutation feature importance. }
+    \label{}
+\end{figure}
+
+
+
+
+
+\FloatBarrier
+\subsection{Number of Data}
+\label{subsec:04ndata}
+
+The number of data is an important consideration in the \gls{NMR} workflow. Experimental statistics form the basis of the objective function components, and are sensitive to the number of available data. Experimental variograms are an inherently uncertain statistic, particularly in the presence of sparse data \citep{ortiz2002calculation,pardo-iguzquiza2012varboot}. The variogram value at lag vector $\mathbf{h}$ is the mean of the squared differences between data values separated by $\mathbf{h}$. This mean value depends directly on the number of data, $n_{\mathbf{h}}$, entering the calculation, which in turn depends on the data configuration and variogram tolerance parameters. Uncertainty in the experimental variogram points transfers to uncertainty in chosen model parameters, though this is not easily quantifiable without knowledge of the true variogram model. Sequence objective components are calculated downhole and are more sensitive to the total number of drillholes rather than the total number of data. However, the shape of the global distribution of runs or the global $n$-point connectivity function ultimately depends on the number of data.
+
+A synthetic model is simulated to assess the sensitivity of $\theta$ to data spacing, or the total number of available data. The model is simulated on a regular 56 x 56 x 56 m \gls{3D} grid with a resolution of 1 m. The grid is sampled with regular, square data configurations ranging from 3 x 3 m to 20 x 20 m, with 1 m spacing in the vertical direction. Table \ref{tab:syn_data} shows the resampled data configurations and the corresponding number of data. The grid is also sampled at a 1 x 1 m spacing which is a reference distribution for calculating the ``true'' variograms, distributions of runs, and $n$-point connectivity functions. For each data spacing a parameter vector $\theta$ is inferred, and the unconditional latent factors are mapped to observed space. The objective function value is the weighted sum of squared errors (Equation \ref{eq:fobj}) between the mapped latent values and the objective components calculated from the reference distribution. Figure \ref{fig:mse_vs_data_plot} shows the relationship between the square data spacings and the objective function value.
+
+\begin{figure}
+    \begin{subtable}{.5\textwidth}
+        \centering
+        \resizebox{1\width}{!}{\input{0-Tables/dstable.tex}}
+        \caption{}
+        \label{tab:syn_data}
+    \end{subtable}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.70, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/mse_vs_data.png}
+        \caption{}
+        \label{fig:mse_vs_data_plot}
+    \end{subfigure}
+    \caption{Square data spacings and corresponding numbers of data (a) and corresponding minimum \gls{MSE} values from \gls{NMR} parameter inference(b). The total number of data increases to the right in (b). }
+    \label{fig:mse_vs_data}
+\end{figure}
+
+The sum of the squared errors is inversely proportional to the total number of data which is the anticipated response. The curve decreases quickly to a spacing of 10 x 10 m or approximately 2000 data. Beyond this spacing the curve is much flatter, but does continue to decrease towards the tightest spacing. This relationship suggests that somewhere between 2000 and 5000 data are enough to provide stable inference of $\theta$. Beyond 5000 data does show slight improvements, though these improvements are negligible when considering the increase in computation time.
+
+
+\FloatBarrier
+\subsection{Computational Considerations}
+\label{subsec:04comp}
+
+
+
 
 \begin{enumerate}[noitemsep]
     \item Number of data
@@ -347,6 +466,8 @@ The primary \gls{NMR} parameter check is reproduction of objective function comp
     \item Variogram approximation
     \item Conflicting objectives
     \item Non-uniqueness
+    \item DE parameters
+    \item Comparison to SGS?
 \end{enumerate}
 
 
