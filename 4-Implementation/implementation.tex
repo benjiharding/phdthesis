@@ -400,7 +400,7 @@ Solutions to inverse problems are often non-unique. Experimental variograms in t
     \item A mix of factors with NS and EW orientations can reproduce a target orientation of NNE, NNW, SSE, SSW, and so on.
 \end{enumerate}
 
-Consider the same data configuration from Section \ref{subsec:04checks}. Synthetic data values are simulated using the \gls{NMR} with a known parameter vector, $\theta$. For clarity of the example, only reproduction of the continuous variogram is measured. Different pools of latent factors are mixed to highlight the non-uniqueness scenarios mentioned above. The weight to each factor, $a_{m}$, is interpreted as the relative importance of each factor to the fit of $\theta$. This weight can be compared to the known weight used to simulate the data to get a measure of similarity. If multiple latent pools with varying weights can reproduce the target, the solution is non-unique. Another approach to understand the dependence of each latent factor on $\theta$ is a measure of \gls{PFI} \citep{fisher2019all}. Feature importance can be calculated by permuting the input latent factors and calculating the increase in error in the output of the fitted model. Features that are pertinent to the network output will show more significant errors when they are permuted. A caveat is that shorter-range structures (more random) will always show less feature importance than longer-range structures (less random) as permutation introduces randomness. Shorter range structures may still contribute to the final fit of the model without showing high permutation feature importance.
+Consider the same data configuration from Section \ref{subsec:04checks}. Synthetic data values are simulated using the \gls{NMR} with a known parameter vector, $\theta$. For clarity of the example, only reproduction of the continuous variogram is measured. Different pools of latent factors are mixed to highlight the non-uniqueness scenarios mentioned above. The weight to each factor, $a_{m}$, is interpreted as the relative importance of each factor to the fit of $\theta$. This weight can be compared to the known weight used to simulate the data to get a measure of similarity. If multiple latent pools with varying weights can reproduce the target, the solution is non-unique. Another approach to understand the dependence of each latent factor on $\theta$ is a measure of \gls{PFI} \citep{fisher2019all}. Feature importance can be calculated by permuting the input latent factors and calculating the increase in error in the output of the fitted model. \gls{PFI} is in the same units as the objective function. Features that are pertinent to the network output will show more significant errors when they are permuted. A caveat is that shorter-range structures (more random) will always show less feature importance than longer-range structures (less random) as permutation introduces randomness. Shorter range structures may still contribute to the final fit of the model without showing high permutation feature importance.
 
 Consider the first scenario listed above. The latent pool consists of the long-range structure of the normal score variogram model, the long-range structure of the 0.1 quantile indicator variogram model, the single structure of the 0.9 quantile indicator variogram model, and the nugget effect for $M = 3+1$ latent factors.  Intuition suggests that if that variogram model (or its elemental components) exists within the Gaussian pool, the network will filter all irrelevant factors and weight the important components appropriately. In practice, this is not always the case. Table \ref{tab:optwts_c01} shows the $a$ and $\omega$ elements of $\theta$, plus \gls{PFI} for comparison. Figure \ref{fig:nonunq_c01_variogram} shows the corresponding variogram reproduction. Factor weights show much of the weight is given factors two and three which correspond to the nested structures of the indicator variograms. This is further backed up by the \gls{PFI} which shows factors two and three and most important. Granted there is similarity between the low-grade indicator and normal score variogram models, the resulting variogram of the mixture model may be an arbitrary mixture of latent factors.
 
@@ -417,13 +417,49 @@ Consider the first scenario listed above. The latent pool consists of the long-r
         \caption{}
         \label{tab:optwts_c01}
     \end{subtable}
-    \caption{Normal score variogram reproduction (a) in the major, minor and vertical directions, respectively, and the components of $\theta$ (b). PFI=permutation feature importance. }
+    \caption{Normal score variogram reproduction (a) in the major, minor and vertical directions, respectively, and the components of $\theta$ (b) for the first scenario. PFI=permutation feature importance. }
     \label{}
 \end{figure}
 
+The second scenario is intuitive. A mix of short-range and long-range factors can reproduce features with intermediate-range. Again, this scenario is non-unique as any number of factors can be considered and variogram ranges are continuous and essentially unbounded. Consider a pool with two latent structures: one long-range and one short-range. The long-range structure corresponds to the second structure 0.1 quantile indicator variogram scaled by a factor of 1.5 in all directions, and the short range structure is the 0.9 quantile indicator variogram model scale by a factor of 0.7 in all directions. Table \ref{tab:optwts_c02} shows the $a$ and $\omega$ elements of $\theta$, plus \gls{PFI} for comparison. Figure \ref{fig:nonunq_c02_variogram} shows the corresponding variogram reproduction. The mixture of long and short-range structures is able to reproduce the variogram model of intermediate range with each factor receiving similar weight. This concept is also applicable to the orientation of factors in the pool. For example, the mix of factors with east-west and north-south orientations can generate features with intermediate orientation in the final model.
 
+\begin{figure}
+    \begin{subfigure}{1.\textwidth}
+        \centering
+        \includegraphics[scale=0.70, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/nonunq_c02_variogram.png}
+        \caption{}
+        \label{fig:nonunq_c02_variogram}
+    \end{subfigure}
+    \begin{subtable}{1.\textwidth}
+        \centering
+        \resizebox{1\width}{!}{\input{0-Tables/optwts_c02.tex}}
+        \caption{}
+        \label{tab:optwts_c02}
+    \end{subtable}
+    \caption{Normal score variogram reproduction (a) in the major, minor and vertical directions, respectively, and the components of $\theta$ (b) for the second scenario. PFI=permutation feature importance. }
+    \label{}
+\end{figure}
 
+The third scenario is also straightforward. A mix of short-range factors cannot reproduce a longer-range target as there is destructive interference between factors when they are mixed. That is, the range of structures in the final model can only be as long as the longest range structure in the latent pool. The opposite of this is also true; a mix of long-range structures cannot reproduce a short-range target. In this scenario the pool consists of the two nested structures of the normal score variogram model scaled by a factor of 0.3 in all directions. Table \ref{tab:optwts_c02} shows the $a$ and $\omega$ elements of $\theta$, plus \gls{PFI} for comparison. Figure \ref{fig:nonunq_c02_variogram} shows the corresponding variogram reproduction. As expected, the algorithm is unable to converge on an acceptable solution due to poor latent feature design. The algorithm attempts to filter the unnecessary first factor though the pool does not have sufficient flexibility to reproduce the target.
 
+\begin{figure}
+    \begin{subfigure}{1.\textwidth}
+        \centering
+        \includegraphics[scale=0.70, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/nonunq_c03_variogram.png}
+        \caption{}
+        \label{fig:nonunq_c03_variogram}
+    \end{subfigure}
+    \begin{subtable}{1.\textwidth}
+        \centering
+        \resizebox{1\width}{!}{\input{0-Tables/optwts_c03.tex}}
+        \caption{}
+        \label{tab:optwts_c03}
+    \end{subtable}
+    \caption{Normal score variogram reproduction (a) in the major, minor and vertical directions, respectively, and the components of $\theta$ (b) for the third scenario. PFI=permutation feature importance. }
+    \label{}
+\end{figure}
+
+This section presents scenarios to emphasize the non-uniqueness of the \gls{NMR} solution. There are numerous latent pools that can reproduce objective targets. The final example presents a scenario where the design of the pool and the objective function have conflicting objectives. The scenario is designed for illustrative purposes and defies any geologic-based logic. However, it emphasizes the practitioner's role to ensure the latent pool and objective function are sound with respect to the conceptual geology. This issue is amplified as more objective function components are added. The requirement of ``reasonableness'' promotes the decomposition of all variogram targets into an initial latent Gaussian pool.
 
 \FloatBarrier
 \subsection{Number of Data}
@@ -452,25 +488,26 @@ A synthetic model is simulated to assess the sensitivity of $\theta$ to data spa
 
 The sum of the squared errors is inversely proportional to the total number of data which is the anticipated response. The curve decreases quickly to a spacing of 10 x 10 m or approximately 2000 data. Beyond this spacing the curve is much flatter, but does continue to decrease towards the tightest spacing. This relationship suggests that somewhere between 2000 and 5000 data are enough to provide stable inference of $\theta$. Beyond 5000 data does show slight improvements, though these improvements are negligible when considering the increase in computation time.
 
-
 \FloatBarrier
 \subsection{Computational Considerations}
 \label{subsec:04comp}
 
-
-
-
-\begin{enumerate}[noitemsep]
-    \item Number of data
-    \item Number of uncond. reals
-    \item Variogram approximation
-    \item Conflicting objectives
-    \item Non-uniqueness
-    \item DE parameters
-    \item Comparison to SGS?
+The NMR objective function is a computationally expensive calculation. This expense is primarily due to experimental variogram calculation. As each population vector is an entirely new network, all experimental variogram pairs must be updated on each iteration. Depending on the data configuration, this updating may account for a significant portion of the algorithm run time. Two straightforward approaches to dealing with runtime are:
+\begin{enumerate}
+    \item \Gls{PDE}
+    \item Maximum number of experimental variogram pairs to consider
 \end{enumerate}
 
+Evaluating the objective function for each member of the population in \gls{DE} is an independent task and lends itself to parallelization. \gls{PDE} is a slightly different algorithm than \gls{DE}. In \gls{DE}, the population is updated after evaluating each trial vector (loop on line 15 in Algorithm \ref{alg:nmropt}), so each subsequent mutation includes information from the previous. In \gls{PDE}, the entire population is mutated and evaluated prior to updating the next generation. This operation introduces new genetic information to the population once per generation rather than after every mutation. The second potential speedup comes from setting a maximum number of experimental variogram pairs to consider per lag when evaluating the objective function. Figure \ref{fig:vario_stability_dir1} shows that roughly restricting the maximum number of pairs per lag to $\approx 10000$ yields a stable variogram relative to considering all possible pairs. Restricting the pairs speeds up the objective function calculation, though variogram stability should be checked for each data configuration.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.50, max size={\textwidth}{\textheight}]{./0-Figures/04-Ch4/vario_stability_dir1.png}
+    \caption{Sensitivity of experimental variogram points to the total number of pairs per lag.}
+    \label{fig:vario_stability_dir1}
+\end{figure}
 
 \FloatBarrier
 \section{Discussion}
 \label{sec:04discuss}
+
