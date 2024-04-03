@@ -103,7 +103,9 @@ The $n\text{-point}$ connectivity function describes the probability of $n$ succ
     \label{fig:npt_connectivity}
 \end{figure}
 
-As properties of the Gaussian \gls{RF} model lead to maximum disorder, one could use a connectivity measure to assess non-Gaussianity from sequences. The idea is that a Gaussian \gls{RV} would have a different distribution of runs relative to a non-Gaussian \gls{RV}. The multi-point spatial arrangement would differ depending on the underlying \gls{RV}. \Glspl{RV} with less disorder, or more connectivity, will have fewer but longer runs. This connectivity concept applies to sequences with structured extreme values that are not well fit by a Gaussian distribution. It seems reasonable to assume there is some degree of connectivity of extremes in mineral systems; the underlying spatial phenomena are not entirely disorganized.
+As properties of the Gaussian \gls{RF} model lead to maximum disorder, one could use a connectivity measure to assess non-Gaussianity from sequences. The idea is that a Gaussian \gls{RV} would have a different distribution of runs relative to a non-Gaussian \gls{RV}. The multi-point spatial arrangement would differ depending on the underlying \gls{RV}. \Glspl{RV} with more connectivity, will have fewer but longer runs. This connectivity concept applies to sequences with structured extreme values that are not well fit by a Gaussian distribution. It seems reasonable to assume there is some degree of connectivity of extremes in mineral systems; the underlying spatial phenomena are not entirely disorganized.
+
+It is notable that the $n\text{-point}$ connectivity function considering runs \emph{above} the threshold (Equation \ref{eq:npt2}) is analogous to cumulative run-length frequencies of runs above the threshold scaled to the fraction of total elements in the sequence. Considering the $n\text{-point}$ connectivity function above a quantile results in the same measure as considering the cumulative run-length frequency above that same quantile.
 
 \FloatBarrier
 \subsection{Measures of Non‐Gaussianity}
@@ -169,48 +171,131 @@ There is likely a spectrum of non-Gaussianity and the practitioner must decide o
 \section{Network Methodology}
 \label{sec:method}
 
-Sections \ref{subsec:03runs} and \ref{subsec:03npoint} present methodology for accessing higher-order statistics from drillhole sequences. Section \ref{subsec:03ngmeasures} shows that these statistics can effectively characterize non-Gaussianity. This section presents the overall \gls{NMR} framework and the generation of non-Gaussian spatial fields. Achieving higher-order connectivity is a key component of the \gls{NMR} framework. Two-point, variogram based statistics alone cannot capture the complex multi-point relationships we seek in a non-Gaussian \gls{RF}. The indicator transform of drill strings provides access to binary sequences that permit calculation multi-point connectivity statistics. Reproduction of high-order statistics in theory should reproduce all lower-order statistics, however the \gls{NMR} explicitly enforces two- and multi-point statistics.
+Sections \ref{subsec:03runs} and \ref{subsec:03npoint} present methodology for accessing higher-order statistics from drillhole sequences. Section \ref{subsec:03ngmeasures} shows that these statistics can effectively characterize non-Gaussianity. This section presents the overall \gls{NMR} framework and the generation of non-Gaussian spatial fields. Achieving higher-order connectivity is a key component of the \gls{NMR} framework. Two-point, variogram based statistics alone cannot capture the complex multi-point relationships we seek in a non-Gaussian \gls{RF}. The indicator transform of drill strings provides access to binary sequences that permit calculation multi-point connectivity statistics.
+
+% Reproduction of high-order statistics in theory should reproduce all lower-order statistics, however the \gls{NMR} explicitly enforces two- and multi-point statistics.
 
 \FloatBarrier
 \subsection{Notation}
 \label{subsec:03notation}
 
-An overview of the \gls{NMR} mathematical notation and definitions are shown here, while further details are presented in Chapter \ref{ch:04implement}. Consider a continuous \gls{RF}:
+An overview of the \gls{NMR} mathematical notation and definitions are shown here, while further details are presented in Chapters \ref{ch:04implement} and \ref{ch:05impute}. Consider a continuous \gls{RF}:
 \begin{equation}
     \{Z(\mathbf{u}), \ \forall \mathbf{u} \in \mathcal{D}\}
+    \label{eq:zu}
 \end{equation}
 
-Where $\mathcal{D}$ is the domain of interest. Next, consider a set of $M+1$ latent variables characterized by a Gaussian \gls{RF}:
+Where $\mathcal{D}$ is a domain of interest. The location vector $\mathbf{u}$ could be either data or grid node locations. Next, consider a set of $M+1$ latent variables characterized by a Gaussian \gls{RF}:
 \begin{equation}
     \{\mathbf{Y}(\mathbf{u}) = (Y_{0}(\mathbf{u}), \dots, Y_{M}(\mathbf{u})), \ \forall \mathbf{u} \in \mathcal{D}\}
+    \label{eq:gpool}
 \end{equation}
 
-Finally, consider a mapping function $\mathcal{F}_{\theta}$ that defines the mapping from real valued latent space to real valued observed space:
+Finally, consider a mapping function $\mathcal{F}_{\theta}$ that defines the mapping from the real valued latent space to the real valued observed space:
 \begin{equation}
     \{\mathcal{F}_{\theta}: \mathbb{R}^{M} \mapsto \mathbb{R} \}
+    \label{eq:fmap}
 \end{equation}
 
-The function is such that the mapping of the latent space reproduces the observed data values:
+Where $\theta$ is a parameter vector that characterizes $\mathcal{F}$, and $\mathcal{F}_{\theta}$ is such that the mapping of the latent space to the observed space reproduces the observed data values:
 \begin{equation}
     \{\mathcal{F}_{\theta}(\mathbf{Y}(\mathbf{u})) = Z(\mathbf{u}), \ \forall \mathbf{u} \in \mathcal{D}\}
+    \label{eq:ftheta}
 \end{equation}
 
-Where $\theta$ is a parameter vector that defines the function $\mathcal{F}$.
+The \gls{NMR} approximates the mapping function $\mathcal{F}_{\theta}$. Chapter \ref{ch:04implement} discusses inference of the parameter vector, $\theta$, and Chapter \ref{ch:05impute} presents imputation of the Gaussian \glspl{RF} such that Equation \ref{eq:ftheta} holds true.
+
+\FloatBarrier
+\subsection{Latent Spatial Structure}
+\label{subsec:03latent}
+
+The set of latent Gaussian variables of Equation \ref{eq:gpool} is the foundation of the \gls{NMR}. This set is referred to as the Gaussian ``pool'' throughout this text. It is a pool in the sense there is a collection of Gaussian \glspl{RF} to be shared with the goal of reproducing high-order statistics. This pooling is analogous to a \gls{GMM} in the spatial context. The idea of a \gls{GMM} is that a continuous distribution (as in Equation \ref{eq:zu}) could be approximated by a finite mixture of Gaussian densities \citep{mclachlan2019finite}. Furthermore, \cite{silva2018multivariate} show that a mixture of Gaussian components is capable of fitting complex non-Gaussian uni- and multivariate distributions. The \gls{NMR} is an extension of this concept; rather than a mixture of Gaussian densities, $Z(\mathbf{u})$ is approximated by a mixture of Gaussian \glspl{RF}. Rather than using the \gls{EM} algorithm to fit the parameters of each Gaussian component \citep{mclachlan2019finite}, $M$ standard Gaussian \glspl{RF}, with covariance structures specified by $\gamma_{m}(\mathbf{h})$, are explicitly chosen. The output of the mapping function $\mathcal{F}_{\theta}$ is a spatial mixture of the Gaussian components in $\mathbf{Y}(\mathbf{u})$.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/03-Ch03/uncond_f1_f2_grid.png}
+    \caption{Unconditional realizations of Gaussian \glspl{RF} with orthogonal directions of continuity.}
+    \label{fig:uncond_f1_f2_grid}
+\end{figure}
+
+Consider a hypothetical scenario where the modeling goal is to have strong low-grade continuity in the east-west direction and strong high-grade continuity in the north-south direction. This is challenge for a multivariate Gaussian simulation algorithm as a normal score variogram cannot capture both directions of continuity simultaneously. The \gls{NMR} has the ability to draw different spatial structures from different latent factors within the pool; the sharing of structures being a core concept of the \gls{NMR} approach.
+
 
 
 \FloatBarrier
-\subsection{Latent and Observed Spaces}
-\label{subsec:03latent}
+\subsection{Non-Linearity and Mapping}
+\label{subsec:03nonlinear}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/03-Ch03/activate_f1_f2_grid.png}
+    \caption{ }
+    \label{fig:activate_f1_f2_grid}
+\end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/03-Ch03/activate_f1_f2_stats.png}
+    \caption{ }
+    \label{fig:activate_f1_f2_stats}
+\end{figure}
+
+
+
+\FloatBarrier
+\subsection{Two-Point Statistics}
+\label{subsec:03twopt}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/03-Ch03/varios_activate_f1_f2.png}
+    \caption{ }
+    \label{fig:varios_activate_f1_f2}
+\end{figure}
+
+\FloatBarrier
+\subsection{Multi-Point Statistics}
+\label{subsec:03multipt}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/03-Ch03/nmr_sgs_dh_cont_ind.png}
+    \caption{ }
+    \label{fig:nmr_sgs_dh_cont_ind}
+\end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/03-Ch03/nmr_sgs_grid_runs.png}
+    \caption{ }
+    \label{fig:nmr_sgs_grid_runs}
+\end{figure}
+
+
+
+\FloatBarrier
+\subsection{Latent Imputation}
+\label{subsec:03impute}
+
+\FloatBarrier
+\subsection{Simulation and Mapping}
+\label{subsec:03simulate}
 
 \begin{enumerate}
     \item Latent variables
     \item Gaussian mixture models
     \item Parameter inference
     \item Imputation
+\end{enumerate}
+
+\FloatBarrier
+\section{Effects of High-Order Continuity}
+\label{sec:03effect}
+
+\begin{enumerate}
     \item Lightning example in here somewhere?
 \end{enumerate}
 
-
 \FloatBarrier
 \section{Discussion}
-\label{sec:discuss03}
+\label{sec:03discuss}
