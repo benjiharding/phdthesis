@@ -20,6 +20,7 @@
 \usepackage{appendix}
 \usepackage{xspace} % Provides a space after a macro if required (e.g., \newcommand{\apples}{AppLeS } )
 \usepackage{amsmath} % Math extension
+\usepackage{amsfonts} % \mathbb in this one
 \usepackage[no-math]{fontspec} % Interface to system fonts
 \usepackage{setspace} % Allow easier changing of line spacing
 \usepackage{lmodern} % Latin Modern font catalog
@@ -39,7 +40,6 @@
 \usepackage{eso-pic}
 \usepackage{graphicx} % optional: use for more complex tables
 \usepackage{tabu} % tabu seems to be better then tabular for making tables - TDA
-
 \usepackage{csquotes} % block quotes
 \usepackage[export]{adjustbox} % max size for \includegraphics - BH
 \usepackage{enumitem} % allows for [noitemsep, nolistsep] in \enumerte or \itemize - BH
