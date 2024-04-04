@@ -270,11 +270,22 @@ In practice, parameters $\boldsymbol{\omega}$ and $\mathbf{a}$ are unknown and m
 \subsection{Two-Point Statistics}
 \label{subsec:03twopt}
 
+Two-point statistics are the experimental normal score, and indicator variograms. The experimental variogram is the expected squared difference between pairs of data separated by lag vector $\mathbf{h}$. Figure \ref{fig:varios_activate_f1_f2} shows the normal score variogram (blue), the 0.1 quantile indicator variogram (black), and the 0.9 indicator variogram (red) of the mapped model in the north-south (left) and east-west (right) directions, respectively. The final model achieves its goals from the perspective of two-point statistics. The indicator variograms show increased low-grade continuity in the east-west direction and high-grade continuity in the north-south direction. The normal score variogram is a blend of the indicator variograms; in the north-south direction it has the continuity of the highs with the cyclicity of the lows, and the range of the lows and cyclicity of the highs in the east-west direction. This blending of directional features further emphasizes how the \gls{NMR} complexity cannot be captured by a single variogram.
+
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/03-Ch03/varios_activate_f1_f2.png}
-    \caption{ }
+    \caption{Normal score experimental variogram (blue), the 0.1 quantile indicator experimental variogram (black), and the 0.9 indicator experimental variogram (red) of the mapped model in the north-south (left) and east-west (right) directions, respectively.}
     \label{fig:varios_activate_f1_f2}
+\end{figure}
+
+An interesting experiment to confirm this hypothesis is to generate a realization with a multivariate Gaussian simulation algorithm using the normal score variogram from Figure \ref{fig:varios_activate_f1_f2} to compare to the final \gls{NMR} model. That is, how visually different are the two realizations though they share the same normal score variogram model. Figure \ref{fig:nmr_sgs_grid} shows the same \gls{NMR} realization from above (left) and a realization generated with \gls{SGS}. Both models use the same variogram model fitted to the blue experimental variogram in Figure \ref{fig:varios_activate_f1_f2}. The \gls{NMR} and \gls{SGS} models are significantly different, though they share the same two-point covariance structure. The \gls{SGS} model shows less connectivity in both low and high values, and generally shows more disorder.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/03-Ch03/nmr_sgs_grid.png}
+    \caption{ }
+    \label{fig:nmr_sgs_grid}
 \end{figure}
 
 \FloatBarrier
