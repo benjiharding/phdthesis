@@ -209,7 +209,13 @@ The \gls{NMR} approximates the mapping function $\mathcal{F}_{\theta}$. Chapter 
 \subsection{Latent Spatial Structure}
 \label{subsec:03latent}
 
-The set of latent Gaussian variables of Equation \ref{eq:gpool} is the foundation of the \gls{NMR}. This set is referred to as the Gaussian ``pool'' throughout this text. It is a pool in the sense there is a collection of Gaussian \glspl{RF} to be shared with the goal of reproducing high-order statistics. This pooling is analogous to a \gls{GMM} in the spatial context. The idea of a \gls{GMM} is that a continuous distribution (as in Equation \ref{eq:zu}) could be approximated by a finite mixture of Gaussian densities \citep{mclachlan2019finite}. Furthermore, \cite{silva2018multivariate} show that a mixture of Gaussian components is capable of fitting complex non-Gaussian uni- and multivariate distributions. The \gls{NMR} is an extension of this concept; rather than a mixture of Gaussian densities, $Z(\mathbf{u})$ is approximated by a mixture of Gaussian \glspl{RF}. Rather than using the \gls{EM} algorithm to fit the parameters of each Gaussian component \citep{mclachlan2019finite}, $M$ standard Gaussian \glspl{RF}, with covariance structures specified by $\gamma_{m}(\mathbf{h})$, are explicitly chosen. The output of the mapping function $\mathcal{F}_{\theta}$ is a spatial mixture of the Gaussian components in $\mathbf{Y}(\mathbf{u})$.
+The set of latent Gaussian variables of Equation \ref{eq:gpool} is the foundation of the \gls{NMR}. This set is referred to as the Gaussian ``pool'' throughout this text; the components of the pool are referred to as latent ``factors''. It is a pool in the sense there is a collection of Gaussian \glspl{RF} to be shared with the goal of reproducing high-order statistics. This pooling is analogous to a \gls{GMM} in the spatial context. The idea of a \gls{GMM} is that a continuous distribution (as in Equation \ref{eq:zu}) could be approximated by a finite mixture of Gaussian densities \citep{mclachlan2019finite}. Furthermore, \cite{silva2018multivariate} show that a mixture of Gaussian components is capable of fitting complex non-Gaussian uni- and multivariate distributions. The \gls{NMR} is an extension of this concept; rather than a mixture of Gaussian densities, $Z(\mathbf{u})$ is approximated by a mixture of Gaussian \glspl{RF}. Rather than using the \gls{EM} algorithm to fit the parameters of each Gaussian component \citep{mclachlan2019finite}, $M$ standard Gaussian \glspl{RF}, with covariance structures specified by $\gamma_{m}(\mathbf{h})$, are explicitly chosen. The factors are chosen such that:
+\begin{enumerate}[noitemsep]
+    \item Latent factors are standard normal: $E\left\{Y_{m}(\mathbf{u})\right\}=0$, \ $E\left\{Y_{m}(\mathbf{u})^{2}\right\}=1, \ \forall \ \mathbf{u}$
+    \item Latent factors are independent: $E\left\{Y_{m}(\mathbf{u}_{i})Y_{n}(\mathbf{u}_{j})\right\}=0, \ \ \forall \ m\neq n, \ \forall \ i \neq j$
+    \item Latent factors reproduce their respective variogram model $\gamma_m(\mathbf{h}), \ \forall \ \mathbf{h}$
+\end{enumerate}
+The output of the mapping function $\mathcal{F}_{\theta}$ is a spatial mixture of the latent factor components of $\mathbf{Y}(\mathbf{u})$.
 
 \begin{figure}[htb!]
     \centering
@@ -218,29 +224,47 @@ The set of latent Gaussian variables of Equation \ref{eq:gpool} is the foundatio
     \label{fig:uncond_f1_f2_grid}
 \end{figure}
 
-Consider a hypothetical scenario where the modeling goal is to have strong low-grade continuity in the east-west direction and strong high-grade continuity in the north-south direction. This is challenge for a multivariate Gaussian simulation algorithm as a normal score variogram cannot capture both directions of continuity simultaneously. The \gls{NMR} has the ability to draw different spatial structures from different latent factors within the pool; the sharing of structures being a core concept of the \gls{NMR} approach.
-
+Consider a hypothetical scenario where the modeling goal is to have highly continuous low-grades in the east-west direction and highly continuous high-grade continuity in the north-south direction. This is challenge for a multivariate Gaussian simulation algorithm as a normal score variogram cannot capture both directions of continuity simultaneously. The \gls{NMR} has the ability to draw different spatial structures from different latent factors within the pool; the sharing of structures being a core concept of the \gls{NMR} approach. Consider the \gls{2D} realizations of two unconditional Gaussian \glspl{RF} in Figure \ref{fig:uncond_f1_f2_grid}. It is possible to achieve the modeling goals if we can draw high-grade continuity from factor 1 and low-grade continuity from factor 2. A simple linear combination of the factors, analogous to the \gls{LMC}, is not able to capture the orthogonal continuities as high and low values cancel when combined. What we require is the ability to emphasize the high values in factor 1 (and mute the low values), and the low values in factor 2 (and mute the high values), before performing the mix. This ``extraction'' of specific factor features requires introduction of a non-linearity.
 
 
 \FloatBarrier
 \subsection{Non-Linearity and Mapping}
 \label{subsec:03nonlinear}
 
+Emphasizing a portion of a range of values requires the definition of a threshold. Given item (1) in the list above, zero is logical value to threshold a Gaussian distribution. A straightforward approach to introducing non-linearity is the application of a power law function. The non-linear value is the original value raised to a power, $\omega$. If we want to emphasize the high values, all values $> 0$ are raised to the exponent $\omega \geq 1$ while the values $< 0$ are raised to the exponent $\frac{1}{\omega}$. The non-linearity effectively mutes the magnitude of values below zero and exponentially increases values above zero. The opposite is true if we wish to emphasize low values; all values $< 0$ are raised to the exponent $\frac{1}{\omega}$ while the values $> 0$ are raised to the exponent $\omega$, where $\omega < 1$. Figure \ref{fig:powerlaw_f1_f2} shows this power law relationship graphically for the two realizations shown in Figure \ref{fig:uncond_f1_f2_grid} using $\omega_{1}=4$ and $\omega_{2}=0.25$. Where factor 1 is greater than zero, the values $> 1$ are emphasized significantly. Where factor 1 is less than zero, the values $< -1$ are muted significantly. This non-linearity advantageously isolates the high-grade structure from factor 1. The opposite is true for factor 2. The complete details of the non-linearity are presented in Chapter \ref{ch:04implement}.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/03-Ch03/powerlaw_f1_f2.png}
+    \caption{Power law relationship between the linear input $y$ and the non-linear output $\phi(y, \omega)$, where $\phi(\dots)$ is the power law function. }
+    \label{fig:powerlaw_f1_f2}
+\end{figure}
+
+Figure \ref{fig:activate_f1_f2_grid} (left, center) shows the spatial distribution of factors 1 and 2 after applying the power law function. Note the magnitude of the colour bars between the plots. The power law function is able to isolate the desired components of each factor and can be thought of as an ``activation'' function. Figure \ref{fig:activate_f1_f2_stats} (left, center) shows the histograms of factors 1 and 2 after transformation. As expected $\phi(y_{1}, \omega_{1})$ is strongly positively skewed, and $\phi(y_{2}, \omega_{2})$ is strongly negatively skewed. $\phi(\dots)$ results in a distribution of arbitrary activation units. These units are not interpretable and require mapping to an observed space in Gaussian units. Combining the ``activated'' realizations is then a weighted, linear combination, followed by a normal score transform. The weights, for the sake of the example, are $\mathbf{a} = [1,1]$. The final model is then $\mathbf{z} = G^{-1}(\phi(\mathbf{Y}, \boldsymbol{\omega}) \cdot \mathbf{a}^{T})$, where $G^{-1}$ is the inverse of the Gaussian \gls{CDF}.
+
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/03-Ch03/activate_f1_f2_grid.png}
-    \caption{ }
+    \caption{Factors 1 (left) and 2 (center) after application of the power law function, and the final mapped, normal score transformed realization (right).}
     \label{fig:activate_f1_f2_grid}
 \end{figure}
 
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/03-Ch03/activate_f1_f2_stats.png}
-    \caption{ }
+    \caption{Histograms of factors 1 (left) and 2 (center) after application of the power law function, and the final mapped, normal score transformed realization (right).}
     \label{fig:activate_f1_f2_stats}
 \end{figure}
 
+Figure \ref{fig:activate_f1_f2_grid} (right) shows the spatial distribution of the final model, while Figure \ref{fig:activate_f1_f2_stats} (right) shows the histogram. Note that the spatial distribution is complex and non-multivariate Gaussian, however the univariate histogram is perfectly Gaussian. The high values show north-south continuity while the lows show east-west continuity. The overprinting of the factors appears natural, and the result is spatial structure that cannot be generated with a single variogram model. These steps provide an overview of the forward pass through the \gls{NMR}. In summary, they are:
+\begin{enumerate}[noitemsep]
+    \item Simulate latent factors to form the Gaussian pool
+    \item Activate the factors with $\boldsymbol{\omega}$ to emphasize certain features
+    \item Linearly combine the activated factors with weights $\mathbf{a}$
+    \item Normal score transform the combination
+\end{enumerate}
 
+In practice, parameters $\boldsymbol{\omega}$ and $\mathbf{a}$ are unknown and must be inferred. As discussed in Section \ref{sec:03inverse}, inverse problems are commonly approached by optimization. The optimization problem consists of determining $\boldsymbol{\omega}$ and $\mathbf{a}$ for a given Gaussian pool such that an objective function is minimized. The objective function in this context is the reproduction of desired two- and multi-point statistics in the final model produced by the steps above.
 
 \FloatBarrier
 \subsection{Two-Point Statistics}
