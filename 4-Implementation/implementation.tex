@@ -21,7 +21,7 @@ The number of latent factors in the Gaussian pool controls network architecture.
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.7, trim={0 1.5cm 0 1.5cm}, clip=true]{./0-Figures/04-Ch4/example_nmr.png}
-    \caption{Schematic representation of the \gls{NMR} with $M=3$ latent factors. $\phi(\dots)$ is the \gls{MPL} activation function. }
+    \caption{Schematic representation of the \gls{NMR} with $M=3$ latent factors. $\phi(\dots)$ is the \gls{MPL} activation function. For clarity the $\omega$ parameter is excluded.}
     \label{fig:example_nmr}
 \end{figure}
 
@@ -35,11 +35,11 @@ The following operators define the general forward pass through the network:
 
 Where $\mathbf{x}$ is an intermediary activation vector, $a_{m}$ is a weight applied to factor $m$, $\phi(\mathbf{y}_{m}, \omega_{m})$ is the \gls{MPL} activation function with exponent $\omega$ applied to factor $m$, $F_{X}$ is the \gls{CDF} of $\mathbf{x}$ and $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. The weights $\{ a_{0}, \dots, a_{M}\}$ are constrained to be greater than or equal to zero and reflect the relative importance of each factor in the mapping function. Alternatively, Equation \ref{eq:fpass1} can be rewritten in matrix notation as:
 \begin{equation}
-    \mathbf{x} = \phi\left( \mathbf{Y} \right) \mathbf{a}^{T}
+    \mathbf{x} = \phi\left( \mathbf{Y}, \boldsymbol{\omega} \right) \mathbf{a}^{T}
     \label{eq:fpass3}
 \end{equation}
 
-Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y} \right)$ is an $ndata$ x $M+1$ matrix of activated latent factors. The raw output of the network is activation units that must be transformed to Gaussian space, necessitating the normal score transform of $\mathbf{x}$ to $\mathbf{z}$. With the given architecture, the \gls{NMR} requires inference of $2 \cdot (M+1)$ parameters: a $1$ x $M+1$ dimensional vector of factor weights and a $1$ x $M+1$ dimensional vector of \gls{MPL} exponents $\omega$. These $2 \cdot (M+1)$ network parameters are inferred through stochastic optimization and discussed in Section \ref{sec:04paraminfer}. The univariate normal score transform from activation units to Gaussian units in Equation \ref{eq:fpass2} requires a representative distribution unique to the network's given state. Each iteration of the stochastic optimization algorithm generates an updated parameter vector, resulting in a new mapping. The iteration-specific reference distribution is created by drawing a $1e^{4}$ x $M+1$ dimensional matrix of independent, standard normal Gaussian values and mapping them to a $1e^{4}$ x $1$ vector of activation values. These activation values are normal score transformed, resulting in a temporary, iteration-specific transformation table. Using this transformation table, the linear interpolation of activation values is the $G^{-1}$ operator in Equation \ref{eq:fpass2}.
+Where $\mathbf{a}$ is a row vector of factor weights and $\phi\left(\mathbf{Y}, \boldsymbol{\omega} \right)$ is an $ndata$ x $M+1$ matrix of activated latent factors. The raw output of the network is activation units that must be transformed to Gaussian space, necessitating the normal score transform of $\mathbf{x}$ to $\mathbf{z}$. With the given architecture, the \gls{NMR} requires inference of $2 \cdot (M+1)$ parameters: a $1$ x $M+1$ dimensional vector of factor weights and a $1$ x $M+1$ dimensional vector of \gls{MPL} exponents $\omega$. These $2 \cdot (M+1)$ network parameters are inferred through stochastic optimization and discussed in Section \ref{sec:04paraminfer}. The univariate normal score transform from activation units to Gaussian units in Equation \ref{eq:fpass2} requires a representative distribution unique to the network's given state. Each iteration of the stochastic optimization algorithm generates an updated parameter vector, resulting in a new mapping. The iteration-specific reference distribution is created by drawing a $1e^{4}$ x $M+1$ dimensional matrix of independent, standard normal Gaussian values and mapping them to a $1e^{4}$ x $1$ vector of activation values. These activation values are normal score transformed, resulting in a temporary, iteration-specific transformation table. Using this transformation table, the linear interpolation of activation values is the $G^{-1}$ operator in Equation \ref{eq:fpass2}.
 
 \subsection{Activation Function}
 \label{subsec:04activation}
@@ -170,7 +170,7 @@ Optimization of network weights uses a gradient-free, heuristic genetic algorith
     \item Return $\text{argmin}_{j} \ f(\mathbf{t}_{j})$
 \end{enumerate}
 
-The algorithm begins by randomly initializing a population of candidate vectors (Equation \ref{eq:theta}) and evaluating each member's fitness. A population size of 30-50 is a reasonable balance between sufficient diversity and algorithm runtime, though there is no definitive guideline for population size \citep{piotrowski2017review}. Over the specified number of iterations, each member of the population undergoes mutation. Optimization employs a DE/current-to-best/1 mutation strategy. \cite{georgioudakis2020comparative} describes the mutated vector as:
+The algorithm begins by randomly initializing a population of candidate vectors (Equation \ref{eq:theta}) and evaluating each member's fitness. A population size of 30-50 is a reasonable balance between sufficient diversity and algorithm runtime, though there is no definitive guideline for population size \citep{piotrowski2017review,balkaya20173d}. Over the specified number of iterations, each member of the population undergoes mutation. Optimization employs a DE/current-to-best/1 mutation strategy. \cite{georgioudakis2020comparative} describes the mutated vector as:
 \begin{equation}
     \mathbf{v}_{j} = \mathbf{x}_{j} + F(\mathbf{x}_{best}-\mathbf{x}_{j}) + F(\mathbf{x}_{r1} - \mathbf{x}_{r2})
     \label{eq:mutation}
