@@ -7,9 +7,13 @@
 
 Mitigating the impact of extreme values on resource estimation is a long-standing issue. The mining industry has no definitive consensus regarding outlier management, and many approaches are developed on an ad hoc basis. Should high grades be capped? Should sub-regions be delineated to isolate higher grades? Should we use decile analysis \citep{parrish1997geologist}, cumulative probability plots, cutting curves \citep{roscoe1996cutting}, coefficient of variation, production reconciliation, arbitrary percentiles, metal at risk, indicator correlations, multiple indicator kriging or no capping at all? If we cap, should it be before or after compositing? All of these questions influence the final metal content of our resource predictions. The impact of restricting outliers may be significant depending on the distribution of the available data.
 
+\begin{enumerate}
+    \item NMR doesnt require capping
+\end{enumerate}
+
 \FloatBarrier
-\section{Current Industry Practices}
-\label{sec:industry}
+\section{Mining Industry Practices}
+\label{sec:02industry}
 
 The Canadian Institute of Mining, Metallurgy and Petroleum (CIM) mineral resource and mineral reserve best practices summarizes outlier management as \citep{cim2019}:
 
@@ -17,7 +21,42 @@ The Canadian Institute of Mining, Metallurgy and Petroleum (CIM) mineral resourc
 
 \cite{leuangthong2015dealing}, echoed by CIM best practices, break the process of outlier management into three categories: (1) choosing appropriate domains, (2) grade capping and (3) limiting the influence of outliers through the estimation process. This short note focuses on the second category. Grade capping or ``top-cutting'' is a common practice in the mining industry. Grades above a given threshold are reset to that threshold. The general idea is that uncapped grades may lead to unrealistic local estimates adjacent to high-grade composites \citep{nowak2013suggestions}. The ``smearing'' may be significant if sparse data are estimated with kriging. Due to the normal score transform, simulation is somewhat more robust in the presence of outliers though capping may still be required in some cases.
 
-The following section summarizes 125 NI 43-101 reports published by companies traded on Canadian securities exchanges. For each deposit, the decision to cap or not, the capping methodology if so, and the decision to cap either assays or composites is recorded. For producing operations, whether they are underground or open-pit, is also recorded. Numerous reports documented multiple outlier management strategies. Due to a large number of possible combinations of strategies, each is recorded separately. If one project uses cumulative probability plots and decile analysis, it contributes to the total methodology fraction twice. The left panel of Figure~\ref{fig:piechart} shows the results for capping methodology, and the right panel shows a summary of assays versus composites for those who capped. Unknown refers to reports which stated a grade cap was applied though no methodology is provided.
+\FloatBarrier
+\subsection{Tools for Outlier Evaluation}
+\label{subsec:02tools}
+
+Probability plots are ubiquitous in resource estimation. The \gls{CDF} of the variable is plotted against the \gls{CDF} of the normal distribution (log scaling results in a log-normal probability plot). Inflection points may indicate the presence of multiple populations, and gaps in the distribution are typically targeted as potential capping limits. A recent survey of 125 43-101 reports with gold as the primary commodity showed that the cumulative probability plot is the most common tool for assessing outliers and establishing outliers. This prevalence is likely due to (1) the simplicity of the technique and the ease of implementation and (2) the historical prevalence of the technique in the mining industry.
+
+Decile analysis or the Parrish method \citep{parrish1997geologist} assesses the metal content of each decile of the grade distribution. The assay population is sorted and arranged into deciles containing equal samples; the upper decile will likely contain less data than the rest. The length weighted mean and standard deviation of each decile are calculated and metal content (grade value x length). The top decile is then split into percentiles, and the same summary statistics are calculated for each. Table XX shows an example decile table for a synthetic log‐normal‐like distribution. The general rules proposed by \cite{parrish1997geologist} are:
+
+\begin{enumerate}
+    \item If the top decile contains more than 40\% of the metal, capping is warranted
+    \item If the top decile contains more than twice the metal of the 80-90\% decile, capping is warranted
+    \item If the top percentile (or more) contains more than 10\% of the total metal is warranted
+\end{enumerate}
+
+If the practitioner decides that capping is appropriate, one could reduce the high values in each percentile exceeding 10\% of the total metal to the maximum value of the next lowest percentile. For example, in Table XX, all values in P99 could be reset to the maximum value of 33.66 in P98. However, P98 contains 8.3\% of the total metal, suggesting further capping may be required based on practitioner judgement.
+
+Cutting curves \citep{roscoe1996cutting,leuangthong2015dealing} is another simple tool to assess the average capped grade versus the capping limit. The idea is that the average grade will eventually stabilize as the threshold increases, and a reasonable capping limit exists somewhere near the inflection point. Figure XX shows an example of a cutting curve for a synthetic log-normal-like data set.
+
+\cite{parker1991statistical} proposed plotting the cumulative \gls{CV} against the grade distribution in order to identify a point where the influence of high values in the upper tail becomes strong. A rapid increase in cumulative \gls{CV} characterizes this point. \cite{parker1991statistical} then breaks the distribution into two parts and fits with a truncated log-normal distribution; estimation is performed without capping the distribution. The Outlier package does not fit the distribution, nor is any estimation performed. Instead, it simply calculates and plots the cumulative \gls{CV} for visual identification of a potential capping limit. Figure XX shows an example cumulative \gls{CV} plot of a synthetic log-normal-like data set.
+
+The influence of suspected outlier values can be investigated by assessing uncertainty in the average grade of the domain through the spatial bootstrap \citep{solow1985bootstrapping}. The procedure proposed by \cite{nowak2013suggestions} involves bootstrapping the grade distribution while leaving out some percentage of the highest data (arbitrarily 2\%) and comparing this expected grade to the uncapped grade. The idea is that if the expected grade with the top 2\% of samples removed is significantly lower than the uncapped grade, capping may be warranted within the domain. Figure XX shows an example of 1000 bootstrapped means capped at P98 of the data distribution and the declustered uncapped mean (left) and the bootstrapped distributions for reference (right). The difference between the expected and declustered actual grades suggests the grade distribution within the domain is sensitive to high values in the upper tail. If the expected grade and uncapped grade are similar, this suggests that the upper tail of the distribution has little influence, and capping may not be necessary.
+
+Metal-at-risk, summarized in \cite{parker2006}, is a procedure that establishes uncertainty related to the amount of high-grade metal within annual or global production volumes. The deposit can be ``re-drilled'' utilizing Monte Carlo simulation where the total number of samples drawn is equal to the annual production tonnage divided by the number of tonnes per assay in the domain. The assay distribution is sampled randomly with replacement under the assumption that high-grade can occur anywhere in the domain. For each resampled realization, the total metal above a given high-grade cutoff is calculated. The P20 value of this distribution is added to the metal content below the cutoff to calculate a ``risk-adjusted'' metal content. \cite{parker2006} states that theoretically, the mine should exceed the risk-adjusted metal in four out of five periods; however, ``there is additional and largely unquantifiable uncertainty related to the representativity of the sample-grade frequency distribution input to the simulation''. Metal-at-risk can be used as a guide to restrict high-grade samples' influence during estimation or calibrate a capping limit that removes this metal content. An advantage to the metal-at-risk approach versus others is that it accounts for data density and the production volume; as data density increases, metal-at-risk decreases and larger production volumes have less risk than small ones.
+
+\begin{enumerate}
+    \item Something about high-yield restrictions
+    \item adjusting model to mitigate downside risk
+\end{enumerate}
+
+
+\FloatBarrier
+\subsection{Current State of the Art}
+\label{subsec:02state}
+
+
+The following section summarizes 125 NI 43-101 reports published by companies traded on Canadian securities exchanges. For each deposit, the decision to cap or not, the capping methodology if so, and the decision to cap either assays or composites is recorded. For producing operations, whether they are underground or open-pit, is also recorded. Numerous reports documented multiple outlier management strategies. Due to many possible combinations of strategies, each is recorded separately. If one project uses cumulative probability plots and decile analysis, it contributes to the total methodology fraction twice. The left panel of Figure~\ref{fig:piechart} shows the results for capping methodology, and the right panel shows a summary of assays versus composites for those who capped. Unknown refers to reports which stated a grade cap was applied though no methodology is provided.
 
 \begin{figure}[htb!]
     \centering
@@ -72,18 +111,23 @@ The remaining outlier management strategies are relatively straightforward. Some
 Another point of general indecision is capping before or after compositing. In this survey, it is more or less a 50-50 split. One approach is not more correct than the other. The author generally believes it is more appropriate to apply a capping grade after assays have been brought to the same support. It seems logical to compare values that are effectively equally weighted. If much of the assay data is the same length, capping could be applied before compositing.
 
 \FloatBarrier
-\section{Capping and Search Restrictions}
-\label{sec:capping}
+\section{Spatial Outlier Detection}
+\label{sec:02spatial}
+
+\begin{enumerate}
+    \item need to consider local and global spatial components
+    \item combination of univariate and spatial components
+\end{enumerate}
 
 
 \FloatBarrier
 \section{High Grade Continuity}
-\label{sec:continuity}
+\label{sec:02continuity}
 
 
 \FloatBarrier
 \section{Analytical Extreme Value Models}
-\label{sec:analytical}
+\label{sec:02analytical}
 
 The geological processes that led to the precipitation and preservation of the grades under consideration in a particular deposit are complex and defy a simple deterministic assessment. The processes influence our understanding, but we adopt a statistical model since there is no way to understand the initial and boundary conditions of the non-linear and chaotic processes that led to the deposit under consideration. This section describes a trimodal model for mineralization: (1) mineralized - M, (2) high grade - HG, and (3) extreme high grade - EHG. Figure~\ref{fig:ehg} illustrates this. The three populations overlap, mix and are not exclusive, but we could reasonably define a range that represents them, for example, 0.1 to 1.0 g/t for mineralized (M), 5 to 20 g/t for high grade (HG), and 500+ g/t for extreme high grade (EHG).
 
@@ -147,7 +191,7 @@ The mean values of the three populations could be estimated with reasonable conf
 
 \FloatBarrier
 \subsection{Probability of Drilling EHG}
-\label{subsec:probehg}
+\label{subsec:02probehg}
 
 The probability of drilling $n$ successive drill holes without encountering EHG could be computed by:
 \[
@@ -177,7 +221,7 @@ So, for thirty ($n=30$) drill holes there is an $0.995^{30}=0.86=86\%$ chance of
 
 \FloatBarrier
 \subsection{Application}
-\label{subsec:application}
+\label{subsec:02application}
 
 The following demonstrates the conceptual trimodal model for extreme high grades applied to an actual data set. The data consists of 61,027 channel samples across a gold-bearing Witwatersrand reef structure with cumulative grade (cmg/t) and thickness (cm) measurements. Gold values (g/t) are back-calculated from the other two measurements. A significant proportion of the samples are considered ``high grade''. The data set is sufficiently dense such that some \emph{valid} extreme values are likely observed, and the parameters of the extreme high-grade model can be inferred with reasonable confidence.
 
@@ -225,4 +269,4 @@ Access to a high resolution ``true'' model is rarely possible in practice. Often
 
 \FloatBarrier
 \section{Discussion}
-\label{sec:discuss04}
+\label{sec:02discuss}
