@@ -5,17 +5,44 @@
 \label{ch:02outlier}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Mitigating the impact of extreme values on resource estimation is a long-standing issue. The mining industry has no definitive consensus regarding outlier management, and many approaches are developed on an ad hoc basis. Should high grades be capped? Should sub-regions be delineated to isolate higher grades? Should we use decile analysis \citep{parrish1997geologist}, cumulative probability plots, cutting curves \citep{roscoe1996cutting}, coefficient of variation, production reconciliation, arbitrary percentiles, metal at risk, indicator correlations, multiple indicator kriging or no capping at all? If we cap, should it be before or after compositing? All of these questions influence the final metal content of our resource predictions. The impact of restricting outliers may be significant depending on the distribution of the available data.
+This chapter presents a minor deviation from the \gls{NMR} framework, though the generation of non-Gaussian spatial fields and the presence of extreme values are unequivocally linked. A discussion regarding extreme values and outlier management is pertinent to any methodology focusing on features of the tails of a distribution. Research initially focused on developing objective measures to identify spatial extreme values and best practices for explicitly managing these values, though evolved into a simulation framework with applicability beyond just extreme values. A key idea of the \gls{NMR} is that extreme values and outliers do not require explicit management. This contrasts many standard practices in the mining industry; \cite{dutaut2021new} mention that methods that avoid capping are interesting, but rarely applied in mining applications. The presence of extreme values, and correctly characterizing their spatial distribution is of great importance. This importance warrants methodologies beyond the standard graphical approaches \citep{silva2021classification}, and motivates a holistic approach incorporating both the statistical and spatial components of extreme values.
+
+The following sections present the concepts of outliers and extreme values in a mining context. Nomenclature is first defined, delineating the differences between an outlier and extreme value. These terms have similar connotations, though different meanings when rigorously defined. An overview of outlier management practices in the mining industry is given, including commonly employed tools and methodologies, followed by a review of methodologies from a survey of 125 \gls{NI} 43-101 reports published between 2019 and 2021. Though the \gls{NMR} framework does not require explicit management of extreme values, the practice is omnipresent in the mining industry. For this reason a spatial outlier identification algorithm is developed that considers a data point's degree of ``outlierness'' both from a local neighbourhood perspective, and the global \gls{CDF}. Finally and analytical approach for forecasting extreme values is presented.  Though some assumptions regarding the underlying distribution must be made, the ability to predict the frequency of intersecting extreme values is valuable from a data collection, and risk-qualified decision-making perspective.
+
+\FloatBarrier
+\section{Outliers and Extreme Values}
+\label{sec:02extreme}
+
+"Outlier" is a general term for an observation that is sufficiently dissimilar to other observations that further investigation is warranted \citep{barnett1984outliers}. Outliers may be random fluctuations of the data generation mechanism (noise), true anomalies, or measurement errors. An extreme value is a value in the tails of the distribution that is believed to be real, but occurring rarely. Extreme values are different from outliers in the sense that all extreme values are possible outliers, but the reverse is not always true \citep{aggarwal2016outlier}. A key distinction here is that an outlier is not necessarily restricted to the tails of a distribution, while extreme values are. Consider the \gls{1D} set of values:
+\begin{equation*}
+    \{1,2,2,50,98,98,99\}
+\end{equation*}
+
+In the extreme value context mentioned above, 1 and 99 could (weakly) be considered extreme values, while 50 (the average of the values), is definitely not an extreme value. However, in the context of an outlier, the value of 50 is distant, or isolated from the remaining values. Distance or density based outlier detection methods would likely classify 50 as an outlier, which is correct given it is sufficiently dissimilar from the remaining values. This simple but illustrative example adapted from \cite{aggarwal2016outlier} highlights the core differences between outliers and extreme values. That being said, the terms are typically synonymous in the mining industry: one is only interested in outliers if they are also extreme values. Throughout this text the term outlier will refer to abnormal, or extreme data values that are assumed to be in either the upper or lower tail of the distribution.
+
+Geostatistical models are often generated using widely spaced data configurations. The cost of data collection prohibits exhaustive sampling and necessitates statistical inference from limited samples. Spatial prediction with widely spaced data in the presence of extreme values is a long-standing issue in the mining industry \citep{leuangthong2015dealing}. Extreme values may have significant local influence leading to overstated resources and the risk of production shortfalls. Practitioners are presented with difficult decisions for limiting extreme value influence and characterizing their spatial continuity.
+
+Inputs to numerical geologic models consist of observed data, a representative histogram and spatial controls on mineralization. Each of these components presents challenges in the presence of extreme values. Extreme values are often under sampled making inference about their probability of occurrence difficult. The influence of extreme values are often limited in practice through grade capping which could have a significant impact on the final resource. The spatial continuity of extreme values is different than that of the barren or mineralized background. Traditional geostatistical methods are limited in capacity to adapt to both extreme values and asymmetric spatial continuity features.
+
+\FloatBarrier
+\subsection{Outlier Detection}
+\label{subsec:02dectection}
+
+Outlier detection is applicable in virtually all statistical modeling. Measures of ``inlierness'' or ``outlierness'' are typically based on (1) statistics of observations for the rest of the distribution (parametric or non-parametric); (2) distances (euclidean or non-euclidean) between observations with outliers being ``far'' from neighbours and (3) probability density-based measures where outliers have low densities \citep{li2022ecod}. A comprehensive review of outlier detection methods beyond the scope of this chapter; the reader is referred to \cite{aggarwal2016outlier,pang2022deep,hodge2004survey,wang2019progress} for a review of methodology.
 
 \begin{enumerate}
-    \item NMR doesnt require capping
+    \item a challenge is defining/thresholding what is in/out
 \end{enumerate}
+
+
 
 \FloatBarrier
 \section{Mining Industry Practices}
 \label{sec:02industry}
 
-The Canadian Institute of Mining, Metallurgy and Petroleum (CIM) mineral resource and mineral reserve best practices summarizes outlier management as \citep{cim2019}:
+The mining industry has no definitive consensus regarding outlier management, and many approaches are developed on an ad hoc basis. Should high grades be capped? Should sub-regions be delineated to isolate higher grades? Should we use decile analysis, cumulative probability plots, cutting curves, coefficient of variation, production reconciliation, arbitrary percentiles, metal at risk, indicator correlations, multiple indicator kriging or no capping at all? If we cap, should it be before or after compositing? All of these questions influence the final metal content of resource predictions. The impact of restricting outliers may be significant depending on the distribution of the available data.
+
+Identifying and managing extreme values or ``outliers'' is essential, particularly concerning heavy-tailed mineral deposits. A practitioner forecasting resources should understand both the statistical influence and spatial distribution of extreme values. Though there are numerous tools for these purposes, there is no generally accepted workflow in the mining industry, and professional judgment guides best practice. Assessing the influence of extreme values with a variety of techniques seems reasonable. The Canadian Institute of Mining, Metallurgy and Petroleum (CIM) mineral resource and mineral reserve best practices summarizes outlier management as \citep{cim2019}:
 
 \blockquote{\textit{``Recognition of the spatial extent of outlier values (a component of grade continuity) should be investigated and a procedure devised for incorporating such data appropriately into an estimate. Procedures including domaining, grade capping (also known as top cutting), spatially restricting the influence of high-grade assays, single and multiple indicator kriging, and Monte Carlo simulation methods all compensate in varying ways for potential overestimation. Regardless of the methodology selected, the Practitioners must provide documentation of the approach selected, along with justification and support for the decision, possibly including reconciliation of estimated block model grades with available production information. Comparisons of the outcome of the different approaches can be useful.'' (pg. 18)}}
 
@@ -27,23 +54,64 @@ The Canadian Institute of Mining, Metallurgy and Petroleum (CIM) mineral resourc
 
 Probability plots are ubiquitous in resource estimation. The \gls{CDF} of the variable is plotted against the \gls{CDF} of the normal distribution (log scaling results in a log-normal probability plot). Inflection points may indicate the presence of multiple populations, and gaps in the distribution are typically targeted as potential capping limits. A recent survey of 125 43-101 reports with gold as the primary commodity showed that the cumulative probability plot is the most common tool for assessing outliers and establishing outliers. This prevalence is likely due to (1) the simplicity of the technique and the ease of implementation and (2) the historical prevalence of the technique in the mining industry.
 
-Decile analysis or the Parrish method \citep{parrish1997geologist} assesses the metal content of each decile of the grade distribution. The assay population is sorted and arranged into deciles containing equal samples; the upper decile will likely contain less data than the rest. The length weighted mean and standard deviation of each decile are calculated and metal content (grade value x length). The top decile is then split into percentiles, and the same summary statistics are calculated for each. Table XX shows an example decile table for a synthetic log‐normal‐like distribution. The general rules proposed by \cite{parrish1997geologist} are:
+\begin{figure}[!htb]
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.60, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cpp.png}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.60, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cpp_tukey.png}
+    \end{subfigure}
+    \caption{}
+    \label{fig:cpp}
+\end{figure}
 
-\begin{enumerate}
+Decile analysis or the Parrish method \citep{parrish1997geologist} assesses the metal content of each decile of the grade distribution. The assay population is sorted and arranged into deciles containing equal samples; the upper decile will likely contain less data than the rest. The length weighted mean and standard deviation of each decile are calculated as well as metal content (grade value x length). The top decile is then split into percentiles, and the same summary statistics are calculated for each. Table \ref{tab:parrish_decile_ex2} shows an example decile table for a synthetic log‐normal‐like distribution. The general rules proposed by \cite{parrish1997geologist} are:
+\begin{enumerate}[noitemsep]
     \item If the top decile contains more than 40\% of the metal, capping is warranted
     \item If the top decile contains more than twice the metal of the 80-90\% decile, capping is warranted
-    \item If the top percentile (or more) contains more than 10\% of the total metal is warranted
+    \item If the top percentile (or more) contains more than 10\% of the total metal capping is warranted
 \end{enumerate}
 
-If the practitioner decides that capping is appropriate, one could reduce the high values in each percentile exceeding 10\% of the total metal to the maximum value of the next lowest percentile. For example, in Table XX, all values in P99 could be reset to the maximum value of 33.66 in P98. However, P98 contains 8.3\% of the total metal, suggesting further capping may be required based on practitioner judgement.
+\begin{table}[!htb]
+    \centering
+    \caption{Parrish decile analysis for a log-normal distribution with 334 samples. }
+    \resizebox{1\width}{!}{\input{0-Tables/parrish_decile_ex2.tex}}
+    \label{tab:parrish_decile_ex2}
+\end{table}
 
-Cutting curves \citep{roscoe1996cutting,leuangthong2015dealing} is another simple tool to assess the average capped grade versus the capping limit. The idea is that the average grade will eventually stabilize as the threshold increases, and a reasonable capping limit exists somewhere near the inflection point. Figure XX shows an example of a cutting curve for a synthetic log-normal-like data set.
+If the practitioner decides that capping is appropriate, one could reduce the high values in each percentile exceeding 10\% of the total metal to the maximum value of the next lowest percentile. For example, in Table \ref{tab:parrish_decile_ex2}, all values in P99 could be reset to the maximum value of 33.66 in P98. However, P98 contains 8.3\% of the total metal, suggesting further capping may be required based on practitioner judgement.
 
-\cite{parker1991statistical} proposed plotting the cumulative \gls{CV} against the grade distribution in order to identify a point where the influence of high values in the upper tail becomes strong. A rapid increase in cumulative \gls{CV} characterizes this point. \cite{parker1991statistical} then breaks the distribution into two parts and fits with a truncated log-normal distribution; estimation is performed without capping the distribution. The Outlier package does not fit the distribution, nor is any estimation performed. Instead, it simply calculates and plots the cumulative \gls{CV} for visual identification of a potential capping limit. Figure XX shows an example cumulative \gls{CV} plot of a synthetic log-normal-like data set.
+Cutting curves \citep{roscoe1996cutting,leuangthong2015dealing} is another simple tool to assess the average capped grade versus the capping limit. The idea is that the average grade will eventually stabilize as the threshold increases, and a reasonable capping limit exists somewhere near the inflection point. Figure \ref{fig:outlier_ex2_cutting_curve} shows an example of a cutting curve for a synthetic log-normal-like data set.
 
-The influence of suspected outlier values can be investigated by assessing uncertainty in the average grade of the domain through the spatial bootstrap \citep{solow1985bootstrapping}. The procedure proposed by \cite{nowak2013suggestions} involves bootstrapping the grade distribution while leaving out some percentage of the highest data (arbitrarily 2\%) and comparing this expected grade to the uncapped grade. The idea is that if the expected grade with the top 2\% of samples removed is significantly lower than the uncapped grade, capping may be warranted within the domain. Figure XX shows an example of 1000 bootstrapped means capped at P98 of the data distribution and the declustered uncapped mean (left) and the bootstrapped distributions for reference (right). The difference between the expected and declustered actual grades suggests the grade distribution within the domain is sensitive to high values in the upper tail. If the expected grade and uncapped grade are similar, this suggests that the upper tail of the distribution has little influence, and capping may not be necessary.
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cutting_curve.png}
+    \caption{Cutting curve showing the relationship between the top cut grade and the mean of the adjusted data.}
+    \label{fig:outlier_ex2_cutting_curve}
+\end{figure}
 
-Metal-at-risk, summarized in \cite{parker2006}, is a procedure that establishes uncertainty related to the amount of high-grade metal within annual or global production volumes. The deposit can be ``re-drilled'' utilizing Monte Carlo simulation where the total number of samples drawn is equal to the annual production tonnage divided by the number of tonnes per assay in the domain. The assay distribution is sampled randomly with replacement under the assumption that high-grade can occur anywhere in the domain. For each resampled realization, the total metal above a given high-grade cutoff is calculated. The P20 value of this distribution is added to the metal content below the cutoff to calculate a ``risk-adjusted'' metal content. \cite{parker2006} states that theoretically, the mine should exceed the risk-adjusted metal in four out of five periods; however, ``there is additional and largely unquantifiable uncertainty related to the representativity of the sample-grade frequency distribution input to the simulation''. Metal-at-risk can be used as a guide to restrict high-grade samples' influence during estimation or calibrate a capping limit that removes this metal content. An advantage to the metal-at-risk approach versus others is that it accounts for data density and the production volume; as data density increases, metal-at-risk decreases and larger production volumes have less risk than small ones.
+\cite{parker1991statistical} proposed plotting the cumulative \gls{CV} against the grade distribution in order to identify a point where the influence of high values in the upper tail becomes strong. The data are sorted in descending order, and the cumulative \gls{CV} is calculated in ascending order considering all samples with grades less than or equal to the current sample. A rapid increase in cumulative \gls{CV} characterizes this point where the influence of the upper tail is significant. \cite{parker1991statistical} then breaks the distribution into two parts and fits the upper distribution with a truncated log-normal distribution; estimation is performed without capping the distribution. Figure \ref{fig:outlier_ex2_cumcv} shows an example cumulative \gls{CV} plot of a synthetic log-normal-like data set.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cumcv.png}
+    \caption{Cumulative \gls{CV} versus sample grade for a log-normal like dataset. There is a rapid increase at approximately CV=1.25.}
+    \label{fig:outlier_ex2_cumcv}
+\end{figure}
+
+The influence of suspected outlier values can be investigated by assessing uncertainty in the average grade of the domain through the spatial bootstrap \citep{solow1985bootstrapping}. The procedure proposed by \cite{nowak2013suggestions} involves bootstrapping the grade distribution while leaving out some percentage of the highest data (arbitrarily 2\%) and comparing this expected grade to the uncapped grade. The idea is that if the expected grade with the top 2\% of samples removed is significantly lower than the uncapped grade, capping may be warranted within the domain. Figure \ref{fig:outlier_ex2_mean_uncert} shows an example of 1000 bootstrapped means capped at P98 of the data distribution and the declustered uncapped mean (left) and the bootstrapped distributions for reference (right). The difference between the expected and declustered actual grades suggests the grade distribution within the domain is sensitive to high values in the upper tail. If the expected grade and uncapped grade are similar, this suggests that the upper tail of the distribution has little influence, and capping may not be necessary.
+
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_mean_uncert.png}
+    \caption{Distribution of 1000 bootstrapped mean values with the top 2\% of values removed (left), and the \glspl{CDF} of 50 of those realizations (right). }
+    \label{fig:outlier_ex2_mean_uncert}
+\end{figure}
+
+Metal-at-risk, summarized in \cite{parker2006}, is a procedure that establishes uncertainty related to the amount of high-grade metal within annual or global production volumes. The deposit can be ``re-drilled'' utilizing Monte Carlo simulation where the total number of samples drawn is equal to the annual production tonnage divided by the number of tonnes per assay in the domain. The assay distribution is sampled randomly with replacement under the assumption that high-grade can occur anywhere in the domain. For each resampled realization, the total metal above a given high-grade cutoff is calculated. The P20 value of this distribution is added to the metal content below the cutoff to calculate a ``risk-adjusted'' metal content. \cite{parker2006} states that theoretically, the mine should exceed the risk-adjusted metal in four out of five periods; however, ``there is additional and largely unquantifiable uncertainty related to the representivity of the sample-grade frequency distribution input to the simulation''. Metal-at-risk can be used as a guide to restrict high-grade samples' influence during estimation or calibrate a capping limit that removes this metal content. An advantage to the metal-at-risk approach versus others is that it accounts for data density and the production volume; as data density increases, metal-at-risk decreases and larger production volumes have less risk than small ones.
 
 \begin{enumerate}
     \item Something about high-yield restrictions
@@ -118,11 +186,6 @@ Another point of general indecision is capping before or after compositing. In t
     \item need to consider local and global spatial components
     \item combination of univariate and spatial components
 \end{enumerate}
-
-
-\FloatBarrier
-\section{High Grade Continuity}
-\label{sec:02continuity}
 
 
 \FloatBarrier
