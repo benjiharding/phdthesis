@@ -13,12 +13,7 @@ The following sections present the concepts of outliers and extreme values in a 
 \section{Outliers and Extreme Values}
 \label{sec:02extreme}
 
-"Outlier" is a general term for an observation that is sufficiently dissimilar to other observations that further investigation is warranted \citep{barnett1984outliers}. Outliers may be random fluctuations of the data generation mechanism (noise), true anomalies, or measurement errors. An extreme value is a value in the tails of the distribution that is believed to be real, but occurring rarely. Extreme values are different from outliers in the sense that all extreme values are possible outliers, but the reverse is not always true \citep{aggarwal2016outlier}. A key distinction here is that an outlier is not necessarily restricted to the tails of a distribution, while extreme values are. Consider the \gls{1D} set of values:
-\begin{equation*}
-    \{1,2,2,50,98,98,99\}
-\end{equation*}
-
-In the extreme value context mentioned above, 1 and 99 could (weakly) be considered extreme values, while 50 (the average of the values), is definitely not an extreme value. However, in the context of an outlier, the value of 50 is distant, or isolated from the remaining values. Distance or density based outlier detection methods would likely classify 50 as an outlier, which is correct given it is sufficiently dissimilar from the remaining values. This simple but illustrative example adapted from \cite{aggarwal2016outlier} highlights the core differences between outliers and extreme values. That being said, the terms are typically synonymous in the mining industry: one is only interested in outliers if they are also extreme values. Throughout this text the term outlier will refer to abnormal, or extreme data values that are assumed to be in either the upper or lower tail of the distribution.
+"Outlier" is a general term for an observation that is sufficiently dissimilar to other observations that further investigation is warranted \citep{barnett1984outliers}. Outliers may be random fluctuations of the data generation mechanism (noise), true anomalies, or measurement errors. An extreme value is a value in the tails of the distribution that is believed to be real, but occurring rarely. Extreme values are different from outliers in the sense that all extreme values are possible outliers, but the reverse is not always true \citep{aggarwal2016outlier}. A key distinction here is that an outlier is not necessarily restricted to the tails of a distribution, while extreme values are. Consider the \gls{1D} set of values: $\{1,2,2,50,98,98,99\}$. In the extreme value context mentioned above, 1 and 99 could (weakly) be considered extreme values, while 50 (the average of the values), is definitely not an extreme value. However, in the context of an outlier, the value of 50 is distant, or isolated from the remaining values. Distance or density based outlier detection methods would likely classify 50 as an outlier, which is correct given it is sufficiently dissimilar from the remaining values. This simple but illustrative example adapted from \cite{aggarwal2016outlier} highlights the core differences between outliers and extreme values. That being said, the terms are typically synonymous in the mining industry: one is only interested in outliers if they are also extreme values. Throughout this text the term outlier will refer to abnormal, or extreme data values that are assumed to be in either the upper or lower tail of the distribution.
 
 Geostatistical models are often generated using widely spaced data configurations. The cost of data collection prohibits exhaustive sampling and necessitates statistical inference from limited samples. Spatial prediction with widely spaced data in the presence of extreme values is a long-standing issue in the mining industry \citep{leuangthong2015dealing}. Extreme values may have significant local influence leading to overstated resources and the risk of production shortfalls. Practitioners are presented with difficult decisions for limiting extreme value influence and characterizing their spatial continuity.
 
@@ -83,23 +78,36 @@ Decile analysis or the Parrish method \citep{parrish1997geologist} assesses the 
 
 If the practitioner decides that capping is appropriate, one could reduce the high values in each percentile exceeding 10\% of the total metal to the maximum value of the next lowest percentile. For example, in Table \ref{tab:parrish_decile_ex2}, all values in P99 could be reset to the maximum value of 33.66 in P98. However, P98 contains 8.3\% of the total metal, suggesting further capping may be required based on practitioner judgement.
 
-Cutting curves \citep{roscoe1996cutting,leuangthong2015dealing} is another simple tool to assess the average capped grade versus the capping limit. The idea is that the average grade will eventually stabilize as the threshold increases, and a reasonable capping limit exists somewhere near the inflection point. Figure \ref{fig:outlier_ex2_cutting_curve} shows an example of a cutting curve for a synthetic log-normal-like data set.
+Cutting curves \citep{roscoe1996cutting,leuangthong2015dealing} is another simple tool to assess the average capped grade versus the capping limit. The idea is that the average grade will eventually stabilize as the threshold increases, and a reasonable capping limit exists somewhere near the inflection point. Figure \ref{fig:cutting_cv} (left) shows an example of a cutting curve for a synthetic log-normal-like data set.
 
-\begin{figure}[htb!]
-    \centering
-    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cutting_curve.png}
-    \caption{Cutting curve showing the relationship between the top cut grade and the mean of the adjusted data.}
-    \label{fig:outlier_ex2_cutting_curve}
+% \begin{figure}[htb!]
+%     \centering
+%     \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cutting_curve.png}
+%     \caption{Cutting curve showing the relationship between the top cut grade and the mean of the adjusted data.}
+%     \label{fig:outlier_ex2_cutting_curve}
+% \end{figure}
+
+\begin{figure}[!htb]
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cutting_curve.png}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cumcv.png}
+    \end{subfigure}
+    \caption{Cutting curve showing the relationship between the top cut grade and the mean of the adjusted data (left) and cumulative \gls{CV} versus sample grade for a log-normal like dataset (right). The cumulative \gls{CV} plot shows a rapid increase at approximately CV=1.25.}
+    \label{fig:cutting_cv}
 \end{figure}
 
-\cite{parker1991statistical} proposed plotting the cumulative \gls{CV} against the grade distribution in order to identify a point where the influence of high values in the upper tail becomes strong. The data are sorted in descending order, and the cumulative \gls{CV} is calculated in ascending order considering all samples with grades less than or equal to the current sample. A rapid increase in cumulative \gls{CV} characterizes this point where the influence of the upper tail is significant. \cite{parker1991statistical} then breaks the distribution into two parts and fits the upper distribution with a truncated log-normal distribution; estimation is performed without capping the distribution. Figure \ref{fig:outlier_ex2_cumcv} shows an example cumulative \gls{CV} plot of a synthetic log-normal-like data set.
+\cite{parker1991statistical} proposed plotting the cumulative \gls{CV} against the grade distribution in order to identify a point where the influence of high values in the upper tail becomes strong. The data are sorted in descending order, and the cumulative \gls{CV} is calculated in ascending order considering all samples with grades less than or equal to the current sample. A rapid increase in cumulative \gls{CV} characterizes this point where the influence of the upper tail is significant. \cite{parker1991statistical} then breaks the distribution into two parts and fits the upper distribution with a truncated log-normal distribution; estimation is performed without capping the distribution. Figure \ref{fig:cutting_cv} (right) shows an example cumulative \gls{CV} plot of a synthetic log-normal-like data set.
 
-\begin{figure}[htb!]
-    \centering
-    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cumcv.png}
-    \caption{Cumulative \gls{CV} versus sample grade for a log-normal like dataset. There is a rapid increase at approximately CV=1.25.}
-    \label{fig:outlier_ex2_cumcv}
-\end{figure}
+% \begin{figure}[htb!]
+%     \centering
+%     \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cumcv.png}
+%     \caption{Cumulative \gls{CV} versus sample grade for a log-normal like dataset. There is a rapid increase at approximately CV=1.25.}
+%     \label{fig:outlier_ex2_cumcv}
+% \end{figure}
 
 The influence of suspected outlier values can be investigated by assessing uncertainty in the average grade of the domain through the spatial bootstrap \citep{solow1985bootstrapping}. The procedure proposed by \cite{nowak2013suggestions} involves bootstrapping the grade distribution while leaving out some percentage of the highest data (arbitrarily 2\%) and comparing this expected grade to the uncapped grade. The idea is that if the expected grade with the top 2\% of samples removed is significantly lower than the uncapped grade, capping may be warranted within the domain. Figure \ref{fig:outlier_ex2_mean_uncert} shows an example of 1000 bootstrapped means capped at P98 of the data distribution and the declustered uncapped mean (left) and the bootstrapped distributions for reference (right). The difference between the expected and declustered actual grades suggests the grade distribution within the domain is sensitive to high values in the upper tail. If the expected grade and uncapped grade are similar, this suggests that the upper tail of the distribution has little influence, and capping may not be necessary.
 
@@ -115,7 +123,11 @@ Metal-at-risk, summarized in \cite{parker2006}, is a procedure that establishes 
 
 \begin{enumerate}
     \item Something about high-yield restrictions
+    \item p-grams \cite{nowak2019optimal}
     \item adjusting model to mitigate downside risk
+    \item grade decomposition \cite{rivoirard2013topcut}
+    \item capping based on duplicates \cite{dutaut2021new}
+    \item rank-transform of cross-validation results \cite{babakhani2014geostatistical}
 \end{enumerate}
 
 
@@ -133,7 +145,7 @@ The following section summarizes 125 NI 43-101 reports published by companies tr
     \label{fig:piechart}
 \end{figure}
 
-The most common method is the analysis of cumulative probability plots (CPP). Practitioners look for infection points to identify multiple populations or look for a point where the upper tail ``degrades''. Figure~\ref{fig:cpp} shows an example of four CPPs from a gold project in Nevada \citep{fiore2021}. The red points are considered outliers. The choice of threshold is necessarily subjective though gaps and infection points are used to guide selection.
+The most common method is the analysis of \glspl{CPP}. Practitioners look for infection points to identify multiple populations or look for a point where the upper tail ``degrades''. Figure~\ref{fig:cpp} shows an example of four \glspl{CPP} from a gold project in Nevada \citep{fiore2021}. The red points are considered outliers. The choice of threshold is necessarily subjective though gaps and infection points are used to guide selection.
 
 \begin{figure}[htb!]
     \centering
@@ -182,9 +194,30 @@ Another point of general indecision is capping before or after compositing. In t
 \section{Spatial Outlier Detection}
 \label{sec:02spatial}
 
+The majority of outlier management methodologies employed in the mining industry neglect the spatial component of outliers and focus solely on the univariate distribution (quantiles, decile analysis, \glspl{CPP}). Assessing the univariate distribution is considered a density based approach; if a statistical model is fit the empirical distribution, samples in the tails of the distribution have low density relative to the underlying \gls{PDF}. Inliers exist in high density regions and outliers in low density regions \citep{geron2019hands}. While this is a justifiable line of reasoning, one must also consider the local spatial component of outliers. An extreme value located in a neighbourhood of other high values may be an outlier from a density perspective, but not in the context of its local spatial arrangement. The spatial dimension characterizes the relationships with the local neighbourhood while the density dimension characterizes the global relationship with the rest of the data. This discrepancy motivates the development of an outlier identification algorithm that considers both the spatial neighbourhood about the data in question, and its position within the global distribution. This section describes the algorithm components, and provides examples of its use first on a synthetic \gls{1D} example, and then on a real \gls{3D} dataset.
+
+Consider a dataset $\{z(\mathbf{u}_{i}), \ i = 1, \dots, n\}$ where $n$ is the total number of data and $\mathbf{u}_{i}$ is a coordinate vector at the $i^{th}$ location. About location $\mathbf{u}_{i}$, there exists a neighbourhood of $k$ nearest locations $NN(\mathbf{u}_{i}; k)$. This neighbourhood could be defined by a fixed search radius and maximum $k$, or a fixed number $k$. The data $\{z(\mathbf{u}_{j}), \ j = 1, \dots, k, \ j \neq i \}$ define the neighbourhood of samples about location $\mathbf{u}_{i}$. Next, consider a function $f(\mathbf{u}_{i})$ that returns a summary statistic, such as the mean or median, for all data values within the neighbourhood $NN(\mathbf{u}_{i}; k)$. The spatial component of the algorithm compares the data value $z(\mathbf{u}_{i})$ to the value returned from $f(\mathbf{u}_{i})$: $h(\mathbf{u}_{i}) = |z(\mathbf{u}_{i}) - f(\mathbf{u}_{i})|$. The function $f(\mathbf{u}_{i})$ is chosen to be the median value of all samples in the neighbourhood (excluding location $\mathbf{u}_{i}$), weighted by distance from $\mathbf{u}_{i}$. The median is chosen as it is a more robust measure of central tendency in the presence of outliers compared to the mean value. The vector $\{h_{1}, h_{2}, \dots, h_{n}\}$ contains the absolute differences between each data value and the median of the surrounding neighbourhood. The $h_{n}$ values are scaled $\in [0,1]$ where values closer to 1 are the most different from their neighbourhood. This comparison accounts for the local spatial relationship between data values. The choice of $k$ is problem dependent. If $k$ is too small the median values will be noisy and not representative of the true local variation. If $k$ is too large the median values will be smooth and also not representative of the true local variation.
+
+The spatial neighbourhood approach is similar to the ``Median Algorithm'' proposed by \cite{chen2008detecting}, however there are some key differences. Firstly, the neighbourhood $NN(\mathbf{u}_{i}; k)$ is determined using covariance based distances rather than euclidean distance. The covariance distance comes from the anisotropy ratios of a robust measure of spatial correlation of $z(\mathbf{u})$. As the traditional semi-variogram is sensitive to the presence of outliers, robust measures of correlation such as the correlogram, normal score variogram, or pairwise relative variogram should be used \citep{babakhani2014geostatistical,drumond2019using}. Covariance based distance ensures the local neighbourhoods are aligned with relevant geologic features. Secondly, the function $f(\mathbf{u}_{i})$ is a weighted statistic, incorporating information about the data configuration and sparseness. The weight given to each sample in the neighbourhood is $w(\mathbf{u}_{j})=\frac{1}{d(\mathbf{u}_{i},\mathbf{u}_{j})^{p}}$.
+
+The second component of the algorithm considers the relationship of each data value to the global distribution. This is achieved by fitting a \gls{GMM} to the univariate distribution with the goal of approximating the underlying \gls{PDF}. \Gls{GMM} models are commonly used for outlier or anomaly detection \citep{geron2019hands,qu2021anomaly}, where data values falling in low density regions of the fit \gls{GMM} are potential outliers. The details of fitting the \gls{GMM} through application of the \gls{EM} algorithm are not given here; the reader is referred to \cite{mclachlan2019finite} for complete details. After the \gls{GMM} is fit to the univariate data, it is straightforward to estimate the density at any location. The log of the \gls{PDF} is calculated as:
+\begin{equation}
+    \log p(z_{i}) = \log \left( \sum_{j=1}^{J} \pi_{j} \mathcal{N}(z_{i}|\mu_{j}, \Sigma_{j}) \right)
+    \label{eq:logprob}
+\end{equation}
+
+Where $z_{i}$ is the $i^{th}$ sample of $z$, $J$ is the number of fitted \gls{GMM} components, $\pi_{j}$ is the weight to the $j^{th}$ component, and $\mathcal{N}(z_{i}|\mu_{j}, \Sigma_{j})$ is the \gls{PDF} of a multivariate Gaussian distribution with mean $\mu_{j}$ and covariance $\Sigma_{j}$. Exponentiation of Equation \ref{eq:logprob} results in an estimate of the \gls{PDF} for each sample. The higher the probability density, the more likely the sample belongs to the fitted distribution. As this calculation results in an estimate of the \gls{PDF} and not a true probability, the values are scaled such that they sum to one. The vector $\{p_{1}, p_{2}, \dots, p_{n}\}$ then contains an estimate of the probability that the $i^{th}$ sample belongs to the fitted distribution. Low probability samples come from low density regions are possible outliers. This clearly depends on the number of components, $J$, which must be chosen. Practice shows that 2-3 components is reasonable for a \gls{1D} distribution and fitting is generally straightforward
+
+
+
+
+
+
 \begin{enumerate}
     \item need to consider local and global spatial components
     \item combination of univariate and spatial components
+    \item robust vario/correlogram \cite{drumond2019using}
+    \item can expand to multivariate outliers by considering Mahalanobis distance
 \end{enumerate}
 
 
