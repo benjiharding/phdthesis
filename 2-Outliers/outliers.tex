@@ -194,23 +194,70 @@ Another point of general indecision is capping before or after compositing. In t
 \section{Spatial Outlier Detection}
 \label{sec:02spatial}
 
-The majority of outlier management methodologies employed in the mining industry neglect the spatial component of outliers and focus solely on the univariate distribution (quantiles, decile analysis, \glspl{CPP}). Assessing the univariate distribution is considered a density based approach; if a statistical model is fit the empirical distribution, samples in the tails of the distribution have low density relative to the underlying \gls{PDF}. Inliers exist in high density regions and outliers in low density regions \citep{geron2019hands}. While this is a justifiable line of reasoning, one must also consider the local spatial component of outliers. An extreme value located in a neighbourhood of other high values may be an outlier from a density perspective, but not in the context of its local spatial arrangement. The spatial dimension characterizes the relationships with the local neighbourhood while the density dimension characterizes the global relationship with the rest of the data. This discrepancy motivates the development of an outlier identification algorithm that considers both the spatial neighbourhood about the data in question, and its position within the global distribution. This section describes the algorithm components, and provides examples of its use first on a synthetic \gls{1D} example, and then on a real \gls{3D} dataset.
+The majority of outlier management methodologies employed in the mining industry neglect the spatial component of outliers and focus solely on the univariate distribution (quantiles, decile analysis, \glspl{CPP}). Assessing the univariate distribution is considered a density based approach; if a statistical model is fit the empirical distribution, samples in the tails of the distribution have low density relative to the underlying \gls{PDF}. Inliers exist in high density regions and outliers in low density regions \citep{geron2019hands}. While this is a justifiable line of reasoning, one must also consider the local spatial component of outliers. An extreme value located in a neighbourhood of other high values may be an outlier from a density perspective, but not in the context of its local spatial arrangement. The spatial dimension characterizes the relationships with the local neighbourhood while the density dimension characterizes the global relationship with the remaining data. This discrepancy motivates the development of an outlier identification algorithm that considers both the spatial neighbourhood about the data in question, and its position within the global distribution. This section describes the algorithm components, and provides examples of its use first on a synthetic \gls{1D} example, and then on a real \gls{3D} dataset.
 
-Consider a dataset $\{z(\mathbf{u}_{i}), \ i = 1, \dots, n\}$ where $n$ is the total number of data and $\mathbf{u}_{i}$ is a coordinate vector at the $i^{th}$ location. About location $\mathbf{u}_{i}$, there exists a neighbourhood of $k$ nearest locations $NN(\mathbf{u}_{i}; k)$. This neighbourhood could be defined by a fixed search radius and maximum $k$, or a fixed number $k$. The data $\{z(\mathbf{u}_{j}), \ j = 1, \dots, k, \ j \neq i \}$ define the neighbourhood of samples about location $\mathbf{u}_{i}$. Next, consider a function $f(\mathbf{u}_{i})$ that returns a summary statistic, such as the mean or median, for all data values within the neighbourhood $NN(\mathbf{u}_{i}; k)$. The spatial component of the algorithm compares the data value $z(\mathbf{u}_{i})$ to the value returned from $f(\mathbf{u}_{i})$: $h(\mathbf{u}_{i}) = |z(\mathbf{u}_{i}) - f(\mathbf{u}_{i})|$. The function $f(\mathbf{u}_{i})$ is chosen to be the median value of all samples in the neighbourhood (excluding location $\mathbf{u}_{i}$), weighted by distance from $\mathbf{u}_{i}$. The median is chosen as it is a more robust measure of central tendency in the presence of outliers compared to the mean value. The vector $\{h_{1}, h_{2}, \dots, h_{n}\}$ contains the absolute differences between each data value and the median of the surrounding neighbourhood. The $h_{n}$ values are scaled $\in [0,1]$ where values closer to 1 are the most different from their neighbourhood. This comparison accounts for the local spatial relationship between data values. The choice of $k$ is problem dependent. If $k$ is too small the median values will be noisy and not representative of the true local variation. If $k$ is too large the median values will be smooth and also not representative of the true local variation.
+Consider a dataset $\{z(\mathbf{u}_{i}), \ i = 1, \dots, n\}$ where $n$ is the total number of data and $\mathbf{u}_{i}$ is a coordinate vector at the $i^{th}$ location. About location $\mathbf{u}_{i}$, there exists a neighbourhood of $k$ nearest locations $NN(\mathbf{u}_{i}; k)$. This neighbourhood could be defined by a fixed search radius and maximum $k$, or a fixed number $k$. The data $\{z(\mathbf{u}_{j}), \ j = 1, \dots, k, \ j \neq i \}$ define the neighbourhood of samples about location $\mathbf{u}_{i}$. Next, consider a function $m(\mathbf{u}_{i})$ that returns a summary statistic, such as the mean or median, for all data values within the neighbourhood $NN(\mathbf{u}_{i}; k)$. The spatial component of the algorithm compares the data value $z(\mathbf{u}_{i})$ to the value returned from $m(\mathbf{u}_{i})$: $h(\mathbf{u}_{i}) = |z(\mathbf{u}_{i}) - m(\mathbf{u}_{i})|$. The function $m(\mathbf{u}_{i})$ is chosen to be the median value of all samples in the neighbourhood (excluding location $\mathbf{u}_{i}$), weighted by distance from $\mathbf{u}_{i}$. The median is chosen as it is a more robust measure of central tendency in the presence of outliers compared to the mean value. The vector $\{h_{1}, h_{2}, \dots, h_{n}\}$ contains the absolute differences between each data value and the median of the surrounding neighbourhood. The $h_{n}$ values are scaled $\in [0,1]$ where values closer to 1 are the most different from their neighbourhood. This comparison accounts for the local spatial relationship between data values. The choice of $k$ is problem specific. If $k$ is too small the median values will be noisy and not representative of the true local variation. If $k$ is too large the median values will be smooth and also not representative of the true local variation.
 
 The spatial neighbourhood approach is similar to the ``Median Algorithm'' proposed by \cite{chen2008detecting}, however there are some key differences. Firstly, the neighbourhood $NN(\mathbf{u}_{i}; k)$ is determined using covariance based distances rather than euclidean distance. The covariance distance comes from the anisotropy ratios of a robust measure of spatial correlation of $z(\mathbf{u})$. As the traditional semi-variogram is sensitive to the presence of outliers, robust measures of correlation such as the correlogram, normal score variogram, or pairwise relative variogram should be used \citep{babakhani2014geostatistical,drumond2019using}. Covariance based distance ensures the local neighbourhoods are aligned with relevant geologic features. Secondly, the function $f(\mathbf{u}_{i})$ is a weighted statistic, incorporating information about the data configuration and sparseness. The weight given to each sample in the neighbourhood is $w(\mathbf{u}_{j})=\frac{1}{d(\mathbf{u}_{i},\mathbf{u}_{j})^{p}}$.
 
-The second component of the algorithm considers the relationship of each data value to the global distribution. This is achieved by fitting a \gls{GMM} to the univariate distribution with the goal of approximating the underlying \gls{PDF}. \Gls{GMM} models are commonly used for outlier or anomaly detection \citep{geron2019hands,qu2021anomaly}, where data values falling in low density regions of the fit \gls{GMM} are potential outliers. The details of fitting the \gls{GMM} through application of the \gls{EM} algorithm are not given here; the reader is referred to \cite{mclachlan2019finite} for complete details. After the \gls{GMM} is fit to the univariate data, it is straightforward to estimate the density at any location. The log of the \gls{PDF} is calculated as:
+The second component of the algorithm considers the relationship of each data value to the global distribution. This is achieved by fitting a \gls{GMM} to the univariate distribution with the goal of approximating the underlying \gls{PDF}. \Gls{GMM} models are commonly used for outlier or anomaly detection \citep{geron2019hands,qu2021anomaly}, where data values falling in low density regions of the fitted \gls{GMM} are potential outliers. The details of fitting the \gls{GMM} through application of the \gls{EM} algorithm are not given here; the reader is referred to \cite{mclachlan2019finite} for complete details. After the \gls{GMM} is fit to the univariate data, it is straightforward to estimate the density at any location. The log of the \gls{PDF} is calculated as:
 \begin{equation}
     \log p(z_{i}) = \log \left( \sum_{j=1}^{J} \pi_{j} \mathcal{N}(z_{i}|\mu_{j}, \Sigma_{j}) \right)
     \label{eq:logprob}
 \end{equation}
 
-Where $z_{i}$ is the $i^{th}$ sample of $z$, $J$ is the number of fitted \gls{GMM} components, $\pi_{j}$ is the weight to the $j^{th}$ component, and $\mathcal{N}(z_{i}|\mu_{j}, \Sigma_{j})$ is the \gls{PDF} of a multivariate Gaussian distribution with mean $\mu_{j}$ and covariance $\Sigma_{j}$. Exponentiation of Equation \ref{eq:logprob} results in an estimate of the \gls{PDF} for each sample. The higher the probability density, the more likely the sample belongs to the fitted distribution. As this calculation results in an estimate of the \gls{PDF} and not a true probability, the values are scaled such that they sum to one. The vector $\{p_{1}, p_{2}, \dots, p_{n}\}$ then contains an estimate of the probability that the $i^{th}$ sample belongs to the fitted distribution. Low probability samples come from low density regions are possible outliers. This clearly depends on the number of components, $J$, which must be chosen. Practice shows that 2-3 components is reasonable for a \gls{1D} distribution and fitting is generally straightforward
+Where $z_{i}$ is the $i^{th}$ sample of $z$, $J$ is the number of fitted \gls{GMM} components, $\pi_{j}$ is the weight to the $j^{th}$ component, and $\mathcal{N}(z_{i}|\mu_{j}, \Sigma_{j})$ is the \gls{PDF} of a multivariate Gaussian distribution with mean $\mu_{j}$ and covariance $\Sigma_{j}$. Exponentiation of Equation \ref{eq:logprob} results in an estimate of the \gls{PDF} for each sample. The higher the probability density, the more likely the sample belongs to the fitted distribution. As this calculation results in an estimate of the \gls{PDF} and not a true probability, the values are scaled such that they sum to one. The vector $\{p_{1}, p_{2}, \dots, p_{n}\}$ then contains an estimate of the probability that the $i^{th}$ sample belongs to the fitted distribution. Low probability samples come from low density regions are possible outliers. This result clearly depends on the number of components, $J$, which must be chosen. Practice shows that 2-3 components is reasonable for a \gls{1D} distribution and fitting is generally straightforward. The final outlier measure is then a weighted combination of $h_{n}$ and $p_{n}$ for each data value:
+\begin{equation}
+    g_{i} = w_{h}*h_{i} + w_{p}*(1-p_{i}), \ i = 1, \dots, n
+    \label{eq:outlier}
+\end{equation}
 
+Where $w_{h}$ and $w_{p}$ weights to the neighbourhood and density components, respectively, and $w_{h}+w_{p}=1.0$. Consider the \gls{1D} synthetic data in Figure \ref{fig:fx}. The data show cyclicity and a trend with increasing $x$, common properties of earth science data. Random noise drawn from a Gaussian distribution with $\sigma=3.0$ is added to ten samples in the sequence to simulate the presence of outliers. The degree of ``outlierness'' varies across the samples. A variogram model is fit to the original data without noise for a robust measure of spatial continuity. This is a luxury that is not possible with real data; alternatively, a correlogram or pairwise relative variogram could be fit to the noise data. A neighbourhood is constructed considering $k=10$ data after scaling the coordinates according to the fitted variogram model.
 
+\begin{figure}[!t]
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/fx.png}
+        \caption{}
+        \label{fig:fx}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/hx.png}
+        \caption{}
+        \label{fig:hx}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/px.png}
+        \caption{}
+        \label{fig:px}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/gx.png}
+        \caption{}
+        \label{fig:gx}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/gx_detrend.png}
+        \caption{}
+        \label{fig:gx_detrend}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/spatial_outliers.png}
+        \caption{}
+        \label{fig:spatial_outliers}
+    \end{subfigure}
+    \caption{}
+    \label{fig:outliers_1d}
+\end{figure}
 
+Figure \ref{fig:hx} shows the difference between the data values and weighted neighbourhood median values. The red x's indicate the data with added noise. Except for one noise value, the suspected outliers show moderate to significant differences with their neighbourhoods. Figure \ref{fig:px} shows the $J=3$ \gls{GMM} components fit to the univariate distribution $f(x)$. The solid line is the fitted model and the dashed lines are the individual components. The number of components is chosen based on trial and error, with the goal of minimizing false positives. Again, a luxury not possible with real data, but this process allows the exploration of bounds of reasonable parameters. Figure \ref{fig:gx} shows the outlier measure of Equation \ref{eq:outlier} considering $w_{h}=0.5$ and $w_{p}=0.5$. Values closer to one are more likely to be outliers. Compared to Figure \ref{fig:hx}, additional values (near $x=-10$) have been identified as being discordant with the rest of the population. Removing the trend from $g(x)$ using a \gls{MWA} further elucidates the potential division between inliers and outliers. Figure \ref{fig:gx_detrend} shows the detrended distribution $g^{\prime}(x)$. At this point a threshold must be selected to define the division. The green circles in Figure \ref{fig:gx_detrend} identify all data above the threshold of $g^{\prime}(x)=0.08$. Figure \ref{fig:spatial_outliers} shows the final outliers identified by the algorithm (green circles) with the original data configuration.
 
+The algorithm effectively identifies the noisy data points. Two points remain undetected though the magnitude of the noise is small and there are no drastic intra-neighbourhood changes in these areas. In addition to the noisy data, the algorithm also identifies three additional outliers near $x=-10$. It is possible that a traditional univariate method such as visual examination of a \gls{CPP} would identify outliers in the upper and lower tails of the distribution (i.e. the values flagged in the lower left and upper right corners of Figure \ref{fig:spatial_outliers}), however the outliers in the middle of the distribution would go undetected without considering the spatial component.
 
 
 \begin{enumerate}
@@ -218,6 +265,11 @@ Where $z_{i}$ is the $i^{th}$ sample of $z$, $J$ is the number of fitted \gls{GM
     \item combination of univariate and spatial components
     \item robust vario/correlogram \cite{drumond2019using}
     \item can expand to multivariate outliers by considering Mahalanobis distance
+    \item not a replacement, but validates other methodologies
+    \item use as part of an ensemble
+    \item possibly easier to choose a threshold in other arbitrary units
+    \item possible unsupervised clustering of $g(x)$ rather than thresholding
+    \item capping grade could be inferred from minimum outlier value?
 \end{enumerate}
 
 
@@ -366,3 +418,7 @@ Access to a high resolution ``true'' model is rarely possible in practice. Often
 \FloatBarrier
 \section{Discussion}
 \label{sec:02discuss}
+
+\begin{enumerate}
+    \item Considering the context of an outlier is important.
+\end{enumerate}
