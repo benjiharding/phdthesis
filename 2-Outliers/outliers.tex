@@ -15,21 +15,15 @@ The following sections present the concepts of outliers and extreme values in a 
 
 "Outlier" is a general term for an observation that is sufficiently dissimilar to other observations that further investigation is warranted \citep{barnett1984outliers}. Outliers may be random fluctuations of the data generation mechanism (noise), true anomalies, or measurement errors. An extreme value is a value in the tails of the distribution that is believed to be real, but occurring rarely. Extreme values are different from outliers in the sense that all extreme values are possible outliers, but the reverse is not always true \citep{aggarwal2016outlier}. A key distinction here is that an outlier is not necessarily restricted to the tails of a distribution, while extreme values are. Consider the \gls{1D} set of values: $\{1,2,2,50,98,98,99\}$. In the extreme value context mentioned above, 1 and 99 could (weakly) be considered extreme values, while 50 (the average of the values), is definitely not an extreme value. However, in the context of an outlier, the value of 50 is distant, or isolated from the remaining values. Distance or density based outlier detection methods would likely classify 50 as an outlier, which is correct given it is sufficiently dissimilar from the remaining values. This simple but illustrative example adapted from \cite{aggarwal2016outlier} highlights the core differences between outliers and extreme values. That being said, the terms are typically synonymous in the mining industry: one is only interested in outliers if they are also extreme values. Throughout this text the term outlier will refer to abnormal, or extreme data values that are assumed to be in either the upper or lower tail of the distribution.
 
-Geostatistical models are often generated using widely spaced data configurations. The cost of data collection prohibits exhaustive sampling and necessitates statistical inference from limited samples. Spatial prediction with widely spaced data in the presence of extreme values is a long-standing issue in the mining industry \citep{leuangthong2015dealing}. Extreme values may have significant local influence leading to overstated resources and the risk of production shortfalls. Practitioners are presented with difficult decisions for limiting extreme value influence and characterizing their spatial continuity.
-
-Inputs to numerical geologic models consist of observed data, a representative histogram and spatial controls on mineralization. Each of these components presents challenges in the presence of extreme values. Extreme values are often under sampled making inference about their probability of occurrence difficult. The influence of extreme values are often limited in practice through grade capping which could have a significant impact on the final resource. The spatial continuity of extreme values is different than that of the barren or mineralized background. Traditional geostatistical methods are limited in capacity to adapt to both extreme values and asymmetric spatial continuity features.
+Geostatistical models are often generated using widely spaced data configurations. The cost of data collection prohibits exhaustive sampling and necessitates statistical inference from limited samples. Spatial prediction with widely spaced data in the presence of extreme values is a long-standing issue in the mining industry \citep{leuangthong2015dealing}. Extreme values may have significant local influence leading to overstated resources and the risk of production shortfalls. Practitioners are presented with difficult decisions for limiting extreme value influence and characterizing their spatial continuity. Inputs to numerical geologic models consist of observed data, a representative histogram and spatial controls on mineralization. Each of these components presents challenges in the presence of extreme values. Extreme values are often under sampled making inference about their probability of occurrence difficult. The influence of extreme values are often limited in practice through grade capping which could have a significant impact on the final resource. The spatial continuity of extreme values is different than that of the barren or mineralized background. Traditional geostatistical methods are limited in capacity to adapt to both extreme values and asymmetric spatial continuity features.
 
 \FloatBarrier
 \subsection{Outlier Detection}
 \label{subsec:02dectection}
 
-Outlier detection is applicable in virtually all statistical modeling. Measures of ``inlierness'' or ``outlierness'' are typically based on (1) statistics of observations for the rest of the distribution (parametric or non-parametric); (2) distances (euclidean or non-euclidean) between observations with outliers being ``far'' from neighbours and (3) probability density-based measures where outliers have low densities \citep{li2022ecod}. A comprehensive review of outlier detection methods beyond the scope of this chapter; the reader is referred to \cite{aggarwal2016outlier,pang2022deep,hodge2004survey,wang2019progress} for a review of methodology.
+Outlier detection is applicable in virtually all statistical modeling. Measures of ``inlierness'' or ``outlierness'' are typically based on (1) statistics of observations for the rest of the distribution (parametric or non-parametric); (2) distances (euclidean or non-euclidean) between observations with outliers being ``far'' from neighbours and (3) probability density-based measures where outliers have low densities \citep{li2022ecod}. A comprehensive review of outlier detection methods beyond the scope of this chapter; the reader is referred to \cite{aggarwal2016outlier,pang2022deep,hodge2004survey,wang2019progress,nowak2019optimal,leuangthong2015dealing} for a review of methodology in the mining industry and beyond.
 
-\begin{enumerate}
-    \item a challenge is defining/thresholding what is in/out
-\end{enumerate}
-
-
+A challenge of many outlier detection techniques is the choice of a threshold to delineate an abnormal measurement. Whether the technique is statistical or proximity based, a threshold must be chosen to classify samples based on the measure of ``outlierness'' or the outlier score. If the threshold is too restrictive, the algorithm may not identify true outliers, and if too relaxed it will lead to false positives. For simple methodologies the selection of a threshold may have physical meaning, such as a grade distribution. For spatial (multivariate) outlier detection the selection of a proximity based threshold in a possibly non-euclidean space is non-trivial. The following section presents details on outlier detection methodologies specific to the mining industry. Generally, these approaches are univariate and do not consider the spatial, or proximity component of outliers. Threshold selection in these cases is subjective, but straightforward.
 
 \FloatBarrier
 \section{Mining Industry Practices}
@@ -41,10 +35,10 @@ Identifying and managing extreme values or ``outliers'' is essential, particular
 
 \blockquote{\textit{``Recognition of the spatial extent of outlier values (a component of grade continuity) should be investigated and a procedure devised for incorporating such data appropriately into an estimate. Procedures including domaining, grade capping (also known as top cutting), spatially restricting the influence of high-grade assays, single and multiple indicator kriging, and Monte Carlo simulation methods all compensate in varying ways for potential overestimation. Regardless of the methodology selected, the Practitioners must provide documentation of the approach selected, along with justification and support for the decision, possibly including reconciliation of estimated block model grades with available production information. Comparisons of the outcome of the different approaches can be useful.'' (pg. 18)}}
 
-\cite{leuangthong2015dealing}, echoed by CIM best practices, break the process of outlier management into three categories: (1) choosing appropriate domains, (2) grade capping and (3) limiting the influence of outliers through the estimation process. This short note focuses on the second category. Grade capping or ``top-cutting'' is a common practice in the mining industry. Grades above a given threshold are reset to that threshold. The general idea is that uncapped grades may lead to unrealistic local estimates adjacent to high-grade composites \citep{nowak2013suggestions}. The ``smearing'' may be significant if sparse data are estimated with kriging. Due to the normal score transform, simulation is somewhat more robust in the presence of outliers though capping may still be required in some cases.
+\cite{leuangthong2015dealing}, echoed by CIM best practices, break the process of outlier management into three categories: (1) choosing appropriate domains, (2) grade capping and (3) limiting the influence of outliers through the estimation process. Grade capping or ``top-cutting'' is a common practice in the mining industry. Grades above a given threshold are reset to that threshold. The general idea is that uncapped grades may lead to unrealistic local estimates adjacent to high-grade composites \citep{nowak2013suggestions}. The ``smearing'' may be significant if sparse data are estimated with kriging. Due to the normal score transform, simulation is somewhat more robust in the presence of outliers though capping may still be required in some cases.
 
 \FloatBarrier
-\subsection{Tools for Outlier Evaluation}
+\subsection{Tools for Outlier Detection}
 \label{subsec:02tools}
 
 Probability plots are ubiquitous in resource estimation. The \gls{CDF} of the variable is plotted against the \gls{CDF} of the normal distribution (log scaling results in a log-normal probability plot). Inflection points may indicate the presence of multiple populations, and gaps in the distribution are typically targeted as potential capping limits. A recent survey of 125 43-101 reports with gold as the primary commodity showed that the cumulative probability plot is the most common tool for assessing outliers and establishing outliers. This prevalence is likely due to (1) the simplicity of the technique and the ease of implementation and (2) the historical prevalence of the technique in the mining industry.
@@ -58,15 +52,15 @@ Probability plots are ubiquitous in resource estimation. The \gls{CDF} of the va
         \centering
         \includegraphics[scale=0.60, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cpp_tukey.png}
     \end{subfigure}
-    \caption{}
+    \caption{\gls{CPP} showing a possible capping threshold based on upper tail decomposition (left), and the same \gls{CPP} showing outlier and far outlier thresholds based on Tukey's fences \citep{tukey1977exploratory}.}
     \label{fig:cpp}
 \end{figure}
 
-Decile analysis or the Parrish method \citep{parrish1997geologist} assesses the metal content of each decile of the grade distribution. The assay population is sorted and arranged into deciles containing equal samples; the upper decile will likely contain less data than the rest. The length weighted mean and standard deviation of each decile are calculated as well as metal content (grade value x length). The top decile is then split into percentiles, and the same summary statistics are calculated for each. Table \ref{tab:parrish_decile_ex2} shows an example decile table for a synthetic log‐normal‐like distribution. The general rules proposed by \cite{parrish1997geologist} are:
+Decile analysis or the Parrish method \citep{parrish1997geologist} assesses the metal content of each decile of the grade distribution. The assay population is sorted and arranged into deciles containing equal samples; the upper decile will likely contain less data than the rest. The length weighted mean and standard deviation of each decile are calculated as well as metal content (grade value x length). The top decile is then split into percentiles, and the same summary statistics are calculated for each. Table \ref{tab:parrish_decile_ex2} shows an example decile table for a synthetic positively skewed distribution. The general rules proposed by \cite{parrish1997geologist} are:
 \begin{enumerate}[noitemsep]
-    \item If the top decile contains more than 40\% of the metal, capping is warranted
-    \item If the top decile contains more than twice the metal of the 80-90\% decile, capping is warranted
-    \item If the top percentile (or more) contains more than 10\% of the total metal capping is warranted
+    \item If the top decile contains more than 40\% of the metal, capping is warranted.
+    \item If the top decile contains more than twice the metal of the 80-90\% decile, capping is warranted.
+    \item If the top percentile (or more) contains more than 10\% of the total metal capping is warranted.
 \end{enumerate}
 
 \begin{table}[!htb]
@@ -90,11 +84,11 @@ Cutting curves \citep{roscoe1996cutting,leuangthong2015dealing} is another simpl
 \begin{figure}[!htb]
     \begin{subfigure}{0.5\textwidth}
         \centering
-        \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cutting_curve.png}
+        \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cutting_curve.png}
     \end{subfigure}
     \begin{subfigure}{0.5\textwidth}
         \centering
-        \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cumcv.png}
+        \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_cumcv.png}
     \end{subfigure}
     \caption{Cutting curve showing the relationship between the top cut grade and the mean of the adjusted data (left) and cumulative \gls{CV} versus sample grade for a log-normal like dataset (right). The cumulative \gls{CV} plot shows a rapid increase at approximately CV=1.25.}
     \label{fig:cutting_cv}
@@ -114,7 +108,7 @@ The influence of suspected outlier values can be investigated by assessing uncer
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_mean_uncert.png}
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/outlier_ex2_mean_uncert.png}
     \caption{Distribution of 1000 bootstrapped mean values with the top 2\% of values removed (left), and the \glspl{CDF} of 50 of those realizations (right). }
     \label{fig:outlier_ex2_mean_uncert}
 \end{figure}
@@ -194,11 +188,35 @@ Another point of general indecision is capping before or after compositing. In t
 \section{Spatial Outlier Detection}
 \label{sec:02spatial}
 
-The majority of outlier management methodologies employed in the mining industry neglect the spatial component of outliers and focus solely on the univariate distribution (quantiles, decile analysis, \glspl{CPP}). Assessing the univariate distribution is considered a density based approach; if a statistical model is fit the empirical distribution, samples in the tails of the distribution have low density relative to the underlying \gls{PDF}. Inliers exist in high density regions and outliers in low density regions \citep{geron2019hands}. While this is a justifiable line of reasoning, one must also consider the local spatial component of outliers. An extreme value located in a neighbourhood of other high values may be an outlier from a density perspective, but not in the context of its local spatial arrangement. The spatial dimension characterizes the relationships with the local neighbourhood while the density dimension characterizes the global relationship with the remaining data. This discrepancy motivates the development of an outlier identification algorithm that considers both the spatial neighbourhood about the data in question, and its position within the global distribution. This section describes the algorithm components, and provides examples of its use first on a synthetic \gls{1D} example, and then on a real \gls{3D} dataset.
+The majority of outlier detection methodologies employed in the mining industry neglect the spatial component of outliers and focus solely on the univariate distribution (quantiles, decile analysis, \glspl{CPP}). Assessing the univariate distribution is considered a density based approach; if a statistical model is fit the empirical distribution, samples in the tails of the distribution have low density relative to the underlying \gls{PDF}. Inliers exist in high density regions and outliers in low density regions \citep{geron2019hands}. While this is a justifiable line of reasoning, one must also consider the local spatial component of outliers. An extreme value located in a neighbourhood of other high values may be an outlier from a density perspective, but not in the context of its local spatial arrangement.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/spatial_outlier_sketch.png}
+    \caption{A sketch illustrating the spatial and density components of the spatial outlier algorithm. The spatial component accounts for local relationship between samples and the density component accounts for the global relationship. These measures are combined into a final outlier measure.}
+    \label{fig:spatial_outlier_sketch}
+\end{figure}
+
+
+Additionally, the volume of influence of a potential outlier should be assessed. Isolated extreme values, or ones with large areas of influence pose a risk of overestimation \citep{leuangthong2015dealing}. The spatial dimension characterizes the relationships with the local neighbourhood while the density dimension characterizes the global relationship with the remaining data. The spatial context of a sample motivates the development of an outlier identification algorithm that considers both the spatial neighbourhood about the sample, and its position within the global distribution. This section describes the algorithm components, and provides examples of its use first on a synthetic \gls{1D} example, and then on a real \gls{3D} dataset.
+
+\FloatBarrier
+\subsection{Methodology}
+\label{subsec:02methodology}
+
 
 Consider a dataset $\{z(\mathbf{u}_{i}), \ i = 1, \dots, n\}$ where $n$ is the total number of data and $\mathbf{u}_{i}$ is a coordinate vector at the $i^{th}$ location. About location $\mathbf{u}_{i}$, there exists a neighbourhood of $k$ nearest locations $NN(\mathbf{u}_{i}; k)$. This neighbourhood could be defined by a fixed search radius and maximum $k$, or a fixed number $k$. The data $\{z(\mathbf{u}_{j}), \ j = 1, \dots, k, \ j \neq i \}$ define the neighbourhood of samples about location $\mathbf{u}_{i}$. Next, consider a function $m(\mathbf{u}_{i})$ that returns a summary statistic, such as the mean or median, for all data values within the neighbourhood $NN(\mathbf{u}_{i}; k)$. The spatial component of the algorithm compares the data value $z(\mathbf{u}_{i})$ to the value returned from $m(\mathbf{u}_{i})$: $h(\mathbf{u}_{i}) = |z(\mathbf{u}_{i}) - m(\mathbf{u}_{i})|$. The function $m(\mathbf{u}_{i})$ is chosen to be the median value of all samples in the neighbourhood (excluding location $\mathbf{u}_{i}$), weighted by distance from $\mathbf{u}_{i}$. The median is chosen as it is a more robust measure of central tendency in the presence of outliers compared to the mean value. The vector $\{h_{1}, h_{2}, \dots, h_{n}\}$ contains the absolute differences between each data value and the median of the surrounding neighbourhood. The $h_{n}$ values are scaled $\in [0,1]$ where values closer to 1 are the most different from their neighbourhood. This comparison accounts for the local spatial relationship between data values. The choice of $k$ is problem specific. If $k$ is too small the median values will be noisy and not representative of the true local variation. If $k$ is too large the median values will be smooth and also not representative of the true local variation.
 
-The spatial neighbourhood approach is similar to the ``Median Algorithm'' proposed by \cite{chen2008detecting}, however there are some key differences. Firstly, the neighbourhood $NN(\mathbf{u}_{i}; k)$ is determined using covariance based distances rather than euclidean distance. The covariance distance comes from the anisotropy ratios of a robust measure of spatial correlation of $z(\mathbf{u})$. As the traditional semi-variogram is sensitive to the presence of outliers, robust measures of correlation such as the correlogram, normal score variogram, or pairwise relative variogram should be used \citep{babakhani2014geostatistical,drumond2019using}. Covariance based distance ensures the local neighbourhoods are aligned with relevant geologic features. Secondly, the function $f(\mathbf{u}_{i})$ is a weighted statistic, incorporating information about the data configuration and sparseness. The weight given to each sample in the neighbourhood is $w(\mathbf{u}_{j})=\frac{1}{d(\mathbf{u}_{i},\mathbf{u}_{j})^{p}}$.
+The area of influence of each sample is accounted for through the neighbourhood $NN(\mathbf{u}_{i}; k)$. The area (in \gls{2D}) or volume (in \gls{3D}) of influence is calculated from the maximum distance to any sample in the neighbourhood ($r_{max}$ in Figure \ref{fig:spatial_outlier_sketch}):
+\begin{align}
+    A_{2D}(\mathbf{u}_{i}) & = \pi \cdot r_{max}(\mathbf{u}_{i})^{2}         \\
+    A_{3D}(\mathbf{u}_{i}) & = 4 \cdot \pi \cdot r_{max}(\mathbf{u}_{i})^{2}
+    \label{eq:aoi}
+\end{align}
+
+This measure is only applicable if $NN(\mathbf{u}_{i}; k)$ considers a fixed number $k$, rather than a fixed search radius. A fixed search radius amounts to equal weighting of each sample. The area directly accounts for the sparseness of the data configuration within the neighbourhood. The anisotropic area values are scaled $\in [0,1]$. Samples located in sparse regions have values closer to one. A sample being geographically isolated does not constitute an outlier and thus the area of influence must be considered in conjunction with $h(\mathbf{u}_{i})$.
+
+The spatial neighbourhood approach is similar to the ``Median Algorithm'' proposed by \cite{chen2008detecting}, however there are some key differences. Firstly, the neighbourhood $NN(\mathbf{u}_{i}; k)$ is determined using covariance based distances rather than euclidean distance. The covariance distance comes from the anisotropy ratios of a robust measure of spatial correlation of $z(\mathbf{u})$. As the traditional semi-variogram is sensitive to the presence of outliers, robust measures of correlation such as the correlogram, normal score variogram, or pairwise relative variogram should be used \citep{babakhani2014geostatistical,drumond2019using}. Covariance based distance ensures the local neighbourhoods are aligned with relevant geologic features. Secondly, the function $f(\mathbf{u}_{i})$ is a weighted statistic, incorporating information about the data configuration and sparseness. The weight given to each sample in the neighbourhood is $w(\mathbf{u}_{j})=\frac{1}{d(\mathbf{u}_{i},\mathbf{u}_{j})^{p}}$ ($d(i,j)$ in Figure \ref{fig:spatial_outlier_sketch}). Accounting for the area of influence further incorporates information on the data configuration.
 
 The second component of the algorithm considers the relationship of each data value to the global distribution. This is achieved by fitting a \gls{GMM} to the univariate distribution with the goal of approximating the underlying \gls{PDF}. \Gls{GMM} models are commonly used for outlier or anomaly detection \citep{geron2019hands,qu2021anomaly}, where data values falling in low density regions of the fitted \gls{GMM} are potential outliers. The details of fitting the \gls{GMM} through application of the \gls{EM} algorithm are not given here; the reader is referred to \cite{mclachlan2019finite} for complete details. After the \gls{GMM} is fit to the univariate data, it is straightforward to estimate the density at any location. The log of the \gls{PDF} is calculated as:
 \begin{equation}
@@ -208,11 +226,13 @@ The second component of the algorithm considers the relationship of each data va
 
 Where $z_{i}$ is the $i^{th}$ sample of $z$, $J$ is the number of fitted \gls{GMM} components, $\pi_{j}$ is the weight to the $j^{th}$ component, and $\mathcal{N}(z_{i}|\mu_{j}, \Sigma_{j})$ is the \gls{PDF} of a multivariate Gaussian distribution with mean $\mu_{j}$ and covariance $\Sigma_{j}$. Exponentiation of Equation \ref{eq:logprob} results in an estimate of the \gls{PDF} for each sample. The higher the probability density, the more likely the sample belongs to the fitted distribution. As this calculation results in an estimate of the \gls{PDF} and not a true probability, the values are scaled such that they sum to one. The vector $\{p_{1}, p_{2}, \dots, p_{n}\}$ then contains an estimate of the probability that the $i^{th}$ sample belongs to the fitted distribution. Low probability samples come from low density regions are possible outliers. This result clearly depends on the number of components, $J$, which must be chosen. Practice shows that 2-3 components is reasonable for a \gls{1D} distribution and fitting is generally straightforward. The final outlier measure is then a weighted combination of $h_{n}$ and $p_{n}$ for each data value:
 \begin{equation}
-    g_{i} = w_{h}*h_{i} + w_{p}*(1-p_{i}), \ i = 1, \dots, n
+    g_{i} = w_{h}*h_{i} + w_{A}*A_{i} + w_{p}*(1-p_{i}), \ i = 1, \dots, n
     \label{eq:outlier}
 \end{equation}
 
-Where $w_{h}$ and $w_{p}$ weights to the neighbourhood and density components, respectively, and $w_{h}+w_{p}=1.0$. Consider the \gls{1D} synthetic data in Figure \ref{fig:fx}. The data show cyclicity and a trend with increasing $x$, common properties of earth science data. Random noise drawn from a Gaussian distribution with $\sigma=3.0$ is added to ten samples in the sequence to simulate the presence of outliers. The degree of ``outlierness'' varies across the samples. A variogram model is fit to the original data without noise for a robust measure of spatial continuity. This is a luxury that is not possible with real data; alternatively, a correlogram or pairwise relative variogram could be fit to the noise data. A neighbourhood is constructed considering $k=10$ data after scaling the coordinates according to the fitted variogram model.
+Where $w_{h}$, $w_{r}$, and $w_{p}$ weights to the neighbourhood, radius and density components, respectively, and $w_{h}+w_{r}+w_{p}=1.0$. Consider the \gls{1D} synthetic data in Figure \ref{fig:fx}. The data show cyclicity and a trend with increasing $x$, common properties of earth science data. Random noise drawn from a Gaussian distribution with $\sigma=3.0$ is added to ten samples in the sequence to simulate the presence of outliers. The degree of ``outlierness'' varies across the samples. A variogram model is fit to the original data without noise for a robust measure of spatial continuity. This is a luxury that is not possible with real data; alternatively, a correlogram or pairwise relative variogram could be fit to the noise data. A neighbourhood is constructed considering $k=10$ data after scaling the coordinates according to the fitted variogram model.
+
+Figure \ref{fig:hx} shows the difference between the data values and weighted neighbourhood median values. The red x's indicate the data with added noise. Except for one noise value, the suspected outliers show moderate to significant differences with their neighbourhoods. Figure \ref{fig:px} shows the $J=3$ \gls{GMM} components fit to the univariate distribution $f(x)$. The solid line is the fitted model and the dashed lines are the individual components. The number of components is chosen based on trial and error, with the goal of minimizing false positives. Again, a luxury not possible with real data, but this process allows the exploration of bounds of reasonable parameters. Figure \ref{fig:gx} shows the outlier measure of Equation \ref{eq:outlier} considering $w_{h}=0.5$, $w_{A}=0.0$ and $w_{p}=0.5$. $w_{A}=0.0$ as all samples are equidistant. Values closer to one are more likely to be outliers. Compared to Figure \ref{fig:hx}, additional values (near $x=-10$) have been identified as being discordant with the rest of the population. Removing the trend from $g(x)$ using a \gls{MWA} further elucidates the potential division between inliers and outliers. Figure \ref{fig:gx_detrend} shows the detrended distribution $g^{\prime}(x)$. At this point a threshold must be selected to define the division. The green circles in Figure \ref{fig:gx_detrend} identify all data above the threshold of $g^{\prime}(x)=0.08$. Figure \ref{fig:spatial_outliers} shows the final outliers identified by the algorithm (green circles) with the original data configuration.
 
 \begin{figure}[!t]
     \begin{subfigure}{0.5\textwidth}
@@ -251,54 +271,83 @@ Where $w_{h}$ and $w_{p}$ weights to the neighbourhood and density components, r
         \caption{}
         \label{fig:spatial_outliers}
     \end{subfigure}
-    \caption{}
+    \caption{\textbf{(a)} \gls{1D} function of the coordinate position $x$; \textbf{(b)} the difference between each sample the neighbourhood median, $h(x)$; \textbf{(c)} fitted \gls{GMM} model with $J=3$ components; \textbf{(d)} the combined outlier measure $g(x)$; \textbf{(e)} detrended $g(x)$ measure with flagged outliers; \textbf{(f)} the \gls{1D} function from \textbf{(a)} with outliers identified. The red x's denote the samples with added noise and the green circles are the samples classified as outliers by the algorithm.}
     \label{fig:outliers_1d}
 \end{figure}
-
-Figure \ref{fig:hx} shows the difference between the data values and weighted neighbourhood median values. The red x's indicate the data with added noise. Except for one noise value, the suspected outliers show moderate to significant differences with their neighbourhoods. Figure \ref{fig:px} shows the $J=3$ \gls{GMM} components fit to the univariate distribution $f(x)$. The solid line is the fitted model and the dashed lines are the individual components. The number of components is chosen based on trial and error, with the goal of minimizing false positives. Again, a luxury not possible with real data, but this process allows the exploration of bounds of reasonable parameters. Figure \ref{fig:gx} shows the outlier measure of Equation \ref{eq:outlier} considering $w_{h}=0.5$ and $w_{p}=0.5$. Values closer to one are more likely to be outliers. Compared to Figure \ref{fig:hx}, additional values (near $x=-10$) have been identified as being discordant with the rest of the population. Removing the trend from $g(x)$ using a \gls{MWA} further elucidates the potential division between inliers and outliers. Figure \ref{fig:gx_detrend} shows the detrended distribution $g^{\prime}(x)$. At this point a threshold must be selected to define the division. The green circles in Figure \ref{fig:gx_detrend} identify all data above the threshold of $g^{\prime}(x)=0.08$. Figure \ref{fig:spatial_outliers} shows the final outliers identified by the algorithm (green circles) with the original data configuration.
 
 The algorithm effectively identifies the noisy data points. Two points remain undetected though the magnitude of the noise is small and there are no drastic intra-neighbourhood changes in these areas. In addition to the noisy data, the algorithm also identifies three additional outliers near $x=-10$. It is possible that a traditional univariate method such as visual examination of a \gls{CPP} would identify outliers in the upper and lower tails of the distribution (i.e. the values flagged in the lower left and upper right corners of Figure \ref{fig:spatial_outliers}), however the outliers in the middle of the distribution would go undetected without considering the spatial component.
 
 
-\begin{enumerate}
-    \item need to consider local and global spatial components
-    \item combination of univariate and spatial components
-    \item robust vario/correlogram \cite{drumond2019using}
-    \item can expand to multivariate outliers by considering Mahalanobis distance
-    \item not a replacement, but validates other methodologies
-    \item use as part of an ensemble
-    \item possibly easier to choose a threshold in other arbitrary units
-    \item possible unsupervised clustering of $g(x)$ rather than thresholding
-    \item capping grade could be inferred from minimum outlier value?
-\end{enumerate}
+\FloatBarrier
+\subsection{2D Example}
+\label{subsec:02example2D}
+
+Consider the \gls{2D} spatial distribution of \gls{PGE} in Figure \ref{fig:pge}. There are scattered high values throughout the north-west portion of the domain where the data density is highest; there are also isolated high values in the more sparse regions to the south. These samples are potential outliers in a spatial context. Figure \ref{fig:pge_probplot} shows the \gls{CDF} and \gls{CPP} for the \gls{PGE} distribution. The empirical \gls{CDF} shows a degree of tail decomposition for high values - this is also shown in the \gls{CPP}. Tukey's fences \citep{tukey1977exploratory} identify potential outliers in both tails of the distribution.
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/pge.png}
+    \caption{Location map of \gls{PGE} sample locations. }
+    \label{fig:pge}
+\end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/pge_probplot.png}
+    \caption{\Gls{CDF} plot and \gls{CPP} for the \gls{PGE} distribution. The green shaded area in the \gls{CPP} are Tukey's fences \citep{tukey1977exploratory}, identifying potential outliers. }
+    \label{fig:pge_probplot}
+\end{figure}
+
+The methodology from Section \ref{subsec:02methodology} is employed to identify spatial outliers. An experimental correlogram is calculated and fitted with an exponential model to characterize the spatial relationship between sample locations. The neighbourhood $NN(\mathbf{u}_{i}; k)$ is characterized by $k=25$ neighbours, and an inverse distance weighting exponent of $p=1.0$. The area of influence for each sample is calculated in \gls{2D} (Equation \ref{eq:aoi}). The \gls{GMM} is fitted to the histogram using $J=2$ components. The final outlier measure is calculated using $w_{h}=0.4$, $w_{A}=0.2$, and $w_{p}=0.4$. The weight to the area of influence is less than the other measures as to not overly weight all sparse samples, or samples near the edges of the domain.
+
+The top row of Figure \ref{fig:measures_pge} shows the absolute difference between each sample value and its corresponding neighbourhood. The left column shows values along the east-west direction and the right column shows the north-south direction. There are some clear outlying samples though $h(\mathbf{u}_{i})$ does not show a clear delineation between two populations. The second row of Figure \ref{fig:measures_pge} shows the area of influence measure for each sample. Row three shows $1-p(\mathbf{u}_{i})$, where values closer to one are in lower density regions of the distribution. The fourth row shows the final outlier measure. The division between inliers and outliers is not immediately clear, but one could argue there is a grouping of points above the $g(\mathbf{u}_{i})=0.6$ threshold, highlighted by the red dashed lines. Figure \ref{fig:pge_outliers} shows the identified outliers in the spatial context. Both high and low values are identified. The algorithm flags ten values above the mean and three values below. It is important that potential outliers are aligned with geologic intuition. There is a clustering of extreme value outliers in the northern part of the domain, where neighbouring samples are medium- to high-grade. An extreme low grade sample immediately adjacent to an extreme high-grade is also flagged. Given the samples position in the distribution and spatial context, these samples appear to be reasonable candidates for outliers. Three high-grade samples in the sparsely sampled southern portion of the domain are also flagged as outliers. These samples are also appropriate outlier candidates due to high grades relative to adjacent samples and the potential area of influence for each sample. In an estimation paradigm these samples could influence the grades in many blocks and lead to overestimation. One could derive a capping limit as the minimum grade of the high-grade samples flagged as outliers.
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/measures_pge.png}
+    \caption{Absolute difference between the sample value and corresponding neighbourhood ($1^{st}$ row); area of influence for each sample ($2^{nd}$ row); density measure ($3^{rd}$ row); final outlier measure ($4^{th}$ row) with flagged outliers above the $g(\mathbf{u}_{i})=0.6$ threshold. The left colum shows values in the east-west direction and the right column shows the north-south direction. }
+    \label{fig:measures_pge}
+\end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/pge_outliers.png}
+    \caption{Location map of \gls{PGE} sample locations with flagged outliers.}
+    \label{fig:pge_outliers}
+\end{figure}
+
+The spatial outlier detection algorithm effectively identifies potential outliers. Measures of ``outierness'' in spatially correlated data must consider both the univariate distribution and the spatial context of the data. The proposed algorithm directly incorporates features of the grade distribution, robust measures of geologic distance, and features of the data configuration including sparseness. The final outlier measure is practical in the sense that it includes multiple sources of relevant information. The final measure is weighted blend of a proximity based algorithm and a parametric statistical model (\gls{GMM}) \citep{li2022ecod}. The algorithm could be easily extended to the multivariate context by considering the Mahalanobis distance between a $K$ dimensional vector of medians and the center of the data \citep{chen2008detecting}. A challenge of the outlier detection algorithm is that an arbitrary threshold must be chosen. There may not be a clear demarcation between inlier and outlier in the final measure. The use of additional outlier detection measures, such as \gls{CPP} analysis, as an ensemble, may aide threshold selection. For instance, the outliers identified by Tukey's fences in Figure \ref{fig:pge_probplot} roughly correspond to the spatial outliers, suggesting appropriate parameters. The identified outliers also appear ``reasonable'' from a geologic perspective. Immediately adjacent extreme high and low values warrant further investigation. One could employ an unsupervised clustering method on the final outlier measure in an effort to remove subjectivity from the choice of threshold. Outlier detection methodologies, should in general, form and ensemble, with higher confidence being given to samples identified by multiple methods. The spatial outlier detection algorithm is another tool to be used in conjunction with those in Section \ref{subsec:02tools}, and further justifies the choice of capping limit or outlier management strategy.
+
+% \begin{enumerate}
+%     \item need to consider local and global spatial components
+%     \item combination of univariate and spatial components
+%     \item robust vario/correlogram \cite{drumond2019using}
+%     \item can expand to multivariate outliers by considering Mahalanobis distance
+%     \item not a replacement, but validates other methodologies
+%     \item use as part of an ensemble
+%     \item possibly easier to choose a threshold in other arbitrary units
+%     \item possible unsupervised clustering of $g(x)$ rather than thresholding
+%     \item capping grade could be inferred from minimum outlier value?
+% \end{enumerate}
 
 
 \FloatBarrier
 \section{Analytical Extreme Value Models}
 \label{sec:02analytical}
 
-The geological processes that led to the precipitation and preservation of the grades under consideration in a particular deposit are complex and defy a simple deterministic assessment. The processes influence our understanding, but we adopt a statistical model since there is no way to understand the initial and boundary conditions of the non-linear and chaotic processes that led to the deposit under consideration. This section describes a trimodal model for mineralization: (1) mineralized - M, (2) high grade - HG, and (3) extreme high grade - EHG. Figure~\ref{fig:ehg} illustrates this. The three populations overlap, mix and are not exclusive, but we could reasonably define a range that represents them, for example, 0.1 to 1.0 g/t for mineralized (M), 5 to 20 g/t for high grade (HG), and 500+ g/t for extreme high grade (EHG).
+The geological processes that led to the precipitation and preservation of the grades under consideration in a particular deposit are complex and defy a simple deterministic assessment. The processes influence our understanding, but we adopt a statistical model since there is no way to understand the initial and boundary conditions of the non-linear and chaotic processes that led to the deposit under consideration. This section describes a trimodal model for mineralization: (1) \acrfull{M}, (2) \acrfull{HG}, and (3) \acrfull{EHG}. Figure~\ref{fig:ehg} illustrates this. The three populations overlap, mix and are not exclusive, but we could reasonably define a range that represents them, for example, 0.1 to 1.0 g/t for \gls{M}, 5 to 20 g/t for \gls{HG}, and 500+ g/t for \gls{EHG}.
 
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.70, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/EHG.png}
-    \caption{Trimodal distribution model of mineralized (M), high-grade HG) and extreme high grade (EHG).}
+    \caption{Trimodal distribution model of \acrfull{M}, \acrfull{HG} and \acrfull{EHG}.}
     \label{fig:ehg}
 \end{figure}
 
 
-The concept of three populations is reasonable. The illustration in Figure~\ref{fig:ehg} appears discrete as three populations; however, the data distribution from this model would appear highly skewed. Considering one highly skewed population may be possible; however, a flexible parametric distribution is not available to satisfy observed data, explain outliers, and avoid unrealistically high grades. Considering more than three populations would be possible; however, it seems reasonable to have M, HG and EHG. Additional intermediate populations would complicate the model and could be grouped into one of the three.
+The concept of three populations is reasonable. The illustration in Figure~\ref{fig:ehg} appears discrete as three populations; however, the data distribution from this model would appear highly skewed. Considering one highly skewed population may be possible; however, a flexible parametric distribution is not available to satisfy observed data, explain outliers, and avoid unrealistically high grades. Considering more than three populations would be possible; however, it seems reasonable to have \gls{M}, \gls{HG} and \gls{EHG}. Additional intermediate populations would complicate the model and could be grouped into one of the three.
 
-An assumption is that the M and HG are more pervasive while EHG is encountered rarely. The EHG, however, is assumed to have some reasonable thickness within the vein structures. A drill hole intersecting M, HG or EHG would be identified as such. We do not expect many EHG intersections.
-
-% \begin{figure}[htb!]
-%     \centering
-%     \includegraphics[scale=0.25, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/MHGEHG.png}
-%     \caption{Illustrations of M, HG and (barely) EHG from Monterde.}
-%     \label{fig:MHGEHG}
-% \end{figure}
-
-The model is parameterized by the probability of each population ($P_{M}$, $P_{HG}$,and $P_{EHG}$) and three lognormal distributions defined by mean values ($m_{M}$, $m_{HG}$,and $m_{EHG}$) and variance or standard deviation parameters for each ($\sigma_{M}$, $\sigma_{HG}$,and $\sigma_{EHG}$).  The sum of the proportions is unity:
+An assumption is that the \gls{M} and \gls{HG} are more pervasive while \gls{EHG} is encountered rarely. The \gls{EHG}, however, is assumed to have some reasonable thickness within the vein structures. A drill hole intersecting \gls{M}, \gls{HG} or \gls{EHG} would be identified as such. We do not expect many \gls{EHG} intersections. The model is parameterized by the probability of each population ($P_{M}$, $P_{HG}$,and $P_{EHG}$) and three lognormal distributions defined by mean values ($m_{M}$, $m_{HG}$,and $m_{EHG}$) and variance or standard deviation parameters for each ($\sigma_{M}$, $\sigma_{HG}$,and $\sigma_{EHG}$).  The sum of the proportions is unity:
 \[
     P_{M} + P_{HG} + P_{EHG}= 1
 \]
@@ -335,19 +384,19 @@ So, the proportions of the populations are defined in sequence by the following:
 \[
     P_{M} = 1 - P_{HG} - P_{EHG}
 \]
-The mean values of the three populations could be estimated with reasonable confidence. The overall mean could be estimated from historical mining. The fraction of metal in the EHG population relative to the HG population (the $f$ value) is a model parameter that could be inferred from available drilling if enough intersections are available. Given the mean values and $f$ we could infer the proportions of the populations and the contribution to metal from each population.
+The mean values of the three populations could be estimated with reasonable confidence. The overall mean could be estimated from historical mining. The fraction of metal in the \gls{EHG} population relative to the \gls{HG} population (the $f$ value) is a model parameter that could be inferred from available drilling if enough intersections are available. Given the mean values and $f$ we could infer the proportions of the populations and the contribution to metal from each population.
 
 \FloatBarrier
 \subsection{Probability of Drilling EHG}
 \label{subsec:02probehg}
 
-The probability of drilling $n$ successive drill holes without encountering EHG could be computed by:
+The probability of drilling $n$ successive drill holes without encountering \gls{EHG} could be computed by:
 \[
     \left( 1 - P_{EHG} \right)^n
 \]
-This approach assumes the drill holes are independent, which is reasonable given the spacing of the drill holes. It also assumes the extreme high grade (EHG) will be seen in a drill hole with a significant thickness, that is, the EHG is not sprinkled around in very small nuggets. This assumption is reasonable since if the EHG were at a very small scale, it would be composited with other rock and end up as mineralized (M) or high grade (HG).
+This approach assumes the drill holes are independent, which is reasonable given the spacing of the drill holes. It also assumes the \gls{EHG} will be seen in a drill hole with a significant thickness, that is, the \gls{EHG} is not sprinkled around in very small nuggets. This assumption is reasonable since if the \gls{EHG} were at a very small scale, it would be composited with other rock and end up as mineralized (M) or high grade (HG).
 
-Consider $m_{Overall} = 10 g/t$, $m_{M} = 0.1 g/t$, $m_{HG} = 10 g/t$, $m_{EHG} = 1000 g/t$, and $f=1$, that is, there is the same metal in the HG and the EHG.  These numbers appear reasonable given the intersections encountered at epithermal veins systems. Following the calculations described above:
+Consider $m_{Overall} = 10 g/t$, $m_{M} = 0.1 g/t$, $m_{HG} = 10 g/t$, $m_{EHG} = 1000 g/t$, and $f=1$, that is, there is the same metal in the HG and the \gls{EHG}.  These numbers appear reasonable given the intersections encountered at epithermal veins systems. Following the calculations described above:
 \[
     P_{HG} =
     \frac{10 - 0.1}
@@ -364,7 +413,7 @@ Consider $m_{Overall} = 10 g/t$, $m_{M} = 0.1 g/t$, $m_{HG} = 10 g/t$, $m_{EHG} 
 \]
 The overall mean of this model could be checked: $m_{Overall} = 0.4975 \cdot 0.1 + 0.4975 \cdot 10 + 0.0050 \cdot 1000 = 10$ as it must.
 
-So, for thirty ($n=30$) drill holes there is an $0.995^{30}=0.86=86\%$ chance of {\em not} intersecting EHG.  To get to a 50\% chance of encountering an EHG drill hole $log(0.5)/log(0.995)=138$ drill holes would be required.
+So, for thirty ($n=30$) drill holes there is an $0.995^{30}=0.86=86\%$ chance of {\em not} intersecting \gls{EHG}.  To get to a 50\% chance of encountering an \gls{EHG} drill hole $log(0.5)/log(0.995)=138$ drill holes would be required.
 
 
 \FloatBarrier
@@ -373,28 +422,28 @@ So, for thirty ($n=30$) drill holes there is an $0.995^{30}=0.86=86\%$ chance of
 
 The following demonstrates the conceptual trimodal model for extreme high grades applied to an actual data set. The data consists of 61,027 channel samples across a gold-bearing Witwatersrand reef structure with cumulative grade (cmg/t) and thickness (cm) measurements. Gold values (g/t) are back-calculated from the other two measurements. A significant proportion of the samples are considered ``high grade''. The data set is sufficiently dense such that some \emph{valid} extreme values are likely observed, and the parameters of the extreme high-grade model can be inferred with reasonable confidence.
 
-Distributions of cmg/t and Au are shown in Figure~\ref{fig:wits_hist}. The Au histogram is weighted by sample length. The overall distribution is high grade with multiple oz/t assays. Log probability plots are a useful tool for identifying multiple populations and visualizing the upper tail of the distribution. Figure~\ref{fig:wits_log_prob} shows log probability plots for the same two distributions. The Au plot shows a distinct inflection point near 0.1 g/t and tail decomposition around 30 g/t. These may be reasonable thresholds for the initial assessment of mineralized, high grade and extreme high grade.
+Figure~\ref{fig:wits_au_cdf} (left) shows the Au distribution. The overall distribution is high grade with multiple oz/t assays. Log probability plots are a useful tool for identifying multiple populations and visualizing the upper tail of the distribution. Figure~\ref{fig:wits_au_cdf} (right) shows the log probability plots for Au. Au plot shows a distinct inflection point near 0.1 g/t and tail decomposition around 30 g/t. These may be reasonable thresholds for the initial assessment of mineralized, high grade and extreme high grade.
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/wits_hist.png}
-    \caption{Histogram of cmg/t (left) and Au g/t (right).}
-    \label{fig:wits_hist}
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/wits_au_cdf.png}
+    \caption{Au \gls{CDF} with log scaling (left) and log probability plot with Tukey's fences \citep{tukey1977exploratory} (right).}
+    \label{fig:wits_au_cdf}
 \end{figure}
 
+% \begin{figure}[htb!]
+%     \centering
+%     \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/wits_log_prob.png}
+%     \caption{Log probability plots of cmg/t (left) and Au g/t (right). Tukey's fences are shown for reference.}
+%     \label{fig:wits_log_prob}
+% \end{figure}
+
+Parameterization of the extreme high-grade model requires four mean values (overall, mineralized, high grade and extreme high grade) and the fraction of extreme high-grade metal contributing to the overall high-grade metal. Thresholds must be selected to delineate sub-populations. A sub-sample of the full data set is used to calculate the proportions of each population. 80\% of the data is with held and the distribution of the remaining 20\% is used for inference to simulate a sparse sampling regime. Distribution quantiles are used to determine the thresholds. Mineralized is defined by 0.1-0.9, high grade from 0.95-0.9995 and extreme high grade 0.9999 and above. Though subjective, threshold selection is informed by log probability plots. The 0.1-0.9 quantile range roughly defines the ``inlier'' range based on Tukey's fences. 0.95 roughly defines the break between ``outlier'' and ``far outlier''. 0.9999 roughly defines the point of tail decomposition suggesting extreme values. Thresholds also consider the number of samples within each distribution; we do not expect to encounter many extreme values. Figure~\ref{fig:wits_ehg_loc} shows a location plot of all samples with the corresponding \gls{EHG} locations highlighted in red.
+
 \begin{figure}[htb!]
     \centering
-    \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/wits_log_prob.png}
-    \caption{Log probability plots of cmg/t (left) and Au g/t (right). Tukey's fences are shown for reference.}
-    \label{fig:wits_log_prob}
-\end{figure}
-
-Parameterization of the extreme high-grade model requires four mean values (overall, mineralized, high grade and extreme high grade) and the fraction of extreme high-grade metal contributing to the overall high-grade metal. Thresholds must be selected to delineate sub-populations. A sub-sample of the full data set is used to calculate the proportions of each population. 80\% of the data is with held and the distribution of the remaining 20\% is used for inference to simulate a sparse sampling regime. Distribution quantiles are used to determine the thresholds. Mineralized is defined by 0.1-0.9, high grade from 0.95-0.9995 and extreme high grade 0.9999 and above. Though subjective, threshold selection is informed by log probability plots. The 0.1-0.9 quantile range roughly defines the ``inlier'' range based on Tukey's fences. 0.95 roughly defines the break between ``outlier'' and ``far outlier''. 0.9999 roughly defines the point of tail decomposition suggesting extreme values. Thresholds also consider the number of samples within each distribution; we do not expect to encounter many extreme values. Figure~\ref{fig:wits_ehg_loc} shows a location plot of all samples with the corresponding EHG locations highlighted in red.
-
-\begin{figure}[htb!]
-    \centering
-    \includegraphics[scale=0.7, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/wits_ehg_loc.png}
-    \caption{Location plot of all samples with EHG locations highlighted in red.}
+    \includegraphics[scale=0.6, max size={\textwidth}{\textheight}]{./0-Figures/02-Ch2/wits_ehg_loc.png}
+    \caption{Location plot of all samples with \gls{EHG} locations highlighted in red.}
     \label{fig:wits_ehg_loc}
 \end{figure}
 
@@ -407,13 +456,13 @@ A sub-sample of the full data set is used to calculate the proportions of each p
 \input{./0-Tables/ehg_model.tex}
 \input{./0-Tables/ehg_metal_prop.tex}
 
-In this scenario, the fractional EHG component, $f$, is quite small due to a significant number of samples in the HG population. The channel samples are narrow (tens of cm) and likely only sample mineralized material. If the samples were drill core, one would expect more internal dilution, overall lower grades, and a higher $f$ value. Given the proportions, we can calculate the probability of sampling extreme high grade with $n$ successive channel samples or the required number of samples for a $P_n$ probability of sampling EHG. For example, the probability of \emph{not} sampling EHG in 100 channel samples is $(1-0.0001)^{100} = 98.9\%$. In order to get a 50\% chance of observing an EHG sample, $log(0.5)/log(1-0.0001) = 6301$ additional channels are required.
+In this scenario, the fractional \gls{EHG} component, $f$, is quite small due to a significant number of samples in the HG population. The channel samples are narrow (tens of cm) and likely only sample mineralized material. If the samples were drill core, one would expect more internal dilution, overall lower grades, and a higher $f$ value. Given the proportions, we can calculate the probability of sampling extreme high grade with $n$ successive channel samples or the required number of samples for a $P_n$ probability of sampling \gls{EHG}. For example, the probability of \emph{not} sampling \gls{EHG} in 100 channel samples is $(1-0.0001)^{100} = 98.9\%$. In order to get a 50\% chance of observing an \gls{EHG} sample, $log(0.5)/log(1-0.0001) = 6301$ additional channels are required.
 
-The reasonableness of this model can be checked with a simple simulation study. For a given probability, say 0.1, 0.5 or 0.9, the number of additional samples required to intersect an EHG value with that probability is calculated analytically as above. High resolution simulated realizations of gold using all available data are considered the truth. If we randomly sample the realizations with the calculated number of samples for some number of trials, we can directly observe how many EHG intersections occur. Ten realizations are used for numerical stability. Each realization is sampled 1000 times with calculated number of samples. Table~\ref{tab:sim_props} summarizes the predicted number of samples required to have a 0.1, 0.5 and 0.9 probability of intersecting EHG and the corresponding expected probabilities from resampling. The simulation results closely reproduce the analytical predictions.
+The reasonableness of this model can be checked with a simple simulation study. For a given probability, say 0.1, 0.5 or 0.9, the number of additional samples required to intersect an \gls{EHG} value with that probability is calculated analytically as above. High resolution simulated realizations of gold using all available data are considered the truth. If we randomly sample the realizations with the calculated number of samples for some number of trials, we can directly observe how many \gls{EHG} intersections occur. Ten realizations are used for numerical stability. Each realization is sampled 1000 times with calculated number of samples. Table~\ref{tab:sim_props} summarizes the predicted number of samples required to have a 0.1, 0.5 and 0.9 probability of intersecting \gls{EHG} and the corresponding expected probabilities from resampling. The simulation results closely reproduce the analytical predictions.
 
 \input{./0-Tables/sim_props.tex}
 
-Access to a high resolution ``true'' model is rarely possible in practice. Often when data is sufficiently dense to be considered the truth, mining has already occurred. One does not have the luxury of calibrating their analytical model. Though the application of the proposed analytical model can never be verified in a practical scenario, the example presented highlights that the analytical model \emph{could} be reasonable. The simulation study shows that the model can predict the probability of intersecting EHG with good accuracy. Determining how many data are required to infer model parameters is a topic of future research.
+Access to a high resolution ``true'' model is rarely possible in practice. Often when data is sufficiently dense to be considered the truth, mining has already occurred. One does not have the luxury of calibrating their analytical model. Though the application of the proposed analytical model can never be verified in a practical scenario, the example presented highlights that the analytical model \emph{could} be reasonable. The simulation study shows that the model can predict the probability of intersecting \gls{EHG} with good accuracy. Determining how many data are required to infer model parameters is a topic of future research.
 
 \FloatBarrier
 \section{Discussion}
