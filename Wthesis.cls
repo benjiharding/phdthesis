@@ -46,6 +46,7 @@
 \usepackage{gensymb} %$\degree$ contained in this one - BH
 \usepackage{pgffor}  % permits for-loops in latex, \foreach \x {item1, item2, ... } {% do things with \x} - BH
 \usepackage{array}
+\usepackage{tcolorbox} % text box
 
 % extras for pseudocode
 \usepackage{algorithm}
