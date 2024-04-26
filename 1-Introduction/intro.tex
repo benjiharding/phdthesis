@@ -157,7 +157,7 @@ Again, the sum of the estimated factors returns the original regionalized variab
 
 Multivariate factorial kriging is a technique for characterizing the regionalized factors $Y_{\ell,k}$ from observations of $Z_{k}$. This technique is advantageous if the correlation between variables is dependent on scale and one would like to extract or filter a particular spatial structure.
 
-Simple factorial kriging equations are equivalent to the simple kriging equations with the exception of the right hand side covariance is the covariance of the nested structure being estimated. The sum of the estimated factors plus the mean is equal to the simple kriging estimate \citep{hong2007improved}:
+Simple factorial kriging equations are equivalent to the simple kriging equations except for the right hand side covariance is the covariance of the nested structure being estimated \citep{hong2007improved}:
 \begin{equation*}
     \begin{cases}
         \sum_{j=1}^{n} \lambda_{j}^{\ell} C(\mathbf{u}_{i}, \mathbf{u}_{j}) = C^{\ell}(\mathbf{u}_{i}, \mathbf{u}) \\
@@ -169,70 +169,91 @@ Simple factorial kriging equations are equivalent to the simple kriging equation
     z^{*}(\mathbf{u}) = \sum_{\ell=0}^{L} z^{\ell*}(\mathbf{u}) + m
 \end{equation*}
 
-Factorial simulation utilizes a conditioning by simple factorial kriging scheme. Conditioning by kriging involves adding a simulated kriging error component to a kriging estimate \citep{chiles2012geostatistics}.
-\begin{equation*}
-    z_{cs}(\mathbf{u}) = z^{*}(\mathbf{u}) + [z_{us}(\mathbf{u}) - z_{us}^{*}(\mathbf{u})]
-\end{equation*}
-
-Where $z_{cs}(\mathbf{u})$ is the final conditioned value, $z^{*}(\mathbf{u})$ is the simple kriging estimate, $z_{us}(\mathbf{u})$ is the unconditionally simulate value and $z_{us}^{*}(\mathbf{u})$ is the simple kriging estimate of the unconditional values at the data locations. This linear combination can be done in a factorial sense as each term can be generated for the given factor \citep{hong2007improved}:
-\begin{equation*}
-    z_{cs}^{\ell}(\mathbf{u}) = z^{\ell*}(\mathbf{u}) + [z_{us}^{\ell}(\mathbf{u}) - z_{us}^{\ell*}(\mathbf{u})]
-\end{equation*}
-
-Due to the exactitude of kriging, the sum of the conditionally simulated values at the data locations is equal to the sum of the simple kriging factors.
-
+The sum of the estimated factors plus the mean is equal to the simple kriging estimate.
 
 \FloatBarrier
 \subsection{Simulating Continuous Variables}
 \label{subsec:03simulate}
 
-\begin{enumerate}
-    \item \cite{gomez-hernandez1993joint,isaaks1990application,goovaerts1997geostatistics}
-    \item \cite{pinto2020independent}
+Kriging, and its variants, generate smooth, deterministic estimates that do not reproduce the true variability of the data \citep{deutsch1992geostatistical}. The smoothness of this estimate is not desirable if the transfer function is sensitive to extreme values; under-representing the variability may be consequential. Simulation methods are designed to reproduce the covariance structure and spatial variability of the input variables, while honouring to data values at their locations \citep{goovaerts1997geostatistics}. Uncertainty in the \gls{RV} is captured by generating $L$ equiprobable realizations. Conventional simulation algorithms are built on the assumption that the input variables are multivariate Gaussian after a univariate normal score transform. Under the multivariate Gaussian assumption, all conditional distributions are defined by the normal equations, and thus linear combinations of the conditioning data \citep{chiles2012geostatistics}. Many algorithms are available for conditional simulation of Gaussian \gls{RF}. \cite{pinto2020independent} presents a comprehensive overview of the most common algorithms and best practices for selecting an algorithm given the problem context.
+
+Gaussian simulation algorithms are prevalent in the mining industry, with \gls{SGS} likely being the most common \citep{rossi2013mineral}. \Gls{SGS} is a \gls{MCS} technique for simulation of Gaussian \glspl{RF} \citep{gomez-hernandez1993joint,isaaks1990application,goovaerts1997geostatistics,gomez-hernandez2021one}. \Gls{SGS} requires (1) parameterizing a multivariate conditional \gls{CDF}, and (2) drawing realizations. Given the dimensionality of the problems faced in mining, (1) is only possible if a parametric, multivariate Gaussian distribution is adopted \citep{leuangthong2008solved}. The \textit{curse of dimensionality} \citep{bellman1961adaptive} and the simplicity and tractability of the Gaussian distribution precludes the use of other distributions.
+
+The following steps generalize the process of generating a realization with \gls{SGS}:
+\begin{enumerate}[noitemsep]
+    \item Define a random path through the grid nodes.
+    \item At each location calculate the first and second order moments of the conditional \gls{CDF} using the normal equations.
+    \item Randomly draw a simulated value from the conditional \gls{CDF}.
+    \item Add the simulated value to the conditioning data.
+    \item Visit the next grid node in the path.
 \end{enumerate}
+
+As simulation progresses the number of conditioning data increases. In practice, calculation of the conditional moments is restricted to a local neighbourhood about the location being simulated to prevent unreasonably large systems of equations. Multiple realizations are generated by varying the random path and draws from the conditional \glspl{CDF}.
+
+
+
+% Factorial simulation utilizes a conditioning by simple factorial kriging scheme. Conditioning by kriging involves adding a simulated kriging error component to a kriging estimate \citep{chiles2012geostatistics}.
+% \begin{equation*}
+%     z_{cs}(\mathbf{u}) = z^{*}(\mathbf{u}) + [z_{us}(\mathbf{u}) - z_{us}^{*}(\mathbf{u})]
+% \end{equation*}
+
+% Where $z_{cs}(\mathbf{u})$ is the conditioned value, $z^{*}(\mathbf{u})$ is the simple kriging estimate, $z_{us}(\mathbf{u})$ is the unconditionally simulated value and $z_{us}^{*}(\mathbf{u})$ is the simple kriging estimate of the unconditional values at the data locations. This linear combination can be done in a factorial sense as each term can be generated for the given factor \citep{hong2007improved}:
+% \begin{equation*}
+%     z_{cs}^{\ell}(\mathbf{u}) = z^{\ell*}(\mathbf{u}) + [z_{us}^{\ell}(\mathbf{u}) - z_{us}^{\ell*}(\mathbf{u})]
+% \end{equation*}
+
+% Due to the exactitude of kriging, the sum of the conditionally simulated values at the data locations is equal to the sum of the simple kriging factors.
 
 \FloatBarrier
 \subsection{Multiple Point Statistics}
 \label{subsec:01mps}
 
-\begin{enumerate}
-    \item\cite{strebelle2002conditional,boisvert2007multiplepoint,tahmasebi2018multiple}
-\end{enumerate}
+Two-point statistics summarize the relationship between points separated by a lag vector $\mathbf{h}$. Two-point statistics such as the variogram or correlogram are measures of linear continuity. \gls{MPS} are measures of continuity between multiple spatial arrangements of points with the possibility of reproducing curvilinear or ordering patterns \citep{boisvert2007multiplepoint}. There are numerous \gls{MPS} including the $n$-point connectivity function \citep{journel1989nongaussian}, the distribution of runs \citep{ortiz2003characterization} and the \gls{MPDF} \citep{boisvert2007multiplepoint}.
+
+The foundation of multiple-point simulation algorithms \citep{guardiano1993multivariate,strebelle2002conditional} is the replacement of inference of two-point statistics with the \gls{MPDF}, where the \gls{MPDF} describes the frequency of occurrence of a particular pattern. The local conditional probabilities are derived from multiple-point configurations allowing for reproduction of non-linear features \citep{silva2014guide}. A challenge of simulation with \gls{MPS} is that inference of the \gls{MPDF} with limited data. This challenge is overcome by extracting the \gls{MPDF} from a \gls{TI} \citep{journel2005covariance}. The \gls{TI}, or substitute for a \gls{RF} model, is an exhaustive image at the support of realizations with the expected geologic variability of the final models \citep{gomez-hernandez2021one}. Though the \gls{TI} allows for inference of \gls{MPS} not available from the data, one is faced with selecting an appropriate \gls{TI}. \cite{boisvert2007multiplepoint} describes the choice of \gls{TI} being analogous to variogram modeling in the two-point paradigm. In general, the TI should represent the physics of the underlying geological process and be characteristic of the conceptual geology. \Glspl{TI} can be generated from outcrop data, object based models, or process based models \cite{tahmasebi2018multiple}. More recently, \cite{minniakhmetov2022highorder} present methodology for high-order simulation of categorical variables that does not rely on a training image.
+
+Traditionally, \gls{MPS} simulations are focused on categorical modeling of stratigraphic deposits where object-based or process-mimicking models are applicable across geologic environments \citep{mariethoz2014multiplepoint}. Multi-point simulation of continuous variables is generally approached with high-order spatial cumulants, discussed in the next section.
 
 
 \FloatBarrier
 \subsection{High-Order Simulation}
 \label{subsec:03hosim}
 
+High-order simulation methods are similar in concept to the multi-point simulation framework, with applications for both continuous and categorical variables. These methodologies are data-driven, not completely \gls{TI} driven; rather than inferring high-order conditional probabilities exclusively from a \gls{TI}, they are approximated by spatial cumulants calculated from the data. High-order simulation based on spatial cumulants is proposed by \cite{dimitrakopoulos2009highorder} and \cite{mustapha2010highorder,mustapha2011hosim}. A cumulant is defined as the logarithm of the moment generating function of a \gls{RF}. The idea is that spatial cumulants can be used to generalize the covariance to orders beyond two; \cite{dimitrakopoulos2009highorder} shows that the first and second order cumulants are the mean and variance, respectively. The high-order cumulants, similar to the concepts \gls{MPS}, are able to characterize complex non-linear and non-Gaussian geologic features. By incorporating spatial cumulants up to order-five, \cite{mustapha2010highorder} show the ability to capture multi-point periodicity, connectivity of extreme values and complex geometric characteristics. The key idea in the \textit{HOSIM} approach \citep{mustapha2011hosim} is that the local conditional \glspl{CDF} take the form Legendre polynomial expansions, where the polynomial coefficients are approximated with spatial cumulants \citep{mustapha2010highorder}. Both a \gls{TI} and available data are used to infer the Legendre polynomial coefficients; third- and fourth-order statistics are estimated from the data, while higher-order features come from the \gls{TI} \citep{minniakhmetov2022highorder}. \cite{minniakhmetov2017joint} extends the high-order simulation framework to the multivariate context. Further refinements to polynomial approximations are given in \cite{minniakhmetov2018highorder}, \cite{yao2020highorder} and \cite{yao2021learning}.
 
-\begin{enumerate}
+Though largely data-driven, a drawback of these methodologies is that a \gls{TI} is still required. The inference of the spatial cumulants the is inferred from both the \gls{TI} and available data \citep{mustapha2010highorder}. Selecting or generating a \gls{TI} for continuous variables in mining problems is challenging without dense sampling; \cite{minniakhmetov2018highorder} and \cite{decarvalho2019highorder} use blast hole samples for \gls{TI} construction. \cite{yao2021training} presents methodology for \gls{TI} free simulation.
 
-    \item HOSIM:
-          \begin{enumerate}
-              \item \cite{dimitrakopoulos2009highorder,mustapha2010highorder,mustapha2011hosim,tamayomas2016testing}
-              \item based on training image
-              \item Legendre Polynomials
-              \item spatial cumulants
-              \item combinations of moments of statistical parameters that characterize non-Gaussian random fields
-              \item absence of any distribution-related assumptions
-          \end{enumerate}
 
-    \item Ilnur's approach:
-          \begin{enumerate}
-              \item \cite{minniakhmetov2017joint,minniakhmetov2018highorder, decarvalho2019highorder}
-              \item Legendre-like orthogonal splines
-              \item The coefficients of spline approximation are estimated using high-order spatial statistics inferred from the available sample data, additionally complemented by a training image.
-          \end{enumerate}
 
-    \item Yao (2021):
-          \begin{enumerate}
-              \item \cite{yao2020highorder,yao2021training,yao2021learning}
-              \item A training image free, high-order sequential simulation method
-              \item Legendre moment kernel spaces
-              \item All methods based on the approximation of a conditional distribution using Legendre polynomials
-          \end{enumerate}
 
-\end{enumerate}
+% \begin{enumerate}
+
+%     \item HOSIM:
+%           \begin{enumerate}
+%               \item \cite{dimitrakopoulos2009highorder,mustapha2010highorder,mustapha2011hosim,tamayomas2016testing}
+%               \item based on training image
+%               \item Legendre Polynomials
+%               \item spatial cumulants
+%               \item combinations of moments of statistical parameters that characterize non-Gaussian random fields
+%               \item absence of any distribution-related assumptions
+%           \end{enumerate}
+
+%     \item Ilnur's approach:
+%           \begin{enumerate}
+%               \item \cite{minniakhmetov2017joint,minniakhmetov2018highorder, decarvalho2019highorder}
+%               \item Legendre-like orthogonal splines
+%               \item The coefficients of spline approximation are estimated using high-order spatial statistics inferred from the available sample data, additionally complemented by a training image.
+%           \end{enumerate}
+
+%     \item Yao (2021):
+%           \begin{enumerate}
+%               \item \cite{yao2020highorder,yao2021training,yao2021learning}
+%               \item A training image free, high-order sequential simulation method
+%               \item Legendre moment kernel spaces
+%               \item All methods based on the approximation of a conditional distribution using Legendre polynomials
+%           \end{enumerate}
+
+% \end{enumerate}
 
 
 
@@ -274,6 +295,10 @@ Outlier or ``novelty'' detection is applicable in virtually all statistical mode
 
 Outliers are significant when considering data from potentially heavy-tailed distributions; there are likely few examples of a critical class. Extreme values are different from traditional outliers in the sense that all extreme values are outliers, but the reverse is not always true \citep{aggarwal2016outlier}. Most EVT outlier approaches model the ``inliers'' and test potential outliers against this model. Outlier detection with explicit use of extreme value theory have been applied to outlier detection in biomedical data processing \citep{roberts2000extreme}, signal processing processing \citep{hazan2012extreme}, image noise removal \citep{roberts1999novelty}, monitoring of critical equipment like jet-engines \citep{clifton2014extending}, cybersecurity and stock price analysis \citep{siffer2017anomaly}.
 
+\begin{enumerate}
+    \item Update references here
+\end{enumerate}
+
 \FloatBarrier
 \subsection{Outlier Detection in Mining}
 \label{subsec:01miningoutlier}
@@ -281,6 +306,10 @@ Outliers are significant when considering data from potentially heavy-tailed dis
 Identifying and managing extreme values or possible outliers prior to resource estimation is a key component of resource estimation, particularly for heavy-tailed mineral deposits. \cite{leuangthong2015dealing} break the process of outlier management into three categories: (1) choosing appropriate domains; (2) grade capping; and (3) limiting the influence of outliers through the estimation process. A portion of this research focuses on the second category. Grade capping or ``top-cutting'' is a common practice in the mining industry. Grades above a given threshold are reset to that threshold. The general idea is that uncapped grades may lead to unrealistic local estimates adjacent to high-grade composites \citep{nowak2013suggestions}. The ``smearing'' may be significant if sparse data are estimated with kriging. Due to the normal score transform, simulation is somewhat more robust to the presence of outliers though some cases may require capping.
 
 There are numerous practical methods for explicitly reducing the influence of high-grade samples. Commonly observed methods in mining technical reports include decile analysis \citep{parrish1997geologist}, cumulative probability plots, cutting curves \citep{roscoe1996cutting}, coefficient of variation thresholds, production reconciliation with capped and uncapped estimates, arbitrary percentiles or quantiles, metal-at-risk \citep{parker2006}, indicator correlations, multiple indicator kriging or no capping at all. An additional point of contention is the support of the data to be capped. There is no clear consensus on whether to cap assay or composited data.
+
+\begin{enumerate}
+    \item Update references here
+\end{enumerate}
 
 
 \begin{enumerate}
@@ -388,14 +417,14 @@ Due to the inherent complexity and potential non-uniqueness of inverse problems,
 \section{Thesis Outline}
 \label{sec:01outline}
 
-Chapter 2 presents a discussion on outlier management in the mining industry. Though the \gls{NMR} framework does not require explicit management of extreme values, it would be remiss to not discuss capping due to its ubiquitous presence and relation to outliers. A range of outlier management tools are discussed and a novel algorithm for the identification of outliers in a spatial context is presented. The chapter finishes with an analytical model for predicting the frequency of intersecting extreme values.
+Chapter \ref{ch:02outlier} presents a discussion on outlier management in the mining industry. Though the \gls{NMR} framework does not require explicit management of extreme values, it would be remiss to not discuss capping due to its ubiquitous presence and relation to outliers. A range of outlier management tools are discussed and a novel algorithm for the identification of outliers in a spatial context is presented. The chapter finishes with an analytical model for predicting the frequency of intersecting extreme values.
 
-Chapter 3 explores the core components of the \gls{NMR} framework. It begins with the concepts of high-order connectivity and the relationship with non-Gaussianity. The network components are discussed: (1) definition of a latent Gaussian pool, (2) non-linearity and mapping to observed space, (3) latent imputation, and (4) continuous simulation and mapping. Here the parameterization of the \gls{NMR} is posed as an inverse problem. The chapter finishes with a synthetic, non-Gaussian example to emphasize the effects of high-order connectivity on contained resources.
+Chapter \ref{ch:03framework} explores the core components of the \gls{NMR} framework. It begins with the concepts of high-order connectivity and the relationship with non-Gaussianity. The network components are discussed: (1) definition of a latent Gaussian pool, (2) non-linearity and mapping to observed space, (3) latent imputation, and (4) continuous simulation and mapping. Here the parameterization of the \gls{NMR} is posed as an inverse problem. The chapter finishes with a synthetic, non-Gaussian example to emphasize the effects of high-order connectivity on contained resources.
 
-Chapter 4 presents details of implementing the \gls{NMR} including the network architecture, activation function, latent factor design and parameter inference via optimization. The effects of mixing latent factors is discussed in detail, as well as the formulation of an objective function relevant to the modeling goals. The concepts of \acrfull{DE} and its application to \gls{NMR} parameter optimization are presented, followed by checking and validating the network output. A \gls{3D} example is introduced, and carried over into chapter 5. Finally, practical implementation details are discussed including the potential non-uniqueness of the solution.
+Chapter \ref{ch:04implement} presents details of implementing the \gls{NMR} including the network architecture, activation function, latent factor design and parameter inference via optimization. The effects of mixing latent factors is discussed in detail, as well as the formulation of an objective function relevant to the modeling goals. The concepts of \acrfull{DE} and its application to \gls{NMR} parameter optimization are presented, followed by checking and validating the network output. A \gls{3D} example is introduced, and carried over into chapter \ref{ch:05impute}. Finally, practical implementation details are discussed including the potential non-uniqueness of the solution.
 
-Chapter 5 introduces a novel algorithm for imputation of latent factors within the \gls{NMR} framework. Imputation concepts and traditional Gibbs sampler approaches are touched on, followed by a presentation of \acrfull{SGRI}. The algorithm is an iterative, sequential imputation algorithm that uses the normal equations and rejection sampling to impute spatially correlated latent variables. Minimum acceptance criteria for checking the latent realizations are presented, followed by conditional simulation and practical checking using the example from Chapter 4.
+Chapter \ref{ch:05impute} introduces a novel algorithm for imputation of latent factors within the \gls{NMR} framework. Imputation concepts and traditional Gibbs sampler approaches are touched on, followed by a presentation of \acrfull{SGRI}. The algorithm is an iterative, sequential imputation algorithm that uses the normal equations and rejection sampling to impute spatially correlated latent variables. Minimum acceptance criteria for checking the latent realizations are presented, followed by conditional simulation and practical checking using the example from Chapter \ref{ch:04implement}.
 
-An application of the complete \gls{NMR} framework with a real dataset is shown in Chapter 6. The data comes from an operating underground mine where personal have noted that multivariate Gaussian simulation algorithms do not reproduce the connected high-grade features observed in drillhole data. This scenario is the ideal application of the \gls{NMR}, where it shows a 7\% improvement over \gls{SGS} in high-grade stopes. The \gls{NMR} results are validated with a hold-out dataset.
+An application of the complete \gls{NMR} framework with a real dataset is shown in Chapter \ref{ch:06casestudy}. The data comes from an operating underground mine where personal have noted that multivariate Gaussian simulation algorithms do not reproduce the connected high-grade features observed in drillhole data. This scenario is the ideal application of the \gls{NMR}, where it shows a 7\% improvement over \gls{SGS} in high-grade stopes. The \gls{NMR} results are validated with a hold-out dataset.
 
-Chapter 7 summarizes the contributions made in this thesis. Consideration is given to the limitations of the developed methodologies as well as avenues for future work and improvements to the \gls{NMR} framework. All software developed for the purpose of this research is documented in the appendices.
+Chapter \ref{ch:07conclusions} summarizes the contributions made in this thesis. Consideration is given to the limitations of the developed methodologies as well as avenues for future work and improvements to the \gls{NMR} framework. All software developed for the purpose of this research is documented in the appendices.

@@ -723,6 +723,25 @@
   file = {D\:\\03 UofA\\06 Reading\\_zotfile\\Gómez-Hernández_Wen\\gomez-hernandez1998be.pdf;C\:\\Users\\benha\\Zotero\\storage\\RK8KZZ6J\\S0309170896000310.html}
 }
 
+@article{gomez-hernandez2021one,
+  title = {One {{Step}} at a {{Time}}: {{The Origins}} of {{Sequential Simulation}} and {{Beyond}}},
+  shorttitle = {One {{Step}} at a {{Time}}},
+  author = {{G{\'o}mez-Hern{\'a}ndez}, J. Jaime and Srivastava, R. Mohan},
+  year = {2021},
+  month = feb,
+  journal = {Mathematical Geosciences},
+  volume = {53},
+  number = {2},
+  pages = {193--209},
+  issn = {1874-8953},
+  doi = {10.1007/s11004-021-09926-0},
+  urldate = {2022-08-30},
+  abstract = {In the mid-1980s, still in his young 40s, Andr{\'e} Journel was already recognized as one of the giants of geostatistics. Many of the contributions from his new research program at Stanford University had centered around the indicator methods that he developed: indicator kriging and multiple indicator kriging. But when his second crop of graduate students arrived at Stanford, indicator methods still lacked an approach to conditional simulation that was not tainted by what Andr{\'e} called the `Gaussian disease'; early indicator simulations went through the tortuous path of converting all indicators to Gaussian variables, running a turning bands simulation, and truncating the resulting multi-Gaussian realizations. When he conceived of sequential indicator simulation (SIS), even Andr{\'e} likely did not recognize the generality of an approach to simulation that tackled the simulation task one step at a time. The early enthusiasm for SIS was its ability, in its multiple-indicator form, to cure the Gaussian disease and to build realizations in which spatial continuity did not deteriorate in the extreme values. Much of Stanford's work in the 1980s focused on petroleum geostatistics, where extreme values (the high-permeability fracture zones and the low-permeability shale barriers) have much stronger anisotropy, and much longer ranges of correlation in the maximum continuity direction, than mid-range values. With multi-Gaussian simulations necessarily imparting weaker continuity to the extremes, SIS was an important breakthrough. The generality of the sequential approach was soon recognized, first through its analogy with multi-variate unconditional simulation achieved using the lower triangular matrix of an LU decomposition of the covariance matrix as the multiplier of random normal deviates. Modifying LU simulation so that it became conditional gave rise to sequential Gaussian simulation (SGS), an algorithm that shared much in common with SIS. With nagging implementation details like the sequential path and the search neighborhood being common to both methods, improvements in either SIS or SGS often became improvements to the other. Almost half of the contributors to this Special Issue became students of Andr{\'e} in the classes of 1984--1988, and several are the pioneers of SIS and SGS. Others who studied later with Andr{\'e} explored and developed the first multipoint statistics simulation procedures, which are based on the same concept that underlies sequential simulation. Among his many significant intellectual accomplishments, one of the cornerstones of Andr{\'e} Journel's legacy was sequential simulation, built one step at a time.},
+  langid = {english},
+  keywords = {Large grids,Random functions,Stochastic processes},
+  file = {D:\03 UofA\06 Reading\_zotfile\Gómez-Hernández_Srivastava\gomez-hernandez2021one.pdf}
+}
+
 @article{goovaerts1992factorial,
   title = {Factorial Kriging Analysis: A Useful Tool for Exploring the Structure of Multivariate Spatial Soil Information},
   shorttitle = {Factorial Kriging Analysis},
@@ -882,12 +901,18 @@
   file = {D:\03 UofA\04 Research\02 PhD\_zotfile\Hong_Deutsch\hong2007improved.pdf}
 }
 
-@book{isaaks1990application,
+@phdthesis{isaaks1990application,
   title = {The Application of {{Monte Carlo}} Methods to the Analysis of Spatially Correlated Data},
   author = {Isaaks, Edward Harold},
   year = {1990},
-  publisher = {Stanford University},
-  file = {D:\03 UofA\06 Reading\_zotfile\Isaaks\isaaks1990application2.pdf}
+  address = {United States -- California},
+  urldate = {2021-10-22},
+  abstract = {Monte Carlo methods based on multiple equiprobable conditional simulations can be particularly informative in assessing the impact of spatial heterogeneities. For example, multiple equiprobable simulations, conditional to sample data can be generated using a stochastic imaging or conditional simulation algorithm. Consider a logical equivalent of some real system or operation: whereas the input to the real system is the spatially distributed attribute, the input to the logical equivalent of that system is the conditional simulation of that attribute. By processing a number of equiprobable conditional simulations through the logical equivalent of the real system, an equivalent number of responses are obtained, i.e. a response distribution. The response distribution provides a quantitative measure of the uncertainty in the output associated with that of the input. However, to date the generation of multiple conditional simulations has required large main frame computers and thus such methods using multiple conditional simulations are not widely used, for example, by the mining industry. To address this problem a C computer program, GSIM3D.C, has been developed to enable the generation of multiple conditional simulations using a 80386 DOS based personal computer. This program enables the generation of multiple conditional simulations sufficiently large for practical applications within a reasonable period of time. With the capability of this program, Monte Carlo methods are applied directly to the problems of change of support and the misclassification of selective mining units (SMU) at the time of mining (grade control). The classification of SMU at the time of mining is posed as an optimization problem where the objective function is to minimize the dollars lost due to classification errors. This approach is demonstrated through a case study based on an exhaustive data set. A typical mining scenario is synthesized using realistic recovery factors, costs, and 195 blast hole assays drawn from the exhaustive data set. The grade of each SMU is characterized using a conditional probability distribution obtained from multiple conditional simulations. The dollar loss associated with each possible classification error is established as a function of the unknown SMU grade. The SMU are then classified as either waste, run of the mine heap leach, agglomeration, or milling ore, according to the classification providing the minimum expected dollar loss. A comparison is made between the optimally recovered value (\$) and the value recovered using ordinary kriging. Optimized grade control is shown to increase the net revenue by more than 7{\textbackslash}\% over that obtained using ordinary kriging.},
+  copyright = {Database copyright ProQuest LLC; ProQuest does not claim copyright in the individual underlying works.},
+  langid = {english},
+  school = {Stanford University},
+  keywords = {conditional simulation,Earth sciences,grade control,Pure sciences,stochastic imaging},
+  file = {D:\03 UofA\04 Research\02 PhD\_zotfile\Isaaks\isaaks1990application2.pdf}
 }
 
 @article{jha2022comparative,
@@ -971,6 +996,26 @@
   abstract = {The majority of geostatistical estimation and simulation algorithms rely on a covariance model as the sole characteristic of the spatial distribution of the attribute under study. The limitation to a single covariance implicitly calls for a multivariate Gaussian model for either the attribute itself or for its normal scores transform. The Gaussian model could be justified on the basis that it is both analytically simple and it is a maximum entropy model, i.e., a model that minimizes unwarranted structural properties. As a consequence, the Gaussian model also maximizes spatial disorder (beyond the imposed covariance) which can cause flow simulation results performed on multiple stochastic images to be very similar; thus, the space of response uncertainty could be too narrow entailing a misleading sense of safety. The ability of the sole covariance to adequately describe spatial distributions for flow studies, and the assumption that maximum spatial disorder amounts to either no additional information or a safe prior hypothesis are questioned. This paper attempts to clarify the link between entropy and spatial disorder and to provide, through a detailed case study, an appreciation for the impact of entropy of prior random function models on the resulting response distributions.},
   langid = {english},
   file = {D:\03 UofA\04 Research\02 PhD\_zotfile\Journel_Deutsch\journel1993entropy.pdf}
+}
+
+@incollection{journel2005covariance,
+  title = {Beyond {{Covariance}}: {{The Advent}} of {{Multiple-Point Geostatistics}}},
+  shorttitle = {Beyond {{Covariance}}},
+  booktitle = {Geostatistics {{Banff}} 2004},
+  author = {Journel, Andre G.},
+  editor = {Leuangthong, Oy and Deutsch, Clayton V.},
+  year = {2005},
+  series = {Quantitative {{Geology}} and {{Geostatistics}}},
+  pages = {225--233},
+  publisher = {Springer Netherlands},
+  address = {Dordrecht},
+  doi = {10.1007/978-1-4020-3610-1_23},
+  urldate = {2022-08-30},
+  abstract = {In any estimation or simulation endeavor there are two types of information, the conditioning data typically numerical, most often location-specific, and the structural model which relates deterministically or stochastically the conditioning data to the unknown(s). Adding conditioning data is valuable only inasmuch as the structural model that links them to the unknowns is accurate and reflects data redundancy.},
+  isbn = {978-1-4020-3610-1},
+  langid = {english},
+  keywords = {Conditioning Data,High Order Statistic,Sequential Simulation,Training Image,Variogram Model},
+  file = {D:\03 UofA\06 Reading\_zotfile\Journel\journel2005covariance.pdf}
 }
 
 @article{kerrou2008issues,
@@ -1067,6 +1112,15 @@
   langid = {english},
   keywords = {Model validation,simulation,verification},
   file = {D:\03 UofA\06 Reading\_zotfile\Leuangthong et al\leuangthong2004minimum.pdf}
+}
+
+@book{leuangthong2008solved,
+  title = {Solved Problems in Geostatistics},
+  author = {Leuangthong, Oy and Khan, K Daniel and Deutsch, Clayton V},
+  year = {2008},
+  publisher = {John Wiley \& Sons},
+  isbn = {978-0-470-17792-1},
+  file = {D:\03 UofA\04 Research\02 PhD\_zotfile\Leuangthong et al\leuangthong2011solved.pdf}
 }
 
 @article{leuangthong2015dealing,
@@ -1175,6 +1229,18 @@
   file = {D\:\\03 UofA\\04 Research\\02 PhD\\_zotfile\\Maleki et al\\maleki2014capping.pdf;C\:\\Users\\benha\\Zotero\\storage\\UDIIMC5J\\scielo.html}
 }
 
+@book{mariethoz2014multiplepoint,
+  title = {Multiple-{{Point Geostatistics}}},
+  author = {Mariethoz, Gregoire and Caers, Jef},
+  year = {2014},
+  edition = {1},
+  publisher = {John Wiley \& Sons, Ltd},
+  doi = {10.1002/9781118662953},
+  urldate = {2024-04-26},
+  abstract = {This book provides a comprehensive introduction to multiple-point geostatistics, where spatial continuity is described using training images. Multiple-point geostatistics aims at bridging the gap between physical modelling/realism and spatio-temporal stochastic modelling. The book provides an overview of this new field in three parts. Part I presents a conceptual comparison between traditional random function theory and stochastic modelling based on training images, where random function theory is not always used. Part II covers in detail various algorithms and methodologies starting from basic building blocks in statistical science and computer science. Concepts such as non-stationary and multi-variate modeling, consistency between data and model, the construction of training images and inverse modelling are treated. Part III covers three example application areas, namely, reservoir modelling, mineral resources modelling and climate model downscaling. This book will be an invaluable reference for students, researchers and practitioners of all areas of the Earth Sciences where forecasting based on spatio-temporal data is performed.},
+  file = {D\:\\03 UofA\\06 Reading\\_zotfile\\Mariethoz_Caers\\mariethoz2014multiplepoint.pdf;C\:\\Users\\benha\\Zotero\\storage\\NAYY9W6Y\\9781118662953.html}
+}
+
 @article{matheron1963principles,
   title = {Principles of Geostatistics},
   author = {Matheron, Georges},
@@ -1273,6 +1339,24 @@
   langid = {english},
   keywords = {High-order spatial statistics,Non-Gaussian distribution,Orthogonal splines,Spatial complexity,Stochastic simulation},
   file = {D:\03 UofA\06 Reading\_zotfile\Minniakhmetov et al\minniakhmetov2018highorder.pdf}
+}
+
+@article{minniakhmetov2022highorder,
+  title = {High-{{Order Data-Driven Spatial Simulation}} of {{Categorical Variables}}},
+  author = {Minniakhmetov, Ilnur and Dimitrakopoulos, Roussos},
+  year = {2022},
+  month = jan,
+  journal = {Mathematical Geosciences},
+  volume = {54},
+  number = {1},
+  pages = {23--45},
+  issn = {1874-8953},
+  doi = {10.1007/s11004-021-09943-z},
+  urldate = {2022-04-26},
+  abstract = {Modern approaches for the spatial simulation of categorical variables are largely based on multi-point statistical methods, where a training image is used to derive complex spatial relationships using relevant patterns. In these approaches, simulated realizations are driven by the training image utilized, while the spatial statistics of the actual sample data are ignored. This paper presents a data-driven, high-order simulation approach based on the approximation of high-order spatial indicator moments. The high-order spatial statistics are expressed as functions of spatial distances that are similar to variogram models for two-point methods, while higher-order statistics are connected with lower-orders via boundary conditions. Using an advanced recursive B-spline approximation algorithm, the high-order statistics are reconstructed from the available data and are subsequently used for the construction of conditional distributions using Bayes' rule. Random values are subsequently simulated for all unsampled grid nodes. The main advantages of the proposed technique are its ability to (a) simulate without a training image to reproduce the high-order statistics of the data, and (b) adapt the model's complexity to the information available in the data. The practical intricacies and effectiveness of the proposed approach are demonstrated through applications at two copper deposits.},
+  langid = {english},
+  keywords = {Categorical variables,Data-driven,High-order spatial statistics,Spatial model,Stochastic simulation},
+  file = {D:\03 UofA\06 Reading\_zotfile\Minniakhmetov_Dimitrakopoulos\minniakhmetov2022highorder.pdf}
 }
 
 @article{mises1936distribution,
@@ -1799,7 +1883,7 @@
   author = {Rossi, Mario E. and Deutsch, Clayton V.},
   year = {2013},
   publisher = {Springer Science \& Business Media},
-  file = {C:\Users\benha\Zotero\storage\V3SMKWS5\books.html}
+  file = {D\:\\03 UofA\\06 Reading\\_zotfile\\Rossi_Deutsch\\rossi2013mineral.pdf;C\:\\Users\\benha\\Zotero\\storage\\V3SMKWS5\\books.html}
 }
 
 @article{rukhin2010statistical,
@@ -1860,6 +1944,16 @@
   year = {2017},
   pages = {1067--1075},
   file = {D:\03 UofA\04 Research\02 PhD\_zotfile\Siffer et al\siffer2017anomaly.pdf}
+}
+
+@book{silva2014guide,
+  title = {Guide to {{MPS Simulation}} with {{SNESIM}}},
+  author = {Silva, Daniel A},
+  year = {2014},
+  series = {Centre for {{Computational Geostatistics}} ({{CCG}}) {{Guidebook Series}}},
+  volume = {18},
+  langid = {english},
+  file = {D:\03 UofA\06 Reading\_zotfile\Silva\silva2014guide.pdf}
 }
 
 @article{silva2017multiple,
