@@ -62,7 +62,7 @@ At present there is little research focused on the continuous simulation of high
 \section{Geostatistical Background}
 \label{sec:01geostatreview}
 
-The proposed research covers a wide range of subjects involving modeling continuous, positively skewed variables with geostatistical simulation. The following section reviews the relevant geostatistical concepts. This section is not intended to be exhaustive, but rather provide a review of concepts related to the \gls{NMR}.
+The proposed research covers a wide range of subjects involving modeling continuous, positively skewed variables with geostatistical simulation. The following section reviews the relevant geostatistical concepts. This section is not intended to be exhaustive, but rather provide a review of concepts related to the \gls{NMR} framework.
 
 \FloatBarrier
 \subsection{Overview}
@@ -219,9 +219,9 @@ Traditionally, \gls{MPS} simulations are focused on categorical modeling of stra
 \subsection{High-Order Simulation}
 \label{subsec:03hosim}
 
-High-order simulation methods are similar in concept to the multi-point simulation framework, with applications for both continuous and categorical variables. These methodologies are data-driven, not completely \gls{TI} driven; rather than inferring high-order conditional probabilities exclusively from a \gls{TI}, they are approximated by spatial cumulants calculated from the data. High-order simulation based on spatial cumulants is proposed by \cite{dimitrakopoulos2009highorder} and \cite{mustapha2010highorder,mustapha2011hosim}. A cumulant is defined as the logarithm of the moment generating function of a \gls{RF}. The idea is that spatial cumulants can be used to generalize the covariance to orders beyond two; \cite{dimitrakopoulos2009highorder} shows that the first and second order cumulants are the mean and variance, respectively. The high-order cumulants, similar to the concepts \gls{MPS}, are able to characterize complex non-linear and non-Gaussian geologic features. By incorporating spatial cumulants up to order-five, \cite{mustapha2010highorder} show the ability to capture multi-point periodicity, connectivity of extreme values and complex geometric characteristics. The key idea in the \textit{HOSIM} approach \citep{mustapha2011hosim} is that the local conditional \glspl{CDF} take the form Legendre polynomial expansions, where the polynomial coefficients are approximated with spatial cumulants \citep{mustapha2010highorder}. Both a \gls{TI} and available data are used to infer the Legendre polynomial coefficients; third- and fourth-order statistics are estimated from the data, while higher-order features come from the \gls{TI} \citep{minniakhmetov2022highorder}. \cite{minniakhmetov2017joint} extends the high-order simulation framework to the multivariate context. Further refinements to polynomial approximations are given in \cite{minniakhmetov2018highorder}, \cite{yao2020highorder} and \cite{yao2021learning}.
+High-order simulation methods are similar in concept to the multi-point simulation framework, with applications for both continuous and categorical variables. These methodologies are predominantly data-driven, complemented by a \gls{TI}. Rather than inferring high-order conditional probabilities exclusively from a \gls{TI}, they are approximated by spatial cumulants calculated from the data. High-order simulation based on spatial cumulants is proposed by \cite{dimitrakopoulos2009highorder} and \cite{mustapha2010highorder,mustapha2011hosim}. A cumulant is defined as the logarithm of the moment generating function of a \gls{RF}. The idea is that spatial cumulants can be used to generalize the covariance to orders beyond two; \cite{dimitrakopoulos2009highorder} shows that the first and second order cumulants are the mean and variance, respectively. The high-order cumulants, similar to the concepts \gls{MPS}, are able to characterize complex non-linear and non-Gaussian geologic features. By incorporating spatial cumulants up to order-five, \cite{mustapha2010highorder} show the ability to capture multi-point periodicity, connectivity of extreme values and complex geometric characteristics. The key idea in the \textit{HOSIM} approach \citep{mustapha2011hosim} is that the local conditional \glspl{CDF} take the form Legendre polynomial expansions, where the polynomial coefficients are approximated with spatial cumulants \citep{mustapha2010highorder}. Both a \gls{TI} and available data are used to infer the Legendre polynomial coefficients; third- and fourth-order statistics are estimated from the data, while higher-order features come from the \gls{TI} \citep{minniakhmetov2022highorder}. \cite{minniakhmetov2017joint} extends the high-order simulation framework to the multivariate context. Further refinements to polynomial approximations are given in \cite{minniakhmetov2018highorder}, \cite{yao2020highorder} and \cite{yao2021learning}.
 
-Though largely data-driven, a drawback of these methodologies is that a \gls{TI} is still required. The inference of the spatial cumulants the is inferred from both the \gls{TI} and available data \citep{mustapha2010highorder}. Selecting or generating a \gls{TI} for continuous variables in mining problems is challenging without dense sampling; \cite{minniakhmetov2018highorder} and \cite{decarvalho2019highorder} use blast hole samples for \gls{TI} construction. \cite{yao2021training} presents methodology for \gls{TI} free simulation.
+Though largely data-driven, a drawback of these methodologies is that a \gls{TI} is required. The inference of the spatial cumulants is drawn from both the \gls{TI} and available data; if the high-order multi-point replicates are not available in the data, they are incorporated from the \gls{TI} \citep{mustapha2010highorder,yao2021training}. Selecting or generating a \gls{TI} for continuous variables in mining problems is challenging without dense sampling; \cite{minniakhmetov2018highorder} and \cite{decarvalho2019highorder} use blast hole samples for \gls{TI} construction. \cite{yao2021training} presents methodology for \gls{TI} free simulation with aggregated kernel statistics.
 
 
 
@@ -256,65 +256,72 @@ Though largely data-driven, a drawback of these methodologies is that a \gls{TI}
 % \end{enumerate}
 
 
-
-
 \FloatBarrier
-\subsection{Latent Imputation}
-\label{subsec:01latent}
+\subsection{Imputation}
+\label{subsec:01impute}
+
+Imputation is a key component of probabilistic modeling of continuous heterotopic data \citep{barnett2015multivariate,silva2018multivariate,hadavand2023spatial} and in truncated Gaussian categorical modeling techniques \citep{silva2018enhanced,arroyo2020iterative,madani2021enhanced,armstrong2011plurigaussian}. Simulation often considers a multiple imputation framework \citep{little2019statistical} where one generates realizations of missing values to correctly transfer imputation uncertainty to the final models.
+
+In the heterotopic data context, the goal is to fill in missing values. Modern geostatistical workflows necessitate the use of multivariate transforms like \gls{PPMT}, \gls{SCT} and \gls{PCA} which require homotopic data. Any heterotopic data observations must be either excluded or imputed. Geologic data is often ``missing not at random'' and simply excluding heterotopic observations can lead to biases in the final model \citep{dasilva2019treatment}. The goal of any imputation algorithm is to define the distribution of the missing values conditional to the observed values. \cite{barnett2015multivariate} proposed a non-parametric methodology for imputing continuous variables based on Bayesian updating and Gibbs sampling.  A \gls{SK} mean and variance is merged with a collocated conditional distribution estimated with a multivariate \gls{KDE}. The parameters calculated with \gls{SK} account for the univariate spatial component while the \gls{KDE} accounts for the collocated multivariate component. Imputed values are then drawn from the merged distribution. This methodology is computationally expensive with many data due to \gls{KDE} calculations and Gibbs sampler iterations. \cite{silva2018multivariate} proposed a non-parametric imputation algorithm based on \glspl{GMM} to relieve the burden of \gls{KDE} calculations. The local conditional spatial distribution is still defined by \gls{SK}, however the collocated multivariate density is sampled from a fitted \gls{GMM}. \cite{hadavand2023spatial} proposed another non-parametric methodology where the multivariate relationships are characterized by deep learning rather than a \gls{GMM}. Two neural networks are trained to quantify the moments of the conditional missing value distribution; one for the mean, and another for the second, third, and fourth order moments. A lambda distribution is fit given the conditional moments that characterizes the collocated multivariate relationship.
+
+Latent imputation is a special scenario where all values are missing \citep{little2019statistical}. Truncated Gaussian modeling techniques are based on the idea that categorical observations are generated by the truncation of underlying latent variables \citep{matheron1987conditional}. These latent variables are not observed and are a synthetic feature of the model. Imputation of latent variables subject to categorical observations is commonly approached with a Gibbs sampler \citep{geman1984stochastic}, where directly sampling the multivariate truncated Gaussian distribution is not possible, but sampling the marginal conditional distributions is possible \citep{silva2018enhanced,arroyo2020iterative,madani2021enhanced}. Though the Gibbs approach is common, \cite{emery2014simulating} and \cite{silva2018enhanced} note convergence issues with spatially correlated variables. More recently \cite{lauzon2020calibration,lauzon2020sequential,lauzon2023joint} proposed the sequential spectral turning band simulator as an alternative for Gibbs sampling, where Gaussian \glspl{RF} are constructed by addition of cosine functions. The proposed approach begins with Gaussian \glspl{RF} that meet the inequality constraints, and then the spatial component is introduced by sampling the spectral density. The Gibbs sample approach begins with Gaussian \glspl{RF} that have the correct spatial structure, and gradually introduce constraints through Gibbs iterations. The authors show the spectral approach is a valid alternative to the Gibbs sampler with stable convergence of many data, multiple rock types, and complex truncation rules.
 
 
-\begin{enumerate}
+% \begin{enumerate}
+%     \item Gibbs:
+%           \begin{enumerate}
+%               \item \cite{barnett2015multivariate,silva2018multivariate,silva2018enhanced,arroyo2020iterative,madani2021enhanced}
+%           \end{enumerate}
 
-    \item Gibbs:
-          \begin{enumerate}
-              \item \cite{barnett2015multivariate,silva2018multivariate,silva2018enhanced,arroyo2020iterative,madani2021enhanced}
-          \end{enumerate}
+%     \item Lambda distribution:
+%           \begin{enumerate}
+%               \item \cite{hadavand2023spatial}
+%           \end{enumerate}
 
-    \item Lambda distribution:
-          \begin{enumerate}
-              \item \cite{hadavand2023spatial}
-          \end{enumerate}
-
-    \item Spectral:
-          \begin{enumerate}
-              \item \cite{lauzon2020calibration,lauzon2020sequential,lauzon2023joint}
-          \end{enumerate}
-
-\end{enumerate}
+%     \item Spectral:
+%           \begin{enumerate}
+%               \item \cite{lauzon2020calibration,lauzon2020sequential,lauzon2023joint}
+%           \end{enumerate}
+% \end{enumerate}
 
 
 \FloatBarrier
 \section{Extreme Value Background}
 \label{sec:01evtreview}
 
+The following section provides background literature for extreme values, outliers, and their significance in mining related problems. Though \gls{EVT} is not directly incorporated in the \gls{NMR} framework, the statistical foundation is presented for completeness.
+
 \FloatBarrier
 \subsection{Outlier Detection}
 \label{subsec:01outlier}
 
-Outlier or ``novelty'' detection is applicable in virtually all statistical modeling. An outlier is an observation sufficiently dissimilar to other observations \citep{barnett1984outliers}. Measures of ``outlierness'' are typically based on (1) statistics of observations for the rest of the distribution (parametric or non-parametric); (2) distances (euclidean or non-euclidean) between observations with outliers being ``far'' from neighbours and (3) probability density-based measures where outliers have low densities \citep{hodge2004survey}.
+Outlier detection is relevant to all statistical modeling and the body of literature is vast. Outlier detection may also be referred to as novelty, noise, anomaly or deviation detection \citep{hodge2004survey}. In all cases, however, an outlier is an observation sufficiently dissimilar to other observations \citep{barnett1984outliers}. \cite{wang2019progress} group outlier detection methodologies into (1) statistical methods, (2) distance-based methods, (3) density-based methods, (4) clustering-based methods, and (5) ensemble-based methods. Statistical methods, either parametric or non-parametric, compare the relationship of potential outliers with the remaining distribution. Distance-based methods (euclidean or non-euclidean) compare the distance between observations where potential outliers are ``far'' from other observations. Density-based methods consider outliers to be in a low density regions of a \gls{PDF}. Clustering based methods classify each observation and potential outliers are not within, or near dense clusters. Finally, ensemble methods are combinations of dissimilar methodologies to create a more robust outlier detection model. \cite{hodge2004survey,wang2019progress,pimentel2014review,boukerche2021outlier} provide comprehensive reviews of outlier detection methodologies with applications to fraud detection, cybersecurity, sensor networks, image processing, time series and data streams, medical diagnostics and industrial monitoring. \cite{pang2022deep} present a comprehensive review of outlier detection with deep learning though the concepts are largely beyond the scope of this thesis.
 
-Outliers are significant when considering data from potentially heavy-tailed distributions; there are likely few examples of a critical class. Extreme values are different from traditional outliers in the sense that all extreme values are outliers, but the reverse is not always true \citep{aggarwal2016outlier}. Most EVT outlier approaches model the ``inliers'' and test potential outliers against this model. Outlier detection with explicit use of extreme value theory have been applied to outlier detection in biomedical data processing \citep{roberts2000extreme}, signal processing processing \citep{hazan2012extreme}, image noise removal \citep{roberts1999novelty}, monitoring of critical equipment like jet-engines \citep{clifton2014extending}, cybersecurity and stock price analysis \citep{siffer2017anomaly}.
+% Outliers are significant when considering data from potentially heavy-tailed distributions; there are likely few examples of a critical class. Extreme values are different from traditional outliers in the sense that all extreme values are outliers, but the reverse is not always true \citep{aggarwal2016outlier}. Most EVT outlier approaches model the ``inliers'' and test potential outliers against this model. Outlier detection with explicit use of extreme value theory have been applied to outlier detection in biomedical data processing \citep{roberts2000extreme}, signal processing processing \citep{hazan2012extreme}, image noise removal \citep{roberts1999novelty}, monitoring of critical equipment like jet-engines \citep{clifton2014extending}, cybersecurity and stock price analysis \citep{siffer2017anomaly}.
 
-\begin{enumerate}
-    \item Update references here
-\end{enumerate}
+% \begin{enumerate}
+%     \item Update references here
+%     \item ML methods like LOF, Isolation Forest, MCD
+%     \item \cite{pimentel2014review, wang2019progress,pang2022deep,boukerche2021outlier}
+% \end{enumerate}
 
 \FloatBarrier
 \subsection{Outlier Detection in Mining}
 \label{subsec:01miningoutlier}
 
-Identifying and managing extreme values or possible outliers prior to resource estimation is a key component of resource estimation, particularly for heavy-tailed mineral deposits. \cite{leuangthong2015dealing} break the process of outlier management into three categories: (1) choosing appropriate domains; (2) grade capping; and (3) limiting the influence of outliers through the estimation process. A portion of this research focuses on the second category. Grade capping or ``top-cutting'' is a common practice in the mining industry. Grades above a given threshold are reset to that threshold. The general idea is that uncapped grades may lead to unrealistic local estimates adjacent to high-grade composites \citep{nowak2013suggestions}. The ``smearing'' may be significant if sparse data are estimated with kriging. Due to the normal score transform, simulation is somewhat more robust to the presence of outliers though some cases may require capping.
+Outlier detection in the mining industry is based largely graphical methods \citep{leuangthong2015dealing, silva2021classification}. These methods are necessarily subjective as the practitioner must interpret a plot and select a threshold to define an outlier. \cite{leuangthong2015dealing,nowak2013suggestions,rossi2013mineral} provide practical advice on threshold selection for \glspl{CPP} where breaks in the upper tail may represent outlier populations. \cite{babakhani2014geostatistical} proposed a spatial bootstrap based methodology to characterize the relationship between the naive mean and capped mean. The goal of the methodology is to identify the values that cause higher mean values.
 
-There are numerous practical methods for explicitly reducing the influence of high-grade samples. Commonly observed methods in mining technical reports include decile analysis \citep{parrish1997geologist}, cumulative probability plots, cutting curves \citep{roscoe1996cutting}, coefficient of variation thresholds, production reconciliation with capped and uncapped estimates, arbitrary percentiles or quantiles, metal-at-risk \citep{parker2006}, indicator correlations, multiple indicator kriging or no capping at all. An additional point of contention is the support of the data to be capped. There is no clear consensus on whether to cap assay or composited data.
+The spatial characteristics of sample values are often omitted when identifying outliers. The spatial context of the samples is likely relevant; an extreme value surrounded by other high values may not be an outlier. \cite{babakhani2014geostatistical} proposed methodology for identification of spatial outliers based on the rank transform of cross-validation estimates. Outliers identified by the rank transform consider the spatial neighbourhood and are different from simply considering the univariate distribution. Many authors \citep{filzmoser2020multivariate,filzmoser2005multivariate,ernst2017comparison, leung2021sample, harris2014multivariate} have proposed methodology for spatial multivariate geochemical outlier detection using the \gls{MCD} estimator \citep{rousseeuw1999fast}. The Mahalanobis distance is a common metric for comparing features in multivariate space, however it is sensitive to presence of outliers \citep{filzmoser2005multivariate}. The \gls{MCD} is a robust measure of the global correlation structure in the presence of outliers. Given the \gls{MCD} estimate various measures of local and global multivariate distances are calculated to determine an outlier score.
 
-\begin{enumerate}
-    \item Update references here
-\end{enumerate}
+\FloatBarrier
+\subsection{Outlier Management in Mining}
+\label{subsec:01outliermanage}
 
+Once outliers have been identified, practitioner must decide a management strategy. Managing extreme values and outliers prior to resource estimation is a key component of resource estimation, particularly for heavy-tailed mineral deposits. The general idea is that unadjusted grades may lead to unrealistic local estimates adjacent to high-grade composites \citep{nowak2013suggestions}. \cite{leuangthong2015dealing} provide an overview of outlier management practices in the context of mineral resource estimation. The practices are grouped into three general categories: (1) choosing appropriate domains; (2) grade capping; and (3) limiting the influence of outliers through the estimation process. The suggested practices are largely based on trade-craft and practitioner experience.
 
-\begin{enumerate}
-    \item \cite{babakhani2014geostatistical}
-\end{enumerate}
+There are numerous practical methods for choosing how to explicitly manage the influence of high-grade samples. Traditional methods published in mining technical reports include decile analysis \citep{parrish1997geologist}, cumulative probability plots \citep{rossi2013mineral}, cutting curves \citep{roscoe1996cutting}, coefficient of variation thresholds \citep{parker1991statistical}, production reconciliation, arbitrary quantiles, metal-at-risk \citep{parker2006}, and indicator correlations \citep{nowak2019optimal}.  Some techniques such as \gls{MIK} \citep{journel1983nonparametric} directly treat outliers through the specification of upper class means \citep{rossi2013mineral}. \cite{babakhani2014geostatistical} proposed a less conventional method of projecting outliers to an extra dimension to reduce the local influence. This method requires specifying a distance $d$ to project the outlier; the distance could be determined by calibrating kriging results to an expected value from simulation, or selection of a specific quantile. \cite{babakhani2014geostatistical} also proposed the calibration of a capping limit based on an expected value from simulation. This approach is similar to the previous, however instead of projecting an outlier some distance, $d$, away, the outlier value is reduced. Within some local volume of influence, the outlier grade is reduced until the kriged grade matches the expected value of 100 realizations. The idea is that simulation is more robust in the presence of outliers and this resistance can be exploited to calibrate a capping grade. \cite{rivoirard2013topcut,maleki2014capping} propose the selection of an optimal capping limit through analysis of the ratios of direct and cross indicator variograms. The goal is to identify the range $[z_{min}, z_{max}]$ in where the capping limit should fall. The minimum value is defined by first threshold where the ratio of the cross and direct indicator variogram values are constant, independent of the lag vector. The maximum value is defined by threshold where the residual is pure nugget.
+
+Many methodologies have been proposed to circumvent the practice of capping. \cite{costa2003reducing} proposed a variant of robust kriging \citep{hawkins1984robust} where the weight to outlier samples if different from that of inliers. The ``robust-edited'' values are adjusted based on the difference between the sample value and the weighted median at the same location. \cite{rivoirard2013topcut} proposed the decomposition of the grade value into a truncated grade, a weighted indicator above the top cut grade, and a residual. If the cutoff is sufficiently high, the residual is uncorrelated with the truncated grade and the indicator. The final estimate is then a kriged estimate of the residual plus a cokriged estimate of the indicator and truncated grade. \cite{maleki2014capping} proposed a similar decomposition approach where they suggest spatial prediction is improved as outlier values are omitted from variogram calculations. \cite{fourie2019limiting} proposed a methodology that post-processes kriging weights to generate realistic estimates without grade smearing. Kriging weights are adjusted based on ratio of the frequency of outlier samples to median samples. The methodology requires a subjective selection of frequency bins after normal score transforming the variable. Simply restricting the spatial range of influence of outlier values during estimation or simulation is a practical approach to circumvent capping. More recently, \cite{silva2021classification} proposed methodology for adjusting outlier grades based on Bayesian updating, and \cite{dutaut2021new} propose using an error-free \gls{CV} calculated from coarse duplicate correlation to determine a capping limit.
 
 \subsection{Extreme Value Theory}
 \label{subsec:01evt}
