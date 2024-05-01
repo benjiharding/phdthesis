@@ -5,15 +5,63 @@
 \label{ch:07conclusions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+The connectivity of extreme values is of great practical importance. In most cases, transfer functions are sensitive to extreme values, and correctly characterizing their two- and multi-point spatial connectivity can have significant downstream impacts. A small proportion of extreme gold grades may be the economic foundation of a mine, while an extremely low permeability facies may preclude production of a hydrocarbon reservoir. The geologic processes responsible for generating these features are not completely disorganized; strings of connected extreme values exist in nature are likely the most consequential spatial features. Traditional estimation and simulation algorithms are maximum entropy models based on multivariate Gaussian assumptions. Though practical from a dimensionality perspective, the use Gaussian \glspl{RF} smooths high-grades and tends to disconnected extreme values. These reasons motivate the development of the \gls{NMR} framework. A mixture of Gaussian \gls{RF} components may result in a highly non-Gaussian \gls{RV}. The \gls{NMR} exploits this idea while considering high-order connectivity measures from strings data and the potential spatial asymmetry between extreme highs and lows.
+
 
 \FloatBarrier
 \section{Summary of Contributions}
-\label{sec:contrib}
+\label{sec:07contrib}
+
+The main contributions of this thesis is the development of the \gls{NMR} framework for simulating continuous non-Gaussian spatial fields. The framework includes important contributions to quantifying non-Gaussianity from spatial data, and multiple imputation for latent Gaussian factors.
+
+\subsection{Extreme Value Connectivity}
+\label{subsec:07connect}
+
+The connectivity of extreme values is an important metric to understand potential shortcomings of multivariate Gaussian models. Extracting multi-point measures of connectivity from drill strings is not a new idea \citep{ortiz2003characterization,boisvert2007multiplepoint}, however using the $n$-point connectivity function and distribution of runs to calculate a proxy for non-Gaussianity is a contribution of this thesis. This non-Gaussianity metric can provide valuable insight into spatial regions that are not well modeled by a Gaussian \gls{RF}. These regions could be sub-domained, or simply warrant further investigation.
+
+Extreme value connectivity is a defining feature of the \gls{NMR} framework that sets it apart from traditional multivariate Gaussian simulation algorithms. The maximum entropy characteristics of a Gaussian \gls{RF} are overcome through introduction of high-order statistics to the mixing model. It is shown that generating \gls{NMR} realizations with explicit consideration of extreme value connectivity results in spatial connectivity features that cannot be reproduced with a traditional algorithm. The $n$-point connectivity function and distribution of runs provide straightforward access to high-order statistics without the use of a training image.
+
+\subsection{Network Model of Regionalization}
+\label{subsec:07nmr}
+
+The \gls{NMR} is a primary contribution of this thesis. It is an expansion of the \gls{LMR} concept for univariate spatial modeling. Both models construct a random function as a combination of independent, standard normal factors, each with its own basic covariance model, each operating at different spatial scales. The key difference with the \gls{NMR} is the combination of factors is not limited to be linear. Activation of the latent factors with a novel \gls{MPL} function prior to the linear combination permits the spatial structure of certain features to be imparted on the tails of the distribution. Traditionally, the \gls{LMR} is limited to four or five factors while there is no practical limit with the \gls{NMR}. This flexibility permits mixing of latent covariance structures in creative ways, achieving complex modeling goals. Structures with various anisotropies and orientations can be combined reproducing non-stationary features. A key concept of the \gls{NMR} is that a mixture of Gaussian factors can be highly non-Gaussian.
+
+The \gls{NMR} is parameterized by $2 \cdot (M+1)$ parameters: $M+1$ weights and $M+1$ power law exponents. Inference of these parameters is an inverse problem. The spatial features of the observed data are known, however the parameters that map the latent space to the observed space are unknown. Framing this as an optimization problem permits use of multi-component objective function. It is through this objective function that the \gls{NMR} gains the ability to reproduce statistics beyond the second order. Two- and multi-point statistics are introduced directly through the optimization process. The parameters of the network are optimized such that the \gls{NMR} output has the correct continuous and indicator variogram models, $n$-point connectivity function, and distributions of runs. The \gls{NMR} is an important contribution to geostatistics, particularly the continuous simulation of high-order connectivity features. The approach is flexible with no limitations on the number of latent factors or objective function components.
+
+\subsection{Sequential Gaussian Rejection Imputation}
+\label{subsec:07sgri}
+
+\Gls{SGRI} is a novel algorithm for multiple imputation of latent factors within the \gls{NMR} framework. The algorithm is designed to overcome Gibbs sampler convergence issues with spatially correlated data \citep{silva2018enhanced}. \Gls{SGRI} combines elements of \gls{SGS} and rejection sampling to impute spatially correlated latent variables that reproduce data observations when mixed through the \gls{NMR}.
+
+\begin{enumerate}
+    \item novel algorithm
+\end{enumerate}
+
+\subsection{Simulation of Continuous High-Order Features}
+\label{subsec:07hosim}
+
+\begin{enumerate}
+    \item no TI
+    \item straightforward implementation
+    \item HG improvements
+\end{enumerate}
+
+
+\subsection{Spatial Outlier Detection}
+\label{subsec:07outlier}
+
 
 \FloatBarrier
 \section{Limitations}
-\label{sec:limit}
+\label{sec:07limit}
+
+\begin{enumerate}
+    \item Still linear, no curvilinear features
+\end{enumerate}
+
+
 
 \FloatBarrier
 \section{Future Work}
-\label{sec:fwork}
+\label{sec:07fwork}
+
