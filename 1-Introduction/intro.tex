@@ -252,7 +252,7 @@ Latent imputation is a special scenario where all values are missing \citep{litt
 \section{Extreme Value Background}
 \label{sec:01evtreview}
 
-The following section provides background literature on extreme values, outliers, and their significance in mining-related problems. Though the \gls{NMR} framework does not directly incorporate \gls{EVT}, the statistical foundation is presented for completeness.
+The following section provides background literature on extreme values, outliers, and their significance in geospatial and mining-related problems. Though the \gls{NMR} framework does not directly incorporate \gls{EVT}, the statistical foundation is presented for completeness.
 
 \FloatBarrier
 \subsection{Outlier Detection}
@@ -349,7 +349,7 @@ The assumption of \acrfull{iid} observations underlies classical \gls{EVT}. In m
 
 Spatial \gls{EVT} builds on the concepts of max-stable distributions extending to the max-stable process. A max-stable process is the infinite dimension generalization of the max-stable distribution where all lower-order marginal distributions are \gls{GEV} distributions \citep{schlather2003dependence}. If there exists normalizing constants $a_n(\mathbf{u}) > 0$ and $b_n(\mathbf{u})$ such that $a_n^{-1}(\mathbf{u})\{\max_{i=1,...,\infty} Z_i(\mathbf{u}) - b_n(\mathbf{u})\} = Y(\mathbf{u})$ then $Y$ is a max-stable process \citep{dehaan2007extreme}. The max-stable process applies to maximums as stable Gaussian processes with finite variance apply to the average \citep{chiles2012geostatistics}. All marginal distributions of a max-stable process are \gls{GEV} distributions defined by Equation~\ref{eq:GEV}.
 
-Unlike a Gaussian \gls{RF}, which is fully defined by its correlogram $\rho(\mathbf{h})$, there is no unique model for max-stable processes \citep{chiles2012geostatistics}. Many different models are found in the literature. First introduced by \cite{smith1990maxstable} and later modified by \cite{schlather2002models}, Gaussian storm and extremal Gaussian processes are commonly used for modeling spatial extremes. The Brown-Resnick processes \citep{brown1977extreme,kabluchko2009stationary} relaxes the assumption of second-order stationarity and permits the use of the variogram, which has shown to be practical in practice \citep{gaume2013mapping}. The extremal-$t$ model \citep{opitz2013extremal} is another popular max-stable model in the literature. A consequence of the max-stable processes is asymptotic dependence in the tails \citep{davison2013geostatistics}.
+Unlike a Gaussian \gls{RF}, which is fully defined by its correlogram $\rho(\mathbf{h})$, there is no unique model for max-stable processes \citep{chiles2012geostatistics}. Many models are found in the literature. First introduced by \cite{smith1990maxstable} and later modified by \cite{schlather2002models}, Gaussian storm and extremal Gaussian processes are commonly used for modeling spatial extremes. The Brown-Resnick processes \citep{brown1977extreme,kabluchko2009stationary} relaxes the assumption of second-order stationarity and permits the use of the variogram, which has shown to be practical in practice \citep{gaume2013mapping}. The extremal-$t$ model \citep{opitz2013extremal} is another popular max-stable model in the literature. A consequence of the max-stable processes is asymptotic dependence in the tails \citep{davison2013geostatistics}.
 
 
 \FloatBarrier
