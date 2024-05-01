@@ -31,7 +31,7 @@ The \gls{NMR} is parameterized by $2 \cdot (M+1)$ parameters: $M+1$ weights and 
 \subsection{Sequential Gaussian Rejection Imputation}
 \label{subsec:07sgri}
 
-\Gls{SGRI} is a novel algorithm for multiple imputation of latent factors within the \gls{NMR} framework. The algorithm is designed to overcome Gibbs sampler convergence issues with spatially correlated data \citep{silva2018enhanced}. \Gls{SGRI} combines elements of \gls{SGS} and rejection sampling to impute spatially correlated latent variables that reproduce data observations when mixed through the \gls{NMR}.
+\Gls{SGRI} is a novel algorithm for multiple imputation of latent factors within the \gls{NMR} framework. The algorithm is designed to overcome Gibbs sampler convergence issues with spatially correlated data \citep{silva2018enhanced}. \Gls{SGRI} combines elements of \gls{SGS} and rejection sampling to impute spatially correlated latent variables that reproduce data observations when mixed through the \gls{NMR}. The algorithm directly samples all univariate conditional distributions of the $M$-dimensional latent distribution until the mapped value is within a specified tolerance. Sampling the conditional distributions ensures variogram reproduction. Next, each sampled value is iteratively perturbed until the mapped value matches the observed value. The algorithm rejects samples anytime they do not improve the solution.
 
 \begin{enumerate}
     \item novel algorithm
