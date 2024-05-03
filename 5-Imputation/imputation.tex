@@ -5,7 +5,7 @@
 \label{ch:05impute}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-This chapter presents a novel algorithm for imputing latent factors called \gls{SGRI}. Imputation of latent factors addresses a problem where all values are missing or unknown. Conditioning gridded realizations of latent factors requires assigning valid latent values at the data locations. The goal is to impute latent factors with a unique covariance structure that, when combined with the inferred \gls{NMR} mapping, returns the true observed values at the data locations within a tolerance. Traditionally, this problem has been approached through Gibbs sampling, though there are noted challenges in achieving stable convergence with spatially correlated variables \citep{silva2018enhanced}. \gls{SGRI} is a simple approach that combines \gls{SGS}, rejection sampling and exact data matching. Conditional moments are calculated with \gls{SGS}, ensuring the spatial relationships are correct and iterative rejection sampling ensures the collocated multivariate relationships are correct. Realizations of latent factors are generated and become conditioning data for gridded realizations. When mapped to observed space, the realizations reproduce non-Gaussian spatial features specified by the \gls{NMR} and uni- and multivariate statistics. A small synthetic example continued from Chapter \ref{ch:04implement} demonstrates imputing latent factors, conditional simulation and mapping the latent space to observed space.
+This chapter presents a novel algorithm for imputing latent factors called \acrfull{SGRI}. Imputation of latent factors addresses a problem where all values are missing or unknown. Conditioning gridded realizations of latent factors requires assigning valid latent values at the data locations. The goal is to impute latent factors with a unique covariance structure that, when combined with the inferred \gls{NMR} mapping, returns the true observed values at the data locations within a tolerance. Traditionally, this problem has been approached through Gibbs sampling, though there are noted challenges in achieving stable convergence with spatially correlated variables \citep{silva2018enhanced}. \gls{SGRI} is a simple approach that combines \gls{SGS}, rejection sampling and exact data matching. Conditional moments are calculated with \gls{SGS}, ensuring the spatial relationships are correct and iterative rejection sampling ensures the collocated multivariate relationships are correct. Realizations of latent factors are generated and become conditioning data for gridded realizations. When mapped to observed space, the realizations reproduce non-Gaussian spatial features specified by the \gls{NMR} and uni- and multivariate statistics. A small synthetic example continued from Chapter \ref{ch:04implement} demonstrates imputing latent factors, conditional simulation and mapping the latent space to observed space.
 
 \FloatBarrier
 \section{Imputation Concepts}
@@ -212,8 +212,6 @@ If the target delta falls within the sensitivity of one or more factors, $b<0$, 
     \end{algorithmic}
 \end{algorithm}
 
-
-\FloatBarrier
 \subsection{Imputation Checks}
 \label{subsec:05impcheck}
 
@@ -334,7 +332,6 @@ Once the latent factors are defined at every grid node, the realizations are map
 
 At this point, the gridded \gls{NMR} realizations should reproduce the continuous variogram model, specified indicator variogram models, cumulative run frequencies and $n$-point connectivity functions. As the gridded models reproduce the data at the data locations (particularly implementations of \gls{SGS} that assign data to grid nodes), an additional step is required to check downhole statistics. For checking runs and $n$-point connectivity reproduction, the entire drillhole configuration is translated within the domain. This translation retains the drillhole configuration but allows sampling simulated values from the grid. The resampled values are then used to check multi-point statistical reproduction.
 
-\FloatBarrier
 \subsection{Simulation Checks}
 \label{subsec:05simcheck}
 

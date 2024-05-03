@@ -73,7 +73,6 @@ The separation vector between elements is $\mathbf{h}$. This definition amounts 
 
 Correlated Gaussian sequences with an arbitrary covariance structure can be easily generated using any stochastic simulation algorithm and the indicator formalism of Equation~\ref{eq:indicator}. The total number of runs and frequencies of run lengths can be determined experimentally for the multivariate Gaussian scenario. If the covariance structure of the Gaussian realizations matches that of the true one-dimensional drillhole sequence, run-based statistics can measure non-Gaussianity. Section \ref{subsec:03ngmeasures} presents this idea further. If the number or frequency of runs in the data deviates significantly from the Gaussian case, one may investigate the sequence as non-Gaussian. These measures can provide insight into domain sub-regions that exhibit non-Gaussian behaviour and warrant further investigation. Run-based connectivity measures in the following sections provide access to high-order statistics to characterize non-Gaussianity.
 
-\FloatBarrier
 \subsection{Distribution of Runs}
 \label{subsec:03runs}
 
@@ -99,7 +98,6 @@ Calculating runs considers a cumulative or ``overlapping'' approach. That is, on
 
 It is interesting to note that the indicator transform results in nested sequences. Sequences that are above the current threshold are also above any lower threshold. Figure~\ref{fig:gauss_indicators} illustrates this concept where all sequences above the 0.9 quantile (zeros) are nested within a sequence above the 0.5 quantile, which is nested within a sequence above the 0.1 quantile. \cite{ortiz2003characterization} uses this property of sequences to simulate hierarchically as a run at one threshold can be used to condition the next threshold.
 
-\FloatBarrier
 \subsection{\textit{N}-point Connectivity Function}
 \label{subsec:03npoint}
 
@@ -126,7 +124,6 @@ The $n\text{-point}$ connectivity function describes the probability of $n$ succ
 
 Notably, the $n\text{-point}$ connectivity function considering runs \emph{above} the threshold (Equation \ref{eq:npt2}) is analogous to cumulative run-length frequencies of runs above the threshold scaled to the fraction of total elements in the sequence. Considering the $n\text{-point}$ connectivity function above a quantile is the same as considering the cumulative run-length frequency above that quantile.
 
-\FloatBarrier
 \subsection{Measures of Non‐Gaussianity}
 \label{subsec:03ngmeasures}
 
@@ -194,7 +191,6 @@ Sections \ref{subsec:03runs} and \ref{subsec:03npoint} present methodology for a
 
 % Reproduction of high-order statistics, in theory, should reproduce all lower-order statistics. However, the \gls{NMR} explicitly enforces two- and multi-point statistics.
 
-\FloatBarrier
 \subsection{Notation}
 \label{subsec:03notation}
 
@@ -252,8 +248,6 @@ Determining the parameters of the \gls{NMR} does not directly consider the repro
 %     \item iteratively adjust model parameters until the acceptable match is achieved
 % \end{enumerate}
 
-
-\FloatBarrier
 \subsection{Latent Spatial Structure}
 \label{subsec:03latent}
 
@@ -274,8 +268,6 @@ The output of the mapping function $\mathcal{F}_{\theta}$ is a spatial mixture o
 
 Consider a hypothetical scenario where the modeling goal is to have highly continuous low grades in the east-west direction and highly continuous high-grade continuity in the north-south direction. This orthogonal continuity is challenging for a multivariate Gaussian simulation algorithm, as a normal score variogram cannot simultaneously capture both directions of continuity. The \gls{NMR} can draw different spatial structures from different latent factors within the pool; the sharing of structures is a core concept of the \gls{NMR} approach. Consider the \gls{2D} realizations of two unconditional Gaussian \glspl{RF} in Figure \ref{fig:uncond_f1_f2_grid}. It is possible to achieve the modeling goals if we can draw high-grade continuity from factor 1 and low-grade continuity from factor 2. A simple linear combination of the factors, analogous to the \gls{LMC}, cannot capture the orthogonal continuities as high and low values cancel when combined. Before mixing, we must emphasize the high values in factor 1 (and mute the low values) and the low values in factor 2 (and mute the high values). This ``extraction'' of specific factor features requires the introduction of a non-linearity.
 
-
-\FloatBarrier
 \subsection{Non-Linearity and Mapping}
 \label{subsec:03nonlinear}
 
@@ -314,7 +306,6 @@ Figure \ref{fig:activate_f1_f2_grid} (right) shows the spatial distribution of t
 
 In practice, parameters $\boldsymbol{\omega}$ and $\mathbf{a}$ are unknown and must be inferred. As Section \ref{subsec:03nmrinverse} discusses, inverse problems are commonly approached by optimization. The optimization problem consists of determining $\boldsymbol{\omega}$ and $\mathbf{a}$ for a given Gaussian pool to minimize an objective function. The objective function in this context is the reproduction of desired two- and multi-point statistics in the final model produced by the steps above.
 
-\FloatBarrier
 \subsection{Two-Point Statistics}
 \label{subsec:03twopt}
 
@@ -338,8 +329,6 @@ An interesting experiment to confirm this behaviour is to generate a realization
 
 Beyond two-point statistics, the network approach also considers the multi-point statistics discussed in Section \ref{sec:03connect}. A non-Gaussian \gls{RF} should show increased multi-point connectivity of extreme values over a Gaussian \gls{RF}. Whether it is connectivity of high or lows depends on the structure of the latent pool and power law exponents, $\omega$.
 
-
-\FloatBarrier
 \subsection{Multi-Point Statistics}
 \label{subsec:03multipt}
 
@@ -363,8 +352,6 @@ As expected, the \gls{NMR} model visually shows increased high-grade connectivit
 
 Connectivity measures are calculated globally, that is, considering all drillholes. The primary orientation of drilling is an important consideration when designing latent factors with the goal of high-order connectivity. In practice, high-grade structures are generally orthogonal to the primary orientation of drilling, so specific factors aligned with the tertiary variogram direction may be required.
 
-
-\FloatBarrier
 \subsection{Latent Imputation}
 \label{subsec:03impute}
 
@@ -387,7 +374,6 @@ The solution to Equation \ref{eq:ftheta0} is non-unique. Multiple combinations o
 
 Chapter \ref{ch:05impute} presents the details of the imputation algorithm and the of checking latent data realizations. The algorithm shows stable convergence for spatially correlated variables and correctly reproduces the latent pool's collocated multivariate relationships and covariance structure.
 
-\FloatBarrier
 \subsection{Simulation and Mapping}
 \label{subsec:03simulate}
 

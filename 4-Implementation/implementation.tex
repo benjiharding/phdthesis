@@ -298,7 +298,6 @@ Algorithm \ref{alg:nmropt} summarizes all components of the \gls{NMR} parameter 
 
 Inference of $\theta$ is relatively straightforward with only a handful of \gls{DE} parameters. However, care must be given to align the design of the latent pool and objective components with the final goals of the \gls{NMR} model. Depending on the modeling scenario, this is the most challenging portion of the workflow.
 
-\FloatBarrier
 \subsection{Checks}
 \label{subsec:04checks}
 
@@ -378,7 +377,6 @@ At this point in the \gls{NMR} workflow, the inferred parameters reasonably appr
 
 The goal of the \gls{NMR} model is to infer the best possible mapping between latent and observed spaces. Given the data configuration, the design of the latent pool and the objective function components, there may be qualitative and quantitative uncertainty in the parameter vector $\theta$. This section discusses some practical implementation details of \gls{NMR} parameter inference that may contribute to or mitigate parameter uncertainty. Topics in this section include the non-uniqueness of the inferred solution, the number of data, the possibility of conflicting objectives, and overall computational considerations.
 
-\FloatBarrier
 \subsection{Non-Uniqueness}
 \label{subsec:04nonunique}
 
@@ -451,7 +449,6 @@ The third scenario is also straightforward. A mix of short-range factors cannot 
 
 This section presents scenarios to emphasize the non-uniqueness of the \gls{NMR} solution. Numerous latent pools can reproduce objective targets. The final example presents a scenario where the design of the pool and the objective function have conflicting objectives. The scenario is designed for illustrative purposes and defies any geologic-based logic; however, it emphasizes the practitioner's role in ensuring the latent pool and objective function are sound concerning the conceptual geology. Adding components to the objective function amplifies this issue. The requirement of ``reasonableness'' further promotes the decomposition of all variogram targets into an initial latent Gaussian pool.
 
-\FloatBarrier
 \subsection{Number of Data}
 \label{subsec:04ndata}
 
@@ -478,7 +475,6 @@ A synthetic model is simulated to assess the sensitivity of $\theta$ to data spa
 
 The sum of the squared errors is inversely proportional to the total number of data, which is the anticipated response. The curve decreases quickly to a spacing of 10 x 10 m or approximately 2000 data. Beyond this spacing, the curve is much flatter but does continue to decrease towards the tightest spacing. This relationship suggests that somewhere between 2000 and 5000 data are enough to provide a stable inference of $\theta$. Beyond 5000 data, the error decreases slightly, though these improvements are negligible when considering the increase in computation time.
 
-\FloatBarrier
 \subsection{Computational Considerations}
 \label{subsec:04comp}
 

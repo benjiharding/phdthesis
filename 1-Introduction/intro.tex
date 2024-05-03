@@ -27,7 +27,6 @@ High-grade values are generally sparse in mining data sets. Though sparse, these
 
 The spatial continuity of extreme values in the upper tail may differ from low values. The multivariate Gaussian assumption underlying many geostatistical algorithms does not allow for spatial connectivity of extreme values, nor does it allow for asymmetry in the loss of correlation away from the median \citep{journel1989nongaussian}. \Gls{MIK} \citep{journel1983nonparametric} was conceived for this purpose; however, it has proved difficult to implement effectively in practice, and simpler Gaussian techniques can outperform \gls{MIK} \citep{vincent2021mik}. The challenges associated with \gls{MIK} and traditional extreme value management motivate the need for a new spatial model to characterize the non-Gaussian spatial continuity of extreme values.
 
-\FloatBarrier
 \subsection{Thesis Statement}
 \label{subsec:01thesis}
 
@@ -62,7 +61,6 @@ Little research has been done on the continuous simulation of high-order spatial
 
 The proposed research covers a wide range of subjects involving modeling continuous, positively skewed variables with geostatistical simulation. The following section reviews the relevant geostatistical concepts. This section does not intend to be exhaustive but rather provide a review of concepts related to the \gls{NMR} framework.
 
-\FloatBarrier
 \subsection{Overview}
 \label{subsec:01overview}
 
@@ -103,7 +101,6 @@ Where $a^{\ell}_{k}$ is the contribution of the $\ell^{th}$ factor the $k^{th}$ 
 \end{equation*}
 The LMC is commonly modeled in the cokriging paradigm for multivariate covariance inference.
 
-\FloatBarrier
 \subsection{Factorial Kriging}
 \label{subsec:01factorial}
 
@@ -169,9 +166,8 @@ Simple factorial kriging equations are equivalent to the simple kriging equation
 
 The sum of the estimated factors plus the mean equals the simple kriging estimate.
 
-\FloatBarrier
 \subsection{Simulating Continuous Variables}
-\label{subsec:03simulate}
+\label{subsec:01simulate}
 
 Kriging and its variants generate smooth, deterministic estimates that do not reproduce the true variability of the data \citep{deutsch1992geostatistical}. The smoothness of this estimate is not desirable if the transfer function is sensitive to extreme values; under-representing the variability may be consequential. Simulation methods reproduce the input variables' covariance structure and spatial variability while honouring data values at their locations \citep{goovaerts1997geostatistics}. Generating a set of equiprobable realizations captures uncertainty in the \gls{RV}. Conventional simulation algorithms rely on the assumption that the input variables are multivariate Gaussian after a univariate normal score transform. Under the multivariate Gaussian assumption, all conditional distributions are defined by the normal equations and thus are linear combinations of the conditioning data \citep{chiles2012geostatistics}. Many algorithms are available for conditional simulation of Gaussian \glspl{RF}. \cite{pinto2020independent} presents a comprehensive overview of the most common algorithms and best practices for selecting an algorithm given the problem context.
 
@@ -200,7 +196,6 @@ As the simulation progresses, the amount of conditioning data increases. In prac
 
 % Due to Kriging's exactitude, the sum of the conditionally simulated values at the data locations equals the sum of the simple Kriging factors.
 
-\FloatBarrier
 \subsection{Multiple Point Statistics}
 \label{subsec:01mps}
 
@@ -210,8 +205,6 @@ The foundation of multiple-point simulation algorithms \citep{guardiano1993multi
 
 Traditionally, \gls{MPS} simulations focus on categorical modeling of stratigraphic deposits where object-based or process-mimicking models are applicable across geologic environments \citep{mariethoz2014multiplepoint}. Multi-point simulation of continuous variables is approached with high-order spatial cumulants, discussed in the next section.
 
-
-\FloatBarrier
 \subsection{High-Order Simulation}
 \label{subsec:03hosim}
 
@@ -219,7 +212,6 @@ High-order simulation methods are similar in concept to the multi-point simulati
 
 Though largely data-driven, a drawback of these methodologies is that a \gls{TI} is required. The inference of the spatial cumulants draws from both the \gls{TI} and available data; if the high-order multi-point replicates are not available in the data, they are incorporated from the \gls{TI} \citep{mustapha2010highorder,yao2021training}. Selecting or generating a \gls{TI} for continuous variables in mining problems is challenging without dense sampling; \cite{minniakhmetov2018highorder} and \cite{decarvalho2019highorder} use blast hole samples for \gls{TI} construction. \cite{yao2021training} presents methodology for \gls{TI} free simulation with aggregated kernel statistics.
 
-\FloatBarrier
 \subsection{Imputation}
 \label{subsec:01impute}
 
@@ -254,13 +246,11 @@ Latent imputation is a special scenario where all values are missing \citep{litt
 
 The following section provides background literature on extreme values, outliers, and their significance in geospatial and mining-related problems. Though the \gls{NMR} framework does not directly incorporate \gls{EVT}, the statistical foundation is presented for completeness.
 
-\FloatBarrier
 \subsection{Outlier Detection}
 \label{subsec:01outlier}
 
 Outlier detection is relevant to all statistical modeling, and the literature is vast \citep{zimek2018there}. \cite{hodge2004survey} note that authors may refer to outlier detection as novelty, noise, anomaly or deviation detection. In all cases, however, an outlier is an observation sufficiently dissimilar to other observations \citep{barnett1984outliers}. \cite{wang2019progress} group outlier detection methodologies into (1) statistical methods, (2) distance-based methods, (3) density-based methods, (4) clustering-based methods, and (5) ensemble-based methods. Statistical methods, either parametric or non-parametric, compare the relationship of potential outliers with the remaining distribution. Distance-based methods (euclidean or non-euclidean) compare the distance between observations where potential outliers are ``far'' from other observations. Density-based methods consider outliers in low-density regions of a \gls{PDF}. Clustering-based methods classify each observation, and potential outliers are not within or near dense clusters. Finally, ensemble methods are combinations of dissimilar methodologies to create a more robust outlier detection model. \cite{hodge2004survey,wang2019progress,pimentel2014review,boukerche2021outlier} provide comprehensive reviews of outlier detection methodologies with applications to fraud detection, cybersecurity, sensor networks, image processing, time series and data streams, medical diagnostics and industrial monitoring. \cite{pang2022deep} presents a comprehensive review of outlier detection with deep learning, though the concepts are largely beyond the scope of this thesis.
 
-\FloatBarrier
 \subsection{Geospatial Outlier Detection}
 \label{subsec:01miningoutlier}
 
@@ -268,7 +258,6 @@ Outlier detection in the mining industry is based largely on graphical methods \
 
 Practitioners often omit the spatial characteristics of sample values when identifying outliers. The spatial context of the samples is likely relevant; an extreme value surrounded by other high values may not be an outlier. The correlation structure of the variable(s) is relevant to understanding the spatial context \citep{filzmoser2014identification}. \cite{babakhani2014geostatistical} proposed a methodology for identifying spatial outliers based on the rank transform of cross-validation estimates. Outliers identified by the rank transform consider the spatial neighbourhood and are different from simply considering the univariate distribution. Many authors \citep{filzmoser2020multivariate,filzmoser2014identification,ernst2017comparison, leung2021sample,harris2014multivariate,chen2008detecting} have proposed methodology for spatial multivariate geochemical outlier detection using the \gls{MCD} estimator of \cite{rousseeuw1999fast}. The Mahalanobis distance \citep{mahalanobis2018generalized} is a common distance metric in multivariate space. However, it is sensitive to outliers \citep{filzmoser2014identification}. The \gls{MCD} is a robust measure of the global correlation structure in the presence of outliers. Given the \gls{MCD} estimate, various measures of local and global multivariate distances are calculated to determine an outlier score. \cite{chen2008detecting} calculate an outlying distance based on the differences between each sample value and the median value over its neighbours. \cite{filzmoser2014identification} calculate a degree of isolation for each observation based on the robust Mahalanobis distance (\gls{MCD} estimate) globally, as well as within a local neighbourhood; values above a defined threshold are considered potential multivariate outliers.
 
-\FloatBarrier
 \subsection{Geospatial Outlier Management}
 \label{subsec:01outliermanage}
 
@@ -341,7 +330,6 @@ The conditional distribution of the exceedances (Equation~\ref{eq:exceed}) can b
 
 In a geoscience context, \cite{caers1999statistics,caers1999statisticsa} use the \gls{GPD} to model earthquake magnitudes, size distributions of diamonds and the size distributions of impact craters. \cite{deligne2010recurrence} use a Poisson process to model the recurrence rate of explosive volcanic eruptions, while \cite{nguyen2023dynamic} use the \gls{GPD} to forecast volcanic eruptions. \cite{miniussi2020metastatistical} model the frequency of flooding events across the United States based on stream gauge measurements. \cite{lee2021temporal} use a Gumbel distribution to predict the exceedance probability of extreme rainfall-induced landslides.
 
-\FloatBarrier
 \subsection{Spatial Extreme Value Theory}
 \label{subsec:01spevt}
 
@@ -358,7 +346,6 @@ Unlike a Gaussian \gls{RF}, which is fully defined by its correlogram $\rho(\mat
 
 The following section provides background literature regarding geoscience and engineering-related inverse problems and the use of optimization to infer unknown model parameters.
 
-\FloatBarrier
 \subsection{Inverse Problems}
 \label{subsec:01inverse}
 
@@ -378,8 +365,6 @@ For this reason, many inverse problems are framed as optimization problems, mini
 %     \item constraints on wt magnitude, nscore keeps solution reasonable
 % \end{enumerate}
 
-
-\FloatBarrier
 \subsection{Genetic Algorithms}
 \label{subsec:01genetic}
 

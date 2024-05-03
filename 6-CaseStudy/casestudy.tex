@@ -532,7 +532,6 @@ Stopes containing composites from the test dataset are used to evaluate the perf
 
 The following section compares the \gls{NMR} and \gls{SGS} realizations at a global scale and conditional to high-grade stope volumes. These tests show how well each set of realizations reproduces data the model has not seen. The main focus of the \gls{NMR} implementation is getting the high-grade connectivity correct at the local stope volume. Modeling results are discussed globally across all test set data locations and locally within high-grade stope volumes. Recall from Figure \ref{fig:datasets} that the test set is systematically higher grade than the training set. Though the conceptual geologic model is embedded in the \gls{NMR}, it is unrealistic to expect a data-driven model to reproduce unseen data that is significantly higher or lower grade. For this reason, stopes where the deviation between the test and training set's mean grade is greater than $20\%$ are excluded from the comparison. Spatially partitioning complete drillholes into training and test sets with balanced features may not always be possible with geologic data.
 
-\FloatBarrier
 \subsection{Global Results}
 \label{subsec:06global}
 
@@ -563,7 +562,6 @@ Probabilistic accuracy can be assessed by considering the local conditional \gls
 
 At a global scale, the \gls{NMR} model shows a modest improvement in prediction error, both in magnitude and \gls{RMSE} with the truth. Both \gls{NMR} and \gls{SGS} models show good accuracy at the global scale. The following section explores validation metrics at the local scale; the goal is that the \gls{NMR} outperforms \gls{SGS} conditional to high-grade stope volumes.
 
-\FloatBarrier
 \subsection{Local Results}
 \label{subsec:06local}
 

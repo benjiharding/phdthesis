@@ -17,7 +17,6 @@ The following sections present the concepts of outliers and extreme values in a 
 
 Practitioners often generate geostatistical models using widely spaced data configurations. Data collection costs prohibit exhaustive sampling and necessitate statistical inference from limited samples. Spatial prediction with widely spaced data in the presence of extreme values is a long-standing issue in the mining industry \citep{leuangthong2015dealing}. Extreme values may have significant local influence, leading to overstated resources and the risk of production shortfalls. Practitioners face difficult decisions when limiting extreme value influence and characterizing their spatial continuity. Inputs to numerical geologic models consist of observed data, a representative histogram and spatial controls on mineralization. Each of these components presents challenges in the presence of extreme values. Extreme values are often under-sampled, making inferences about their probability of occurrence difficult. The influence of extreme values is often limited in practice through grade capping, which could significantly impact the final resource. The spatial continuity of extreme values differs from that of the barren or mineralized background. Traditional geostatistical methods are limited in capacity to adapt to both extreme values and asymmetric spatial continuity features.
 
-\FloatBarrier
 \subsection{Outlier Detection}
 \label{subsec:02dectection}
 
@@ -35,7 +34,6 @@ Identifying and managing extreme values is essential, particularly concerning he
 
 \cite{leuangthong2015dealing}, echoed by CIM best practices, break the process of outlier management into three categories: (1) choosing appropriate domains, (2) grade capping, and (3) limiting the influence of outliers through the estimation process. Grade capping or ``top-cutting'' is common in the mining industry. Grades above a given threshold are reset to that threshold. The general idea is that uncapped grades may lead to unrealistic local estimates adjacent to high-grade composites \citep{nowak2013suggestions}. The ``smearing'' may be significant if sparse data are estimated with kriging. Due to the normal score transform, simulation is more robust in the presence of outliers, though some cases may still require capping. As point scale realizations reproduce the input \gls{CDF}, directly capping the realizations avoids iterative re-simulation \citep{harding2023probabilistic}.
 
-\FloatBarrier
 \subsection{Tools for Outlier Management}
 \label{subsec:02tools}
 
@@ -113,7 +111,6 @@ P-grams are a spatial statistic to characterize the continuity of high grades: t
 
 Regardless of the methodology, restricting extreme values aims to mitigate downside risk in resource estimates. The following section presents a survey of outlier management strategies published in publicly available technical reports. The survey provides an overview of current practices in the mining industry.
 
-\FloatBarrier
 \subsection{Current State of the Art}
 \label{subsec:02state}
 
@@ -195,10 +192,8 @@ Most outlier detection methodologies employed in the mining industry neglect the
 
 Additionally, one must understand the volume of influence of a potential outlier. Isolated extreme values, or ones with large areas of influence, pose a risk of overestimation \citep{leuangthong2015dealing}. The spatial context of a sample motivates the development of an outlier identification algorithm that considers both the spatial neighbourhood of the sample and its position within the global distribution. The spatial dimension characterizes the relationships within the local neighbourhood, while the density dimension characterizes the global relationship with the remaining data. Figure \ref{fig:spatial_outlier_sketch} shows a sketch of the local and global components to calculate a final outlier measure. This section describes the algorithm components and provides examples of its use first on a synthetic \gls{1D} example and then on a real \gls{3D} dataset.
 
-% \FloatBarrier
 \subsection{Methodology}
 \label{subsec:02methodology}
-
 
 Consider a dataset $\{z(\mathbf{u}_{i}), \ i = 1, \dots, n\}$ where $n$ is the total number of data and $\mathbf{u}_{i}$ is a coordinate vector at the $i^{th}$ location. About location $\mathbf{u}_{i}$, there exists a neighbourhood of $k$ nearest locations, $NN(\mathbf{u}_{i}; k)$. This neighbourhood could be defined by a fixed search radius and maximum $k$ or a fixed number $k$. The data $\{z(\mathbf{u}_{j}), \ j = 1, \dots, k, \ j \neq i \}$ define the neighbourhood of samples about location $\mathbf{u}_{i}$. Next, consider a function $m(\mathbf{u}_{i})$ that returns a summary statistic, such as the mean or median, for all data values within the neighbourhood $NN(\mathbf{u}_{i}; k)$. The spatial component of the algorithm compares the data value $z(\mathbf{u}_{i})$ to the value returned from $m(\mathbf{u}_{i})$: $h(\mathbf{u}_{i}) = |z(\mathbf{u}_{i}) - m(\mathbf{u}_{i})|$. The function $m(\mathbf{u}_{i})$ is chosen to be the median value of all samples in the neighbourhood (excluding location $\mathbf{u}_{i}$), weighted by distance from $\mathbf{u}_{i}$. The median is chosen as it is a more robust measure of central tendency in the presence of outliers than the mean. The vector $\{h_{1}, h_{2}, \dots, h_{n}\}$ contains the absolute differences between each data value and the median of the surrounding neighbourhood. The $h_{n}$ values are scaled $\in [0,1]$ where values closer to 1 differ most from their neighbourhood. This comparison accounts for the local spatial relationship between data values. The choice of $k$ is problem-specific. If $k$ is too small, the median values will be noisy and not represent the true local variation. If $k$ is too large, the median values will be smooth and not representative of the true local variation.
 
@@ -272,8 +267,6 @@ Figure \ref{fig:hx} shows the difference between the data and weighted neighbour
 
 The algorithm effectively identifies the noisy data points. Two points remain undetected, though the magnitude of the noise is small, and there are no drastic intra-neighbourhood changes in these areas. In addition to the noisy data, the algorithm identifies three additional outliers near $x=-10$. It is possible that a traditional univariate method such as visual examination of a \gls{CPP} would identify outliers in the upper and lower tails of the distribution (i.e. the values flagged in the lower left and upper right corners of Figure \ref{fig:spatial_outliers}); however, the outliers in the middle of the distribution would go undetected without considering the spatial component.
 
-
-\FloatBarrier
 \subsection{Application}
 \label{subsec:02application}
 
@@ -334,7 +327,6 @@ The spatial outlier detection algorithm effectively identifies potential outlier
 
 Many techniques have evolved to restrict the influence of outliers or extreme high grades. No statistical or geostatistical model exists to understand and manage the resource contributions of \gls{EHG}. The validity of such a model could only be established based on many data or bulk mining. The idea is to develop a simple and intuitive model that accommodates the resource contributions of \gls{EHG}. This model could be applied to understand and explain historical mining and to project the possibility of \gls{EHG} mineralization in unmined areas.
 
-\FloatBarrier
 \subsection{Methodology}
 \label{subsec:02methodehg}
 
@@ -346,7 +338,6 @@ The geological processes that led to the precipitation and preservation of the g
     \caption{Trimodal distribution model of \acrfull{M}, \acrfull{HG} and \acrfull{EHG}.}
     \label{fig:ehg}
 \end{figure}
-
 
 The concept of three populations is reasonable. The illustration in Figure~\ref{fig:ehg} appears discrete as three populations; however, the data distribution from this model would appear highly skewed. Considering one highly skewed population may be possible; however, a flexible parametric distribution is not available to satisfy observed data, explain outliers, and avoid unrealistically high grades. Considering more than three populations would be possible; however, it seems reasonable to have \gls{M}, \gls{HG} and \gls{EHG}. Additional intermediate populations would complicate the model and could be grouped into one of the three.
 
@@ -389,7 +380,6 @@ The proportions of the populations are defined in sequence by the following:
 \]
 The mean values of the three populations could be estimated with reasonable confidence. The overall mean could be estimated from historical mining. The fraction of metal in the \gls{EHG} population relative to the \gls{HG} population (the $f$ value) is a model parameter that could be inferred from available drilling if enough intersections are available. Given the mean values and $f$, we could infer the proportions of the populations and the contribution to metal from each population.
 
-\FloatBarrier
 \subsection{Probability of Drilling EHG}
 \label{subsec:02probehg}
 
@@ -416,8 +406,6 @@ Consider $m_{Overall} = 10 g/t$, $m_{M} = 0.1 g/t$, $m_{HG} = 10 g/t$, $m_{EHG} 
 \]
 The overall mean of the model is checked: $m_{Overall} = 0.4975 \cdot 0.1 + 0.4975 \cdot 10 + 0.0050 \cdot 1000 = 10$ as it must. So, for thirty ($n=30$) drill holes there is an $0.995^{30}=0.86=86\%$ chance of {\em not} intersecting \gls{EHG}. To get to a 50\% chance of encountering an \gls{EHG} drill hole $log(0.5)/log(0.995)=138$ drill holes would be required.
 
-
-\FloatBarrier
 \subsection{Application}
 \label{subsec:02applicationehg}
 
