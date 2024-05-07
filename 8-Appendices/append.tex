@@ -1,73 +1,116 @@
 %!TEX root = ../Thesis_example_compile_this.tex
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Appendices}
-\label{ch:append}
+\chapter{Software}
+\label{ch:software}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Using the CCG Parameter File Environment}
-\label{sect:parm_file}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The following Appendix presents the software developed for the methodologies in this thesis. Programs are developed as a series of FORTRAN 90 codes with \gls{GSLIB} style parameter files \citep{deutsch1992geostatistical}. \texttt{NMROPT} is developed for \gls{NMR} parameter inference and \texttt{NMRIMP} for imputation of latent Gaussian factors. These programs together form the suite of programs for the \gls{NMR} framework. The following sections present the parameter file for each program, summarizing the key parameters. All source code is available at the authors github (\href{https://github.com/benjiharding/NMROPT}{\texttt{NMROPT}} and \href{https://github.com/benjiharding/NMRIMP}{\texttt{NMRIMP}}).
+
+
+\section{NMROPT}
+\label{sect:nmropt}
 
 
 \begin{framed}
-    \begin{lstlisting}[style=ccgParameterfile]
-                   Parameters for HPO
-                  ********************
+   \begin{lstlisting}[style=ccgParameterfile]
+            PARAMETERS FOR NMROPT
+            *********************
 
-    START OF MAIN:
-    bvtest01.dat            - (str) file with block values
-    1                       - (int) column number for value
-    100                     - (int) number of realizations
-    50      0.5    1.0      - grid definition: nx,xmn,xsiz
-    50      0.5    1.0      -                  ny,ymn,ysiz
-    50      0.5    1.0      -                  nz,zmn,zsiz
-    PitOpt-summaries.out    - (str) filename for summaries output
-    PitOpt-surfaces.out     - (str) filename for surfaces output
-    PitOpt-models.out       - (str) filename for optimized pit model output
-
-
-    -----------------------------
-    Start of Optional Parameters.
-    -----------------------------
-
-    START OF OBJ_FUNCT:
-    0.1                     - (float) factor to penalize uncertainty (0 = none, Default = 0.1)
-    0                       - (float) expected stripping ratio target (0 = none, Default = 0)
-    0                       - (float) factor to penalize stripping ratio uncertainty (0 = none, Default = 0)
-    1.0   1.0               - (flt, flt) ore and waste multipliers (Default = 1.0 1.0)
-
-    START OF GLOBAL_OPTIMA:
-    69069                   - (int) random number seed (Default = 69069)
-    soft_boundary.dat       - (str) file with boundary pit (optional) (Default = nofile)
-    10                      - (int) Maximum perturbation loops (Default = 10)
-    10  300                 - (int, int) random restarts: number, number locations (Default = 5  3)
-    5                       - (int) Number of Perturbation loop failures that will cause an early exit of the cycle (Default = 5)
-
-    START OF PRECEDANCE:
-    0                       - (int) Precedence Option (Default = 0)
-
-       : Precedence Notes:
-       : 0      - 1:5 pattern (~35-45 deg slopes)
-       : 1      - 1:9 pattern (~45-55 deg slopes)
-
-    START OF FILE FORMATS:
-    0                       - (int) Input File Formats (Default = 0)
-    0                       - (int) Output File Formats (Default = 0)
-
-       : File Formats Notes:
-       : 0      - traditional GSLIB format (ASCII based)
-       : 1      - GSB (intra Binary format)
-
-    START OF DEBUG:
-    0                        - (int) Debug Options (0, 1, 2): Default = 0
-    0                        - (int) How often to display messages
-
-       : Debug Notes:
-       : Debug Options (0) No Messages. (1) displays console messages
-       : for every N attempts to change pit. (2) displays console
-       : messages every N changes that are accepted
-       : How Often: Sets the N that determines how often the messages are displayed
+      START OF PARAMETERS:
+      data.dat                          - file with data
+      1 4 5 6 7 11                      - columns for dh, x, y, z, var and wt
+      0                                 - normal score transform var? (0=no, 1=yes)
+      -1.0e21    1.0e21                 - trimming limits
+      100                               - number of unconditional realizations
+      0                                 - simulation type (0=LU (<2500 data), 1=sequential)
+      5841044                           - random number seed
+      1 1                               - debugging level, realization to output (-1 for all)
+      nmropt.dbg                        - file for debugging output
+      nmropt.out                        - file for network output
+      nmrwts.out                        - file for optimzed network weights
+      nmrobj.out                        - file for objective function value per iteration
+      nmr_                              - prefix for target/experimental output files
+      3                                 - number of network layers (input to output layer)
+      5 5 1                             - network layer dimensions (input + nugget to output layer)
+      1 0.1                             - network wt regularization (0=none, 1=L1, 2=L2), lambda
+      pool.dat                          - file with covariance structs. of Gaussian pool
+      0                                 - consider factor precedence? (0=no, 1=yes)
+      1  1  1  1                        - objective components: varg, ivarg, runs, npoint
+      1  1  1  1                        - objective weight:     varg, ivarg, runs, npoint
+      3                                 - number of indicator thresholds
+      -1.28 0.0 1.28                    - Gaussian indicator thresholds
+      1  1  1                           - threshold weights 
+      1                                 - runs above or below threshold? (0=below, 1=above, 2=both)
+      30                                - max number of runs to consider
+      0                                 - runs target from file? (0=no, 1=yes)
+      target_runs.out                   - runs target file
+      1                                 - npoint above or below threshold? (0=below, 1=above)
+      30                                - max number of connected steps to consider
+      0                                 - npoint target from file? (0=no, 1=yes)
+      target_npoint.out                 - npoint target file
+      0.8 0.5 1.0 15 1000               - DE parameters: F, CR lo, CR hi, pop. size, its
+      0.0 1.0                           - DE bounds: lower, upper
+      omega.out                         - file with factor omega bounds
+      1                                 - num. threads for parallel DE (1=serial, -1 for all)
+      2                                 - number of experimental variogram directions
+      0.0 22.5 1000 0.0 22.5 1000 0.0   - dir 01: azm,azmtol,bandhorz,dip,diptol,bandvert,tilt
+      8  1000.0  500.0                  -        number of lags,lag distance,lag tolerance
+      90. 22.5 1000 0.0 22.5 1000 0.0   - dir 02: azm,azmtol,bandhorz,dip,diptol,bandvert,tilt
+      8  1000.0  500.0                  -        number of lags,lag distance,lag tolerance
+      1                                 - number of target variogram models
+      3                                 - number of target indicator variogram models
+      1.0                               - IDW power for variogram optimization weighting
+      999999                            - max number of exp. variogram pairs (see note)
+      1                                 - standardize sill? (0=no, 1=yes)
+      1    0.1                          - nst, nugget effect
+      1    0.9  0.0   0.0   0.0         - it,cc,ang1,ang2,ang3
+      10.0  10.0  10.0          - a_hmax, a_hmin, a_vert
+      1    0.1                          - inst, nugget effect
+      1    0.9  0.0   0.0   0.0         - iit,icc,iang1,iang2,iang3
+      10.0  10.0  10.0         - ia_hmax, ia_hmin, ia_vert
+      1    0.1                          - inst, nugget effect
+      1    0.9  0.0   0.0   0.0         - iit,icc,iang1,iang2,iang3
+      10.0  10.0  10.0         - ia_hmax, ia_hmin, ia_vert
+      1    0.1                          - inst, nugget effect
+      1    0.9  0.0   0.0   0.0         - iit,icc,iang1,iang2,iang3
+      10.0  10.0  10.0         - ia_hmax, ia_hmin, ia_vert
     \end{lstlisting}
 \end{framed}
+
+
+
+\FloatBarrier
+\section{NMRIMP}
+\label{sect:nmrimp}
+
+
+\begin{framed}
+   \begin{lstlisting}[style=ccgParameterfile]
+            PARAMETERS FOR NMRIMP
+            *********************
+
+      START OF PARAMETERS:
+      data.dat                - file with data
+      1 4 5 6 7 11            - columns for dh, x, y, z, var and wt
+      0                       - normal score transform var? (0=no, 1=yes)
+      -1.0e21    1.0e21       - trimming limits
+      100                     - number of realizations
+      5841044                 - random number seed
+      1                       - debugging level
+      nmrimp.dbg              - file for debugging output
+      nmrimp.out              - output file with imputed realizations
+      3                       - number of network layers (input to output layer)
+      5 5 1                   - network layer dimensions (input + nugget to output layer)
+      0                       - normalize layer inputs? (0=no, 1=yes)
+      nmrwts.out              - input file with optimzed network weights
+      0  1  -1.5              - consider factor precedence? (0=no, 1=yes), factor index, wt
+      0  0.9  1               - seed values? (0=no, 1=yes), threshold to seed, factor index
+      20                      - exclusion radius for seeded values (approx. 5-10*comp length)
+      40                      - maximum previously simulated nodes
+      50000 10000             - maximum iterations for step 1 and step 2
+      0.1 0.01                - rejection tolerances for step 1 and step 2
+      pool.dat                - file with covariance structs. of Gaussian pool
+    \end{lstlisting}
+\end{framed}
+
