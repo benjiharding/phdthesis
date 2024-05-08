@@ -2,14 +2,16 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Software}
-\label{ch:software}
+\label{ch:Asoftware}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The following Appendix presents the software developed for the methodologies in this thesis. Programs are developed as a series of FORTRAN 90 codes with \gls{GSLIB} style parameter files \citep{deutsch1992geostatistical}. \texttt{NMROPT} is developed for \gls{NMR} parameter inference and \texttt{NMRIMP} for imputation of latent Gaussian factors. These programs together form the suite of programs for the \gls{NMR} framework. The following sections present the parameter file for each program, summarizing the key parameters. All source code is available at the authors github (\href{https://github.com/benjiharding/NMROPT}{\texttt{NMROPT}} and \href{https://github.com/benjiharding/NMRIMP}{\texttt{NMRIMP}}).
 
 
 \section{NMROPT}
-\label{sect:nmropt}
+\label{sect:Anmropt}
+
+\texttt{NMROPT} provides functionality for the \gls{NMR} parameter inference discussed in Chapter \ref{ch:04implement}. The program takes two data files as inputs: (1) specifying the drillhole data and (2) specifying the covariance structure of each latent factor. Network architecture, thresholds, experimental variogram search parameters, and objective functions components are specified directly in the parameter file. The optimized network parameters are output as a text file and passed to \texttt{NMRIMP} for latent factor imputation. The parameter file is shown below:
 
 
 \begin{framed}
@@ -18,72 +20,124 @@ The following Appendix presents the software developed for the methodologies in 
             *********************
 
       START OF PARAMETERS:
-      data.dat                          - file with data
-      1 4 5 6 7 11                      - columns for dh, x, y, z, var and wt
-      0                                 - normal score transform var? (0=no, 1=yes)
-      -1.0e21    1.0e21                 - trimming limits
-      100                               - number of unconditional realizations
-      0                                 - simulation type (0=LU (<2500 data), 1=sequential)
-      5841044                           - random number seed
-      1 1                               - debugging level, realization to output (-1 for all)
-      nmropt.dbg                        - file for debugging output
-      nmropt.out                        - file for network output
-      nmrwts.out                        - file for optimzed network weights
-      nmrobj.out                        - file for objective function value per iteration
-      nmr_                              - prefix for target/experimental output files
-      3                                 - number of network layers (input to output layer)
-      5 5 1                             - network layer dimensions (input + nugget to output layer)
-      1 0.1                             - network wt regularization (0=none, 1=L1, 2=L2), lambda
-      pool.dat                          - file with covariance structs. of Gaussian pool
-      0                                 - consider factor precedence? (0=no, 1=yes)
-      1  1  1  1                        - objective components: varg, ivarg, runs, npoint
-      1  1  1  1                        - objective weight:     varg, ivarg, runs, npoint
-      3                                 - number of indicator thresholds
-      -1.28 0.0 1.28                    - Gaussian indicator thresholds
-      1  1  1                           - threshold weights 
-      1                                 - runs above or below threshold? (0=below, 1=above, 2=both)
-      30                                - max number of runs to consider
-      0                                 - runs target from file? (0=no, 1=yes)
-      target_runs.out                   - runs target file
-      1                                 - npoint above or below threshold? (0=below, 1=above)
-      30                                - max number of connected steps to consider
-      0                                 - npoint target from file? (0=no, 1=yes)
-      target_npoint.out                 - npoint target file
-      0.8 0.5 1.0 15 1000               - DE parameters: F, CR lo, CR hi, pop. size, its
-      0.0 1.0                           - DE bounds: lower, upper
-      omega.out                         - file with factor omega bounds
-      1                                 - num. threads for parallel DE (1=serial, -1 for all)
-      2                                 - number of experimental variogram directions
-      0.0 22.5 1000 0.0 22.5 1000 0.0   - dir 01: azm,azmtol,bandhorz,dip,diptol,bandvert,tilt
-      8  1000.0  500.0                  -        number of lags,lag distance,lag tolerance
-      90. 22.5 1000 0.0 22.5 1000 0.0   - dir 02: azm,azmtol,bandhorz,dip,diptol,bandvert,tilt
-      8  1000.0  500.0                  -        number of lags,lag distance,lag tolerance
-      1                                 - number of target variogram models
-      3                                 - number of target indicator variogram models
-      1.0                               - IDW power for variogram optimization weighting
-      999999                            - max number of exp. variogram pairs (see note)
-      1                                 - standardize sill? (0=no, 1=yes)
-      1    0.1                          - nst, nugget effect
-      1    0.9  0.0   0.0   0.0         - it,cc,ang1,ang2,ang3
-      10.0  10.0  10.0          - a_hmax, a_hmin, a_vert
-      1    0.1                          - inst, nugget effect
-      1    0.9  0.0   0.0   0.0         - iit,icc,iang1,iang2,iang3
-      10.0  10.0  10.0         - ia_hmax, ia_hmin, ia_vert
-      1    0.1                          - inst, nugget effect
-      1    0.9  0.0   0.0   0.0         - iit,icc,iang1,iang2,iang3
-      10.0  10.0  10.0         - ia_hmax, ia_hmin, ia_vert
-      1    0.1                          - inst, nugget effect
-      1    0.9  0.0   0.0   0.0         - iit,icc,iang1,iang2,iang3
-      10.0  10.0  10.0         - ia_hmax, ia_hmin, ia_vert
+      data.dat             - file with data
+      1 4 5 6 7 11         - columns for dh, x, y, z, var and wt
+      0                    - normal score transform var? (0=no, 1=yes)
+      -1.0e21    1.0e21    - trimming limits
+      100                  - number of unconditional realizations
+      0                    - simulation type (0=LU, 1=sequential)
+      5841044              - random number seed
+      1 1                  - debugging level, realization to output
+      nmropt.dbg           - file for debugging output
+      nmropt.out           - file for network output
+      nmrwts.out           - file for optimzed network weights
+      nmrobj.out           - file for objective function value per ...
+      nmr_                 - prefix for target/experimental output
+      3                    - number of network layers 
+      5 5 1                - network layer dimensions 
+      1 0.1                - network wt regularization (0=none, ...
+      pool.dat             - file with cov. structs. of Gaussian pool
+      0                    - consider factor precedence? (0=no, 1=yes)
+      1  1  1  1           - objective components: varg, ivarg, ...
+      1  1  1  1           - objective weight:     varg, ivarg, ...
+      3                    - number of indicator thresholds
+      -1.28 0.0 1.28       - Gaussian indicator thresholds
+      1  1  1              - threshold weights 
+      1                    - runs above or below threshold? ...
+      30                   - max number of runs to consider
+      0                    - runs target from file? (0=no, 1=yes)
+      target_runs.out      - runs target file
+      1                    - npoint above or below threshold? ...
+      30                   - max number of connected steps to consider
+      0                    - npoint target from file? (0=no, 1=yes)
+      target_npoint.out    - npoint target file
+      0.8 0.5 1.0 15 1000  - DE parameters: F, CR lo, CR hi, pop ...
+      0.0 1.0              - DE bounds: lower, upper
+      omega.out            - file with factor omega bounds
+      1                    - num. threads for parallel DE ...
+      2                    - number of experimental variogram ...
+      0.0 22.5 1000 0.0 22.5 1000 0.0  - dir 01: azm,azmtol, ...
+      8  1000.0  500.0     - number of lags,lag distance,lag ...
+      90. 22.5 1000 0.0 22.5 1000 0.0  - dir 02: azm,azmtol, ...
+      8  1000.0  500.0     - number of lags,lag distance,lag ...
+      1                    - number of target variogram models
+      3                    - number of target indicator variogram ...
+      1.0                  - IDW power for variogram optimization ...
+      999999               - max number of exp. variogram pairs ...
+      1                    - standardize sill? (0=no, 1=yes)
+      1    0.1             - nst, nugget effect
+      1    0.9  0.0   0.0   0.0      - it,cc,ang1,ang2,ang3
+      10.0  10.0  10.0               - a_hmax, a_hmin, a_vert
+      1    0.1                       - inst, nugget effect
+      1    0.9  0.0   0.0   0.0      - iit,icc,iang1,iang2,iang3
+      10.0  10.0  10.0               - ia_hmax, ia_hmin, ia_vert
+      1    0.1                       - inst, nugget effect
+      1    0.9  0.0   0.0   0.0      - iit,icc,iang1,iang2,iang3
+      10.0  10.0  10.0               - ia_hmax, ia_hmin, ia_vert
+      1    0.1                       - inst, nugget effect
+      1    0.9  0.0   0.0   0.0      - iit,icc,iang1,iang2,iang3
+      10.0  10.0  10.0               - ia_hmax, ia_hmin, ia_vert
     \end{lstlisting}
 \end{framed}
 
+Each line in the parameter file is summarized below:
 
+\begin{itemize}[noitemsep]
+   \item Lines 5-8 are standard GSLIB-style data inputs.
+   \item Line 9 is the number of unconditional realizations to simulate for optimization; the final objective value is the expectation across all realizations.
+   \item Line 10 is the simulation type, either LU or sequential Gaussian simulation. LU is recommended for less than roughly 2500 data.
+   \item Line 11 is the random number seed.
+   \item Line 12 is debugging options; some or all unconditional realizations are written to the file specified in line 13.
+   \item Line 14 is the output file for the final network mixture model.
+   \item Line 15 is the output file for the optimized network weights or the best population vector.
+   \item Line 16 is the output file for the objective function value per iteration.
+   \item Line 17 is the prefix for output files for the target and experimental (optimized) objective components.
+   \item Line 18 is the total number of network layers, including input and output layers.
+   \item Line 19 are the corresponding layer dimensions (number of nodes per layer). The number of layers must match line 18, or an error is thrown.
+   \item Line 20 indicates the type of regularization (L1 or L2) and the regularization constant.
+   \item Line 21 is the input file containing all elemental factor variogram models. Only one structure is permitted per model.
+   \item Line 22 is the option to consider factor precedence. Precedence is specified in the file on line 38.
+   \item Lines 23 and 24 select the objective function components and their weighting, respectively. Each component is automatically scaled internally; however, a user-defined weighting is permissible via Line 24.
+   \item Line 25 specified the number of thresholds to consider, and line 26 specifies the threshold values. The number of indicator thresholds must match the number of indicator variogram targets, or an error is thrown.
+   \item Line 27 specifies a user defined weight to each threshold.
+   \item Line 28 is an option to consider runs either above or below the threshold. Above the threshold amounts to $1-I(\mathbf{u}_{i}; z_{k})$. Line 29 is the maximum number of runs to consider.
+   \item Line 30 specifies whether the target runs are calculated internally, or from a file. If 1, then the file on line 31 is read.
+   \item Line 32 is an option to consider $n$-point connectivity either above or below the threshold. Above the threshold amounts to $1-I(\mathbf{u}_{i}; z_{k})$. Line 33 is the maximum number of connected steps to consider.
+   \item Line 34 specifies whether the target $n$-point connectivity function is calculated internally, or from a file. If 1, then the file on line 35 is read.
+   \item Line 36 contains DE parameters. F=mutation factor; CR=cross-over probability; pop. size=population size; its=total number of algorithm iterations.
+   \item Line 37 are upper and lower bounds for each population vector.
+   \item Line 38 specifies the file with upper and lower bounds of the $\omega$ parameters.
+   \item Line 39 is an option for parallel DE.
+   \item Line 40 is the number of directions for experimental variogram calculation. These experimental variograms are used to calculate MSE relative to the targets.
+   \item Lines 41-44 are standard \texttt{varcalc} experimental variogram calculation parameters.
+   \item Lines 45 and 46 are the number of continuous and indicator variogram model targets to consider.
+   \item Line 47 is inverse distance weighting for variogram optimization. A larger power places more weight on optimizing shorter-range lags.
+   \item Line 48 is the maximum number of experimental pairs to consider. This option can speed up optimization but results in greater error and potentially unstable results.
+   \item Line 49 is the option to standardize variogram sills if not already.
+   \item Lines 50-61 are standard GSLIB variogram model specifications for the targets outlined in lines 45 and 46. The continuous model is first followed by some number of indicators. The number of models here must equal line 45 + line 46, or an error is thrown.
+\end{itemize}
+
+The Gaussian pool file specified on line 21 contains a single structure variogram model for each factor in the input layer. The structures can be permissible GSLIB variogram structures (spherical, experimental, Gaussian).  White space is permitted between the models. $nst$ may not be greater than 1. The program allocates arrays and reads data based on the specified input layer dimension; the number of structures must match the number of input nodes, or an error is thrown. An example of a pool file with three input factors is shown below:
+
+\begin{framed}
+   \begin{lstlisting}[style=ccgParameterfile]
+      1    0.0                     -nst, nugget effect
+      1    1.0  -40   0   0        -it,cc,ang1,ang2,ang3
+      129.6  75.6  25              -a_hmax, a_hmin, a_vert  
+      1    0.0                     -nst, nugget effect
+      1    1.0  -40   0   0        -it,cc,ang1,ang2,ang3
+      232.2  124.2 50              -a_hmax, a_hmin, a_vert
+      1    0.0                     -nst, nugget effect
+      1    1.0  -40   0   0        -it,cc,ang1,ang2,ang3
+      334.79  172.8  75            -a_hmax, a_hmin, a_vert  
+   \end{lstlisting}
+\end{framed}
 
 \FloatBarrier
 \section{NMRIMP}
-\label{sect:nmrimp}
+\label{sect:Anmrimp}
 
+\texttt{NMRIMP} provides latent imputation functionality discussed in Chapter \ref{ch:05impute}. The program takes two data files as inputs: (1) the same drillhole data provided to \texttt{NMROPT}, and (2) the file containing the optimized network weights generated by \texttt{NMROPT}. The same network archtecture must bet specified in both programs or errors with occur allocating arrays. The program outputs all imputed realizations to a file with the same structure as the input data; each imputed factor becomes a new variable in the file. The parameter file is shown below:
 
 \begin{framed}
    \begin{lstlisting}[style=ccgParameterfile]
@@ -91,26 +145,52 @@ The following Appendix presents the software developed for the methodologies in 
             *********************
 
       START OF PARAMETERS:
-      data.dat                - file with data
-      1 4 5 6 7 11            - columns for dh, x, y, z, var and wt
-      0                       - normal score transform var? (0=no, 1=yes)
-      -1.0e21    1.0e21       - trimming limits
-      100                     - number of realizations
-      5841044                 - random number seed
-      1                       - debugging level
-      nmrimp.dbg              - file for debugging output
-      nmrimp.out              - output file with imputed realizations
-      3                       - number of network layers (input to output layer)
-      5 5 1                   - network layer dimensions (input + nugget to output layer)
-      0                       - normalize layer inputs? (0=no, 1=yes)
-      nmrwts.out              - input file with optimzed network weights
-      0  1  -1.5              - consider factor precedence? (0=no, 1=yes), factor index, wt
-      0  0.9  1               - seed values? (0=no, 1=yes), threshold to seed, factor index
-      20                      - exclusion radius for seeded values (approx. 5-10*comp length)
-      40                      - maximum previously simulated nodes
-      50000 10000             - maximum iterations for step 1 and step 2
-      0.1 0.01                - rejection tolerances for step 1 and step 2
-      pool.dat                - file with covariance structs. of Gaussian pool
+      data.dat            - file with data
+      1 4 5 6 7 11        - columns for dh, x, y, z, var and wt
+      0                   - normal score transform var? (0=no, 1=yes)
+      -1.0e21    1.0e21   - trimming limits
+      100                 - number of realizations
+      5841044             - random number seed
+      1                   - debugging level
+      nmrimp.dbg          - file for debugging output
+      nmrimp.out          - output file with imputed realizations
+      3                   - number of network layers (input to ...
+      5 5 1               - network layer dimensions (input + ...
+      nmrwts.out          - input file with optimzed network weights
+      0  1  -1.5          - consider factor precedence? (0=no, ...
+      0  0.9  1           - seed values? (0=no, 1=yes), thresh ...
+      20                  - exclusion radius for seeded values ...
+      40                  - maximum previously simulated nodes
+      50000 10000         - maximum iterations for step 1 and step 2
+      0.1 0.01            - rejection tolerances for step 1 and step 2
+      pool.dat            - file with cov. structs. of Gaussian pool
     \end{lstlisting}
 \end{framed}
+
+Each line in the parameter file is summarized below:
+
+\begin{itemize}[noitemsep]
+   \item Lines 5-8 are standard GSLIB-style data inputs.
+   \item Line 9 is the number of realizations to impute.
+   \item Line 10 is the random number seed.
+   \item Lines 11 and 12 are the debug flag and the output file for debugging.
+   \item Line 13 is the output file for imputed realizations.
+   \item Lines 14-15 specify the architecture of the NMR. These parameters must match those used in \texttt{NMROPT}.
+   \item Line 16 is the input file with optimized network weights. This file is output by \texttt{NMROPT}.
+   \item Line 17 is an option to consider factor precendence; this must match that used by \texttt{NMROPT}.
+   \item Line 18 is the option to seed values, the threshold above which to seed, and the factor index to seed. Line 19 is the exclusion radius for seeding and setting the semi-random path.
+   \item Line 20 is the number of previously simulated nodes to consider in sequential simulation. 40-60 is typical for a 3D problem.
+   \item Line 21 are the number of iterations for the coarse search (step 1) and solution polishing (step 2), respectively.
+   \item Line 22 are the rejection tolerances for the coarse search (step 1) and solution polishing (step 2).
+   \item Line 23 is the input file containing all elemental factor variogram models. Only one structure is permitted per model. This file should be the same as in \texttt{NMROPT}.
+\end{itemize}
+
+
+% \FloatBarrier
+% \section{Sequence Analysis}
+% \label{sect:Asequence}
+
+% \FloatBarrier
+% \section{Outlier Analysis}
+% \label{sect:Aoutlier}
 
