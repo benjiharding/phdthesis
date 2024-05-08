@@ -154,7 +154,7 @@
 \lstdefinestyle{ccgParameterfile}{xleftmargin=0.5em, numbers=left,
     breakatwhitespace=true, numbersep=-1em, breaklines=true,
     numberstyle=\raggedright\ttfamily, basicstyle=\ttfamily,
-    framextopmargin=1em}
+    framextopmargin=1em, framexbottommargin=1em}
 \setlength\topsep{0em}
 \FrameSep0pt
 
