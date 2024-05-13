@@ -117,7 +117,7 @@ Each line in the parameter file is summarized below:
    \item Lines 50-61 are standard GSLIB variogram model specifications for the targets outlined in lines 45 and 46. The continuous model is first followed by some number of indicators. The number of models here must equal line 45 + line 46, or an error is thrown.
 \end{itemize}
 
-The Gaussian pool file specified on line 21 contains a single structure variogram model for each factor in the input layer. The structures can be permissible GSLIB variogram structures (spherical, experimental, Gaussian).  White space is permitted between the models. \texttt{nst} may not be greater than 1. The program allocates arrays and reads data based on the specified input layer dimension; the number of structures must match the number of input nodes, or an error is thrown. An example of a pool file with three input factors is shown below:
+The Gaussian pool file specified on line 21 contains a single structure variogram model for each factor in the input layer. An example of a pool file with three input factors is shown below:
 
 \begin{framed}
    \begin{lstlisting}[style=ccgParameterfile]
@@ -132,6 +132,8 @@ The Gaussian pool file specified on line 21 contains a single structure variogra
       334.79  172.8  75            -a_hmax, a_hmin, a_vert  
    \end{lstlisting}
 \end{framed}
+
+The structures can be permissible GSLIB variogram structures (spherical, experimental, Gaussian). White space is permitted between the models. \texttt{nst} may not be greater than 1. The program allocates arrays and reads data based on the specified input layer dimension; the number of structures must match the number of input nodes, or an error is thrown.
 
 \FloatBarrier
 \section{NMRIMP}
