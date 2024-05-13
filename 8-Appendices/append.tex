@@ -85,7 +85,7 @@ Each line in the parameter file is summarized below:
 \begin{itemize}[noitemsep]
    \item Lines 5-8 are standard GSLIB-style data inputs.
    \item Line 9 is the number of unconditional realizations to simulate for optimization; the final objective value is the expectation across all realizations.
-   \item Line 10 is the simulation type, either LU or sequential Gaussian simulation. LU is recommended for less than roughly 2500 data.
+   \item Line 10 is the simulation type, either LU or sequential Gaussian simulation. LU is recommended for less than $\approx 2500$ data.
    \item Line 11 is the random number seed.
    \item Line 12 is debugging options; some or all unconditional realizations are written to the file specified in line 13.
    \item Line 14 is the output file for the final network mixture model.
@@ -117,7 +117,7 @@ Each line in the parameter file is summarized below:
    \item Lines 50-61 are standard GSLIB variogram model specifications for the targets outlined in lines 45 and 46. The continuous model is first followed by some number of indicators. The number of models here must equal line 45 + line 46, or an error is thrown.
 \end{itemize}
 
-The Gaussian pool file specified on line 21 contains a single structure variogram model for each factor in the input layer. The structures can be permissible GSLIB variogram structures (spherical, experimental, Gaussian).  White space is permitted between the models. $nst$ may not be greater than 1. The program allocates arrays and reads data based on the specified input layer dimension; the number of structures must match the number of input nodes, or an error is thrown. An example of a pool file with three input factors is shown below:
+The Gaussian pool file specified on line 21 contains a single structure variogram model for each factor in the input layer. The structures can be permissible GSLIB variogram structures (spherical, experimental, Gaussian).  White space is permitted between the models. \texttt{nst} may not be greater than 1. The program allocates arrays and reads data based on the specified input layer dimension; the number of structures must match the number of input nodes, or an error is thrown. An example of a pool file with three input factors is shown below:
 
 \begin{framed}
    \begin{lstlisting}[style=ccgParameterfile]
