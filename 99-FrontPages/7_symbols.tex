@@ -1,133 +1,39 @@
 %!TEX root = ../Thesis_example_compile_this.tex
-% \newglossaryentry{u0}
-% {
-% name={$\mathbf{u_i}$},
-% description={Block $u$ at location \textit{i}},
-% sort=u
-% }
-\newglossaryentry{e0}
-{
-name={$E\lbrack \quad \rbrack$},
-description={Expected value},
-sort=e
-}
-\newglossaryentry{l1}
-{
-name={$L$},
-description={Total number of input models},
-sort=l
-}
-\newglossaryentry{s0}
-{
-name={$\sigma$},
-description={Standard deviation},
-sort=s
-}
-\newglossaryentry{i1}
-{
-name={$I$},
-description={Total number of blocks inside pit shell},
-sort=i
-}
-\newglossaryentry{i0}
-{
-name={$i$},
-description={Indexer for summation},
-sort=i
-}
-\newglossaryentry{l0}
-{
-name={$l$},
-description={Block model index},
-sort=i
-}
-\newglossaryentry{x0}
-{
-name={$x$},
-description={x-axis index for blocks in the block model},
-sort=x
-}
-\newglossaryentry{y0}
-{
-name={$y$},
-description={y-axis index for blocks in the block model},
-sort=y
-}\newglossaryentry{z0}
-{
-name={$z$},
-description={z-axis index for blocks in the block model},
-sort=z
-}
-\newglossaryentry{z1}
-{
-name={$Z$},
-description={Total number of blocks in z-axis of the block model},
-sort=z
-}
-\newglossaryentry{c0}
-{
-name={$CumulativeY_{x,y,z,l}$},
-description={Cumulative block value for block $u_{x,y,z,l}$ considering all blocks directly above},
-sort=c
-}
 
-\newglossaryentry{v0}
-{
-name={$V(u;l)$},
-description={Block value at location $u$, for realization $l$},
-sort=v
-}
-\newglossaryentry{v2}
-{
-name={$V_p(l)$},
-description={Value of a pit shell evaluated on realization $l$},
-sort=v
-}
-\newglossaryentry{v3}
-{
-name={$V_p$},
-description={Value of a pit shell evaluated and averaged over all realizations},
-sort=v
-}
-\newglossaryentry{v1}
-{
-name={$\overline{V}_u$},
-description={Average block value at location $u$},
-sort=v
-}
-\newglossaryentry{g0}
-{
-name={$g_i$},
-description={Block grade at location $i$},
-sort=g
-}
-\newglossaryentry{g1}
-{
-name={$g_z$},
-description={Economic cut-off grade},
-sort=g
-}
-\newglossaryentry{z2}
-{
-name={$z(u;k,l)$},
-description={Random value at location $u$, with $k$ grade, for realization $l$},
-sort=z
-}
-\newglossaryentry{r0}
-{
-name={$R_{pv}$},
-description={Measure of risk (standard deviation) of the pit value},
-sort=r
-}
-\newglossaryentry{o0}
-{
-name={$\omega_{pv}$},
-description={Risk penalization factor applied to the risk measurement for the pit value},
-sort=r
-}
-% \newglossaryentry{s0}
-% {
-% name={},
-% description={},
-% sort=s
-% }
+\newglossaryentry{e0}{name={$E\{ \quad \}$},description={Expected value},sort=e}
+\newglossaryentry{l1}{name={$L$},description={Number of realizations},sort=l}
+\newglossaryentry{s0}{name={$\sigma$},description={Standard deviation},sort=s}
+\newglossaryentry{m0}{name={$\mu$},description={Mean},sort=mean}
+\newglossaryentry{m1}{name={$M$},description={Number of latent factors},sort=m}
+\newglossaryentry{i0}{name={$i$},description={Index for summation},sort=i}
+\newglossaryentry{x0}{name={$ix, iy, iz$},description={Block model indices},sort=x}
+\newglossaryentry{h0}{name={$\mathbf{h}$},description={Lag vector},sort=h}
+\newglossaryentry{u0}{name={$\mathbf{u}$},description={Location in space},sort=u}
+\newglossaryentry{z0}{name={$Z$},description={Random variable},sort=z}
+\newglossaryentry{z1}{name={$z(\mathbf{u})$},description={Random variable outcome at location $\mathbf{u}$},sort=zu}
+\newglossaryentry{v0}{name={$\gamma(\mathbf{h})$},description={Variogram value at lag $\mathbf{h}$},sort=v}
+\newglossaryentry{c0}{name={$C(\mathbf{h})$},description={Covariance value at lag $\mathbf{h}$},sort=cov}
+\newglossaryentry{m2}{name={$m$},description={Meter},sort=meter}
+\newglossaryentry{c1}{name={$F_{Z}$},description={Cumulative distribution function of random variable $Z$},sort=cdf}
+\newglossaryentry{p0}{name={$P(y|z)$},description={Probability of $y$ given $z$},sort=prob}
+\newglossaryentry{a0}{name={$A(\mathbf{u})$},description={Search area},sort=area}
+\newglossaryentry{g0}{name={$g_{i}$},description={Outlier measure},sort=g}
+\newglossaryentry{d0}{name={$d(i,j)$},description={Distance between locations $i$ and $j$},sort=dist}
+\newglossaryentry{i1}{name={$I(\mathbf{u}_{i}; z_{k})$},description={Indicator value at threshold $z_{k}$},sort=ind}
+\newglossaryentry{n0}{name={$\psi_{z_{k}}(n;\mathbf{h})$},description={$n$-point connectivity fucntion at threshold $z_{k}$},sort=phi}
+\newglossaryentry{d1}{name={DHID},description={Drillhole ID},sort=dhid}
+\newglossaryentry{d2}{name={$\mathcal{D}$},description={Domain of interest},sort=domain}
+\newglossaryentry{f0}{name={$\mathcal{F}_{\theta}$},description={Parameterized NMR mapping function},sort=f}
+\newglossaryentry{t0}{name={$\theta$},description={NMR parameter vector},sort=t}
+\newglossaryentry{p1}{name={$\phi(\mathbf{y}, \omega)$},description={Power law activation fucntion of vector $y$ and exponent $\omega$},sort=phi2}
+\newglossaryentry{o0}{name={$\omega$},description={Power law activation fucntion exponent},sort=omega}
+\newglossaryentry{x1}{name={$\xi$},description={Power law activation scaling factor},sort=xi}
+\newglossaryentry{a1}{name={$\alpha$},description={Data matching tolerance},sort=alpha}
+\newglossaryentry{a2}{name={argmin},description={Value at which the fucntion output is minimized},sort=argmin}
+\newglossaryentry{c2}{name={$CR$},description={Differential evolution crossover probability},sort=cross}
+\newglossaryentry{f1}{name={$F$},description={Differential evolution scaling factor},sort=scale}
+\newglossaryentry{o1}{name={$O_{c}$},description={Objective function value of component $c$},sort=obj}
+\newglossaryentry{c3}{name={$\rho$},description={Correlation coefficient},sort=corr}
+\newglossaryentry{n1}{name={$n$},description={Number of data},sort=num}
+
+% \newglossaryentry{s0}{name={},description={},sort=s}

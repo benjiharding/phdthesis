@@ -42,10 +42,10 @@
 \pagenumbering{roman}
 
 % Input Frontpage Content
-% \input{99-FrontPages/1_titlepage}
-% \input{99-FrontPages/2_abstract}
-% \input{99-FrontPages/3_dedication}
-% \input{99-FrontPages/4_acknowledgements}
+\input{99-FrontPages/1_titlepage}
+\input{99-FrontPages/2_abstract}
+\input{99-FrontPages/3_dedication}
+\input{99-FrontPages/4_acknowledgements}
 \clearpage
 
 
@@ -58,29 +58,29 @@
 \tableofcontents*
 \clearpage
 
-% % Add List of Tables
-% \listoftables*
+% Add List of Tables
+\listoftables*
+\clearpage
+
+% Add List of Figures
+\listoffigures*
 % \clearpage
 
-% % Add List of Figures
-% \listoffigures*
-% \clearpage
+% % Set-up Glossary
+\setglossarystyle{superheader}
+\setlength{\glspagelistwidth}{0.1\linewidth} % Get the first use header on one line
+\setlength{\glsdescwidth}{0.9\linewidth} % Fill the page with the table
+\renewcommand*{\glsgroupskip}{} % Prevent the glossaries from being separated into alphabetical groups
 
-% % % Set-up Glossary
-% \setglossarystyle{superheader}
-% \setlength{\glspagelistwidth}{0.1\linewidth} % Get the first use header on one line
-% \setlength{\glsdescwidth}{0.9\linewidth} % Fill the page with the table
-% \renewcommand*{\glsgroupskip}{} % Prevent the glossaries from being separated into alphabetical groups
+% List of Symbols
+\renewcommand*{\entryname}{Symbol}
+\glsaddallunused
+\printglossary[title={List of Symbols}]
 
-% % List of Symbols
-% \renewcommand*{\entryname}{Symbol}
-% \glsaddallunused
-% \printglossary[title={List of Symbols}]
-
-% % List of Abbreviations
-% \renewcommand*{\entryname}{Abbreviation}
-% \glsaddallunused
-% \printglossary[type=acronym, title={List of Abbreviations}]
+% List of Abbreviations
+\renewcommand*{\entryname}{Abbreviation}
+\glsaddallunused
+\printglossary[type=acronym, title={List of Abbreviations}]
 
 % -----------------------------------------------------
 % Custom commands for loops
@@ -105,13 +105,13 @@
 \glsresetall
 
 % Insert the chapters
-% \input{1-Introduction/intro}
+\input{1-Introduction/intro}
 \input{2-Outliers/outliers}
-% \input{3-NMRFramework/framework}
-% \input{4-Implementation/implementation}
-% \input{5-Imputation/imputation}
-% \input{6-CaseStudy/casestudy}
-% \input{7-Conclusions/conclusions}
+\input{3-NMRFramework/framework}
+\input{4-Implementation/implementation}
+\input{5-Imputation/imputation}
+\input{6-CaseStudy/casestudy}
+\input{7-Conclusions/conclusions}
 
 %---------------------------------------------------
 % Insert Bibliography
