@@ -80,24 +80,24 @@ Where $\mu$, $\sigma^2$ and $C(\mathbf{h})$ are the mean, variance and covarianc
 
 The linear model of regionalization (LMR) is used to fit experimental variograms with models that ensure positive definite covariance matrices. As not all combinations of variogram models may lead to a permissible model, the LMR constructs a random function $Z(\mathbf{u})$ to be the linear combination of $L+1$ independent, standard random functions $\{Y_{\ell}(\mathbf{u}), \ell=0,\dots,L\}$, each with its permissible variogram function \citep{goovaerts1997geostatistics}, plus the stationary mean:
 \begin{equation*}
-    Z(\mathbf{u}) = \sum_{\ell=0}^{L} a^{\ell} Y^{\ell}(\mathbf{u}) + \mu(\mathbf{u})
+    Z(\mathbf{u}) = \sum_{\ell=0}^{L} a_{\ell} Y_{\ell}(\mathbf{u}) + \mu(\mathbf{u})
 \end{equation*}
 
 Where $L$ is the number of nested structures in the model. By convention, the isotropic nugget effect is the $0^{th}$ structure. The variogram model of can $Z(\mathbf{u})$ then be expressed as the sum of the variograms for each of the factors:
 \begin{equation*}
-    \gamma_z(\mathbf{h}) = \sum_{\ell=0}^{L} b^{\ell} \Gamma^{\ell}(\mathbf{h}), \ \ \ b^{\ell} = (a^{\ell})^{2}
+    \gamma_z(\mathbf{h}) = \sum_{\ell=0}^{L} b_{\ell} \Gamma_{\ell}(\mathbf{h}), \ \ \ b_{\ell} = (a_{\ell})^{2}
 \end{equation*}
 
 Where $\Gamma_{\ell}(\mathbf{h})$ is the variogram of $Y_{\ell}$ and $b_{\ell}$ represents the variance contribution of each $\ell=0,\dots,L$ factors.
 
 The LMR extends to the multivariate case with $k=1,\dots,K$ coregionalized variables. With the liner model of coregionalization (LMC), each coregionalized random function, $Z_{k}(\mathbf{u})$, is also the sum of the standard, uncorrelated factors:
 \begin{equation*}
-    Z_{k}(\mathbf{u}) = \sum_{\ell=0}^{L} a^{\ell}_{k} Y^{\ell}(\mathbf{u}) + \mu_{k}(\mathbf{u})
+    Z_{k}(\mathbf{u}) = \sum_{\ell=0}^{L} a_{\ell, k} Y_{\ell}(\mathbf{u}) + \mu_{k}(\mathbf{u})
 \end{equation*}
 
-Where $a^{\ell}_{k}$ is the contribution of the $\ell^{th}$ factor the $k^{th}$ variable. The direct and cross variograms can be expressed as:
+Where $a_{\ell, k}$ is the contribution of the $\ell^{th}$ factor the $k^{th}$ variable. The direct and cross variograms can be expressed as:
 \begin{equation*}
-    \gamma_{k,k^{\prime}}(\mathbf{h}) = \sum_{\ell=0}^{L} a^{\ell}_{k} a^{\ell}_{k^{\prime}} \Gamma^{\ell}(\mathbf{h}), \ \ \ k,k^{\prime} = 1,\dots,K
+    \gamma_{k,k^{\prime}}(\mathbf{h}) = \sum_{\ell=0}^{L} a_{\ell, k} a_{\ell, k^{\prime}} \Gamma_{\ell}(\mathbf{h}), \ \ \ k,k^{\prime} = 1,\dots,K
 \end{equation*}
 The LMC is commonly modeled in the cokriging paradigm for multivariate covariance inference.
 
@@ -106,7 +106,7 @@ The LMC is commonly modeled in the cokriging paradigm for multivariate covarianc
 
 As demonstrated with the LMR notation, the regionalized variable is characterized by $m(\mathbf{u})$, the $L + 1$ $a_{\ell}$ values and the $L + 1$ variograms $\Gamma_{\ell}(\mathbf{h})$. Factorial kriging aims to model each nested spatial structure present in the LMR for filtering or feature extraction. The idea is that each regionalized factor has a correlation structure responsible for a different scale of continuity, and they can be estimated independently \citep{matheron1982factorial}. The factors are estimated as linear combinations of the data values \cite{deutsch2007recall}:
 \begin{equation*}
-    z^{\ell*}(\mathbf{u}) = a^{\ell} Y^{\ell}(\mathbf{u}) = \sum_{i=1}^{n} \lambda_{i}^{\ell} z(\mathbf{u}_{i})
+    z_{\ell}^{*}(\mathbf{u}) = a_{\ell} Y_{\ell}(\mathbf{u}) = \sum_{i=1}^{n} \lambda_{i, \ell} z(\mathbf{u}_{i})
 \end{equation*}
 
 % \begin{equation*}
@@ -118,19 +118,19 @@ By convention, ordinary kriging is used, though there is no reason simple krigin
     \begin{cases}
         % \sum_{i=1}^{n} \lambda_{m,i} C(\mathbf{u}_{i}, \mathbf{u}_{j}) - \mu_{m} = 0, \ \ i=1,\dots,n  \\
         % \sum_{i=1}^{n} \lambda_{m,i} = 1 \\
-        \sum_{j=1}^{n} \lambda_{j}^{\ell} C(\mathbf{u}_{i}, \mathbf{u}_{j}) + \mu^{\ell} = C^{\ell}(\mathbf{u}_{i}, \mathbf{u}), \ \ \ i=1,\dots,n \\
-        \sum_{j=1}^{n} \lambda_{j}^{\ell} = 0, \ \ \ \ell = 0,\dots,L
+        \sum_{j=1}^{n} \lambda_{j, \ell} C(\mathbf{u}_{i}, \mathbf{u}_{j}) + \mu_{\ell} = C_{\ell}(\mathbf{u}_{i}, \mathbf{u}), \ \ \ i=1,\dots,n \\
+        \sum_{j=1}^{n} \lambda_{j, \ell} = 0, \ \ \ \ell = 0,\dots,L
     \end{cases}
 \end{equation*}
 
 The right hand side covariances are the covariances corresponding to the particular structure $\ell$ being estimated. The sum of the estimated factors returns the original ordinary kriging estimate:
 \begin{equation*}
-    z^{*}(\mathbf{u}) = \sum_{\ell=0}^{L} z^{\ell*}(\mathbf{u}) + \mu^{*}(\mathbf{u})
+    z^{*}(\mathbf{u}) = \sum_{\ell=0}^{L} z_{\ell}^{*}(\mathbf{u}) + \mu^{*}(\mathbf{u})
 \end{equation*}
 
-Filtering properties of factorial kriging may be helpful if one is interested in removing a particular factor from estimated maps. For example, high-frequency variation from the nugget effect could be filtered by only considering the $\ell=1,\dots,L$ factors. Factorial kriging extends to the multivariate context by considering the LMC fitted to the direct and cross variograms where each coregionalized variable $\{Z_{k}(\mathbf{u}), k=1,\dots,K\}$ is a linear combination of the standard, independent factors $\{Y_{v}^{\ell}(\mathbf{u}), v=1,\dots,K; \ell=0,\dots,L\}$ \citep{wackernagel1988geostatistical}:
+Filtering properties of factorial kriging may be helpful if one is interested in removing a particular factor from estimated maps. For example, high-frequency variation from the nugget effect could be filtered by only considering the $\ell=1,\dots,L$ factors. Factorial kriging extends to the multivariate context by considering the LMC fitted to the direct and cross variograms where each coregionalized variable $\{Z_{k}(\mathbf{u}), k=1,\dots,K\}$ is a linear combination of the standard, independent factors $\{Y_{\ell}^{v}(\mathbf{u}), v=1,\dots,K; \ell=0,\dots,L\}$ \citep{wackernagel1988geostatistical}:
 \begin{equation*}
-    z^{\ell*}_{k}(\mathbf{u}) = \sum_{v=1}^{K} a_{k,v}^{\ell} Y^{\ell}_{v}(\mathbf{u}) = \sum_{v=1}^{K}\sum_{i=1}^{n} \lambda_{v,i} z_{v}(\mathbf{u}_{i})
+    z^{*}_{\ell, k}(\mathbf{u}) = \sum_{v=1}^{K} a_{\ell, k}^{v} Y^{v}_{\ell}(\mathbf{u}) = \sum_{v=1}^{K}\sum_{i=1}^{n} \lambda_{i}^{v} z^{v}(\mathbf{u}_{i})
 \end{equation*}
 
 % \begin{equation*}
@@ -147,21 +147,21 @@ The cokriging equations for a particular spatial component are then:
 
 Again, the sum of the estimated factors returns the original regionalized variable:
 \begin{equation*}
-    z^{*}_{k}(\mathbf{u}) = \sum_{\ell=0}^{L} z^{\ell*}_{k}(\mathbf{u}) + \mu^{*}_{k}(\mathbf{u})
+    z^{*}_{k}(\mathbf{u}) = \sum_{\ell=0}^{L} z^{*}_{\ell, k}(\mathbf{u}) + \mu^{*}_{k}(\mathbf{u})
 \end{equation*}
 
-Multivariate factorial kriging is a technique for characterizing the regionalized factors $Y_{k}^{\ell}$ from observations of $Z_{k}$. This technique is advantageous if the correlation between variables depends on scale and one would like to extract or filter a particular spatial structure.
+Multivariate factorial kriging is a technique for characterizing the regionalized factors $Y_{\ell, k}$ from observations of $Z_{k}$. This technique is advantageous if the correlation between variables depends on scale and one would like to extract or filter a particular spatial structure.
 
 Simple factorial kriging equations are equivalent to the simple kriging equations except for the right hand side covariance is the covariance of the nested structure being estimated \citep{hong2007improved}:
 \begin{equation*}
     \begin{cases}
-        \sum_{j=1}^{n} \lambda_{j}^{\ell} C(\mathbf{u}_{i}, \mathbf{u}_{j}) = C^{\ell}(\mathbf{u}_{i}, \mathbf{u}) \\
-        i=1,\dots,n \ \ \ \ell=1,\dots,L                                                                           \\
+        \sum_{j=1}^{n} \lambda_{\ell,j} C(\mathbf{u}_{i}, \mathbf{u}_{j}) = C_{\ell}(\mathbf{u}_{i}, \mathbf{u}) \\
+        i=1,\dots,n \ \ \ \ell=1,\dots,L                                                                         \\
     \end{cases}
 \end{equation*}
 
 \begin{equation*}
-    z^{*}(\mathbf{u}) = \sum_{\ell=0}^{L} z^{\ell*}(\mathbf{u}) + m
+    z^{*}(\mathbf{u}) = \sum_{\ell=0}^{L} z_{\ell}^{*}(\mathbf{u}) + \mu
 \end{equation*}
 
 The sum of the estimated factors plus the mean equals the simple kriging estimate.
@@ -299,7 +299,7 @@ Restricting the spatial range of influence of outlier values during estimation i
     \label{eq:3}
 \end{equation}
 
-To avoid degeneracy, the variable $M_n$ is normalized to $M_n^* = a_n^{-1}(M_n - b_n)$ for a sequence of ``normalizing'' constants $a_n > 0$ and $b_n$. \cite{fisher1928limiting} show that if these sequences of real numbers can be chosen such that $M_n^*$ has a non-degenerate limiting distribution, it must be one of type I, II or III. These are the only possible limits for the distributions of $M_n^*$ regardless of the population distribution $F$. This Extremal Types Theorem is analogous to the Central Limit Theorem for extreme values \citep{coles2001introduction}.
+To avoid degeneracy, the variable $M_n$ is normalized to $M_n^* = a_n^{-1}(M_n - b_n)$ for a sequence of ``normalizing'' constants $a_n > 0$ and $b_n$. \cite{fisher1928limiting} show that if these sequences of real numbers can be chosen such that $M_n^*$ has a non-degenerate limiting distribution, it must be one of type I, II or III. These are the only possible limits for the distributions of $M_n^*$ regardless of the population distribution $F_{Z}$. This Extremal Types Theorem is analogous to the Central Limit Theorem for extreme values \citep{coles2001introduction}.
 
 These collectively are termed extreme value distributions with Equation \ref{eq:1} being Gumbel-type, Equation \ref{eq:2} being Fr\'echet-type and Equation \ref{eq:3} being Weibull-type. Each distribution has a location $\mu$, scale $\sigma$ and Equation \ref{eq:2} and Equation \ref{eq:3} have shape parameter $\xi$. The extreme value distributions are obtained as limiting distributions of $M_n$ as $n \to \infty$. The limit distributions for block maximum can be grouped into a single family termed the \gls{GEV} distribution \citep{dehaan2007extreme}:
 \begin{equation}
