@@ -7,7 +7,7 @@
 
 This chapter presents an application of the complete \gls{NMR} workflow to a real \gls{3D} dataset. The \gls{NMR} workflow is designed to capture the spatial features of non‐Gaussian distributions in a way that the multi-Gaussian assumption and a \gls{LMR} cannot. The case study aims to construct an \gls{NMR} spatial model and compare it to a traditional \gls{SGS} model. The dataset comes from a mineral deposit where the project operator observes non-Gaussian characteristics within drillholes that are not well reproduced by \gls{SGS}. Within local stope volumes \gls{SGS} cannot reproduce the connectivity of high-grades present in drillhole data.
 
-The workflow consists of (1) inferring the parameters, $\theta$, of the latent-observed mapping function, $\mathcal{F}_{\theta}$, using the methodology from Chapter \ref{ch:04implement}, (2) imputing the latent factors at the data locations using the methodology from Chapter \ref{ch:05impute} (3) conditional simulation of the imputed factors on the grid. The learned mapping is non-linear. The idea is that the \gls{NMR} realizations can capture non-Gaussian spatial features such as asymmetric indicator variograms and connectivity of extreme values. Twenty-five conditional realizations are generated with the \gls{NMR}, and pertinent model statistics are checked and compared to \gls{SGS}. Defining characteristics of the deposit and mineralization type are omitted for confidentiality purposes.
+The workflow consists of (1) inferring the parameters, $\theta$, of the latent-observed mapping function, $\mathcal{F}_{\theta}$, using the methodology from Chapter \ref{ch:04implement}, (2) imputing the latent factors at the data locations using the methodology from Chapter \ref{ch:05impute}, and (3) conditional simulation of the imputed factors on the grid. The learned mapping is non-linear. The idea is that the \gls{NMR} realizations can capture non-Gaussian spatial features such as asymmetric indicator variograms and connectivity of extreme values. Twenty-five conditional realizations are generated with the \gls{NMR}, and pertinent model statistics are checked and compared to \gls{SGS}. Defining characteristics of the deposit and mineralization type are omitted for confidentiality purposes.
 
 \FloatBarrier
 \section{Exploratory Data Analysis}
@@ -114,14 +114,14 @@ Experimental variograms are first calculated using an omni-directional search th
     \label{tab:ind_expvar}
 \end{table}
 
-Transformation to Gaussian space requires a representative \gls{CDF}.  \Gls{ID2} estimation produces declustering weights. A grid of 5 x 5 x 5 meter blocks is used considering a 25-meter buffer in the x, y, and z directions around all available data (the \gls{SMU} grid). \Gls{ID2} estimation weights for each data are accumulated during an estimation run and used as declustering weights. The idea is that data in dense regions receive less total weight as many data are present in the search neighbourhood. In sparse areas, data receive more weight as fewer data are in the search neighbourhood. Estimator declustering is more robust than traditional cell declustering for irregular data configurations, as the search ellipse can capture the principal orientation of continuity. The limits of the estimation grid must be well-defined to prevent unintended edge effects \citep{Wilde2007}. Figure \ref{fig:declus_cdf} shows the clustered (black) and declustered \gls{CDF} (red).
+Transformation to Gaussian space requires a representative \gls{CDF}.  \Gls{ID2} estimation produces declustering weights. A grid of 5 x 5 x 5 meter blocks is used considering a 25-meter buffer in the x, y, and z directions around all available data (the \gls{SMU} grid). \Gls{ID2} estimation weights for each data are accumulated during an estimation run and used as declustering weights. The idea is that data in dense regions receive less total weight as many data are present in the search neighbourhood. In sparse areas, data receive more weight as fewer data are in the search neighbourhood. Estimator declustering is more robust than traditional cell declustering for irregular data configurations, as the search ellipse can capture the principal orientation of continuity. The limits of the estimation grid must be well-defined to prevent unintended edge effects \citep{Wilde2007}. Figure \ref{fig:declus_cdf} shows the clustered (gray) and declustered \glspl{CDF} (red).
 
 After the normal score transformation, the experimental variogram of the normal scores is calculated and fitted with a model. Figure \ref{fig:ns_expvar} shows the fitted experimental points, and Table \ref{tab:ns_expvar} shows the model parameters. A normal score variogram permits the calculation of accuracy metrics, particularly the fraction of true values that fall within specified probability intervals. Figure \ref{fig:ns_xval} shows a leave-one-drillhole out cross-validation and accuracy plot for the fitted normal score variogram model. The scatter plot shows a reasonable \gls{SOR} and reproduction of the true mean. The accuracy plot suggests that the variogram model characterizes a reasonable uncertainty distribution.
 
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.5, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/var_a_declus_cdf.png}
-    \caption{ Declustered \gls{CDF} (red) considering \gls{ID2} weights. }
+    \caption{Clustered (gray) and declustered \glspl{CDF} (red) considering \gls{ID2} weights. }
     \label{fig:declus_cdf}
 \end{figure}
 
@@ -152,7 +152,7 @@ The final step of \gls{EDA} is to generate a reference model for validation purp
 \section{Network Parameter Inference}
 \label{sec:06param}
 
-Parameterization of the \gls{NMR} requires the definition of (1) optimization targets, (2) a pool of latent Gaussian factors, (3) network architecture and (4) optimization hyperparameters. The continuous normal score and indicator variograms from Section \ref{sec:06eda} are optimization targets for parameterizing the \gls{NMR}. Target run distributions are calculated internally from the drillhole data by \texttt{NMROPT}. The $n$-point connectivity function is not considered, as the case study focuses on indicators above a high-grade threshold. When considering indicators above a threshold, cumulative run-length frequencies and the $n$-point connectivity function are analogous, and one can be calculated from the other. Thus, considering both in the objective function is redundant and would increase computation time.
+Parameterization of the \gls{NMR} requires the definition of (1) optimization targets, (2) a pool of latent Gaussian factors, (3) network architecture and (4) optimization hyperparameters. The continuous normal score and indicator variograms from Section \ref{sec:06eda} are optimization targets for parameterizing the \gls{NMR}. Target run distributions are calculated directly from the drillhole data. The $n$-point connectivity function is not considered, as the case study focuses on indicators above a high-grade threshold. When considering indicators above a threshold, cumulative run-length frequencies and the $n$-point connectivity function are analogous, and one can be calculated from the other. Thus, considering both in the objective function is redundant and would increase computation time.
 
 The initial step in defining the Gaussian pool is checking how well a traditional simulation algorithm (e.g.\ \gls{SGS}) reproduces the optimization target only considering the normal score variogram. This ``base-case'' model provides insight into the required features to achieve the desired targets. \Gls{SGS} performs well reproducing the normal score and all indicator variograms, likely due to the data density of the training dataset. Though variograms are well reproduced, there is a discrepancy between downhole sequences from the data and the base-case model. Figure \ref{fig:data_sgs_runs} shows cumulative run length frequencies above the 0.9 quantile calculated directly from the data (red) and the expected value of gridded \gls{SGS} realizations (black). This discrepancy suggests additional high-grade continuity is required up to approximately 30m (six connected five-meter composites).
 
@@ -189,7 +189,7 @@ The choice of activation function exponent, $\omega$, controls each factor's inf
     \label{tab:omega}
 \end{table}
 
-The number of factors in the Gaussian pool dictates the network architecture. The pool consists of three structures, plus one for the nugget, for four latent Gaussian factors, resulting in an input layer of four nodes. Each input node has a single connection weight to a single hidden layer of the same dimension as the input. The network has $2 \cdot (M+1) = 8$ trainable parameters, four connection weights, and four $\omega$ values. Table \ref{tab:de_params} shows \gls{DE} parameters. The indicator thresholds used for optimization correspond to the indicator variograms in Section \ref{sec:06eda}, that is, $G^{-1}([0.1, 0.5, 0.9])$ where $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. Runs consider a maximum of 10 steps ($\approx$50m).
+The number of factors in the Gaussian pool dictates the network architecture. The pool consists of three structures, plus one for the nugget, for four latent Gaussian factors, resulting in an input layer of four nodes. Each input node has a single connection weight to a single hidden layer of the same dimension as the input. The network has $2 \cdot (M+1) = 8$ trainable parameters: four connection weights, and four $\omega$ values. Table \ref{tab:de_params} shows \gls{DE} parameters. The indicator thresholds used for optimization correspond to the indicator variograms in Section \ref{sec:06eda}, that is, $G^{-1}([0.1, 0.5, 0.9])$ where $G^{-1}$ is the inverse of the Gaussian \gls{CDF}. Runs consider a maximum of 10 steps ($\approx$50m).
 
 \begin{table}[!htb]
     \centering
@@ -259,18 +259,18 @@ Network optimization runs for 1500 iterations, resulting in a reasonably stable 
             \end{subfigure}%
         }\cr
     }
-    \caption{Plan (a), east-west (b) and north-south (c) sections through the first unconditional realization of Gaussian values generated by \texttt{NMROPT}. Objective function components are evaluated using these realizations. }
+    \caption{Plan (a), east-west (b) and north-south (c) sections through the first unconditional realization of Gaussian values generated through parameter inference. Objective function components are evaluated using these realizations. }
     \label{fig:nmropt_uncond_reals}
 \end{figure}
 
-A critical component of the \texttt{NMROPT} workflow is checking the reproduction of the optimization targets. Deviations from these targets will likely manifest in the imputed conditioning data and final realizations. Figures \ref{fig:nmropt_repro_vario} to \ref{fig:nmropt_repro_runs} show variogram, indicator variogram and cumulative run-length frequency reproduction with the optimal \gls{NMR} parameters. Variogram and indicator variogram reproduction are reasonable, though there is some deviation from the target models, particularly at shorter ranges in the principal directions. Cumulative run-length frequencies show good reproduction for all quantiles.
+A critical component of the workflow is checking the reproduction of the optimization targets. Deviations from these targets will likely manifest in the imputed conditioning data and final realizations. Figures \ref{fig:nmropt_repro_vario} to \ref{fig:nmropt_repro_runs} show variogram, indicator variogram and cumulative run-length frequency reproduction with the optimal \gls{NMR} parameters. Variogram and indicator variogram reproduction are reasonable, though there is some deviation from the target models, particularly at shorter ranges in the principal directions. Cumulative run-length frequencies show good reproduction for all quantiles.
 
 % This deviation comes at the expense of increasing high-grade (0.9 quantile) continuity in the drilling direction (roughly parallel to the tertiary variogram direction). This increased continuity is evident in the 0.9 quantile run-length frequency plot (Figure \ref{fig:nmropt_repro_runs} right) where the unconditional \texttt{NMROPT} realizations show continuity greater than that in the data. Consequently, the 0.1 and 0.5 quantiles show slightly decreased continuity relative to the data (Figure \ref{fig:nmropt_repro_runs} left and center). This increased continuity is advantageous as results show that the effect of conditioning in the final realizations can reduce extreme value continuity.
 
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.60, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_vario.png}
-    \caption{\texttt{NMROPT} continuous variogram reproduction for \csnreals \ realizations. The black line is the variogram model, the red line is the average variogram, and the shaded red area encloses the minimum and maximum variogram values. Left to right are the major, minor and vertical directions, respectively.}
+    \caption{Continuous variogram reproduction for \csnreals \ realizations. The black line is the variogram model, the red line is the average variogram, and the shaded red area encloses the minimum and maximum variogram values. Left to right are the major, minor and vertical directions, respectively.}
     \label{fig:nmropt_repro_vario}
 \end{figure}
 
@@ -290,14 +290,14 @@ A critical component of the \texttt{NMROPT} workflow is checking the reproductio
         \includegraphics[scale=0.60, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_ivario_0_9.png}
         \caption{0.9 Quantile}
     \end{subfigure}
-    \caption{\texttt{NMROPT} indicator variogram reproduction for \csnreals \ realizations for the 0.1 (a), 0.5 (b) and 0.9 (c) quantiles. Left to right are the major, minor and vertical directions, respectively. The black line is the variogram model, the red line is the average variogram, and the shaded red area encloses the minimum and maximum variogram values.}
+    \caption{Indicator variogram reproduction for \csnreals \ realizations for the 0.1 (a), 0.5 (b) and 0.9 (c) quantiles. Left to right are the major, minor and vertical directions, respectively. The black line is the variogram model, the red line is the average variogram, and the shaded red area encloses the minimum and maximum variogram values.}
     \label{fig:nmropt_repro_ivario}
 \end{figure}
 
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.60, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_runs.png}
-    \caption{\texttt{NMROPT} cumulative run-length frequency reproduction for \csnreals \ realizations. Thresholds 1, 2, and 3 correspond to the 0.1, 0.5 and 0.9 quantiles. The black line is the target run-length frequency model, the red line is the average experimental value, and the shaded red area encloses the minimum and maximum experimental values.}
+    \caption{Cumulative run-length frequency reproduction for \csnreals \ realizations. Thresholds 1, 2, and 3 correspond to the 0.1, 0.5 and 0.9 quantiles. The black line is the target run-length frequency model, the red line is the average experimental value, and the shaded red area encloses the minimum and maximum experimental values.}
     \label{fig:nmropt_repro_runs}
 \end{figure}
 
@@ -310,7 +310,7 @@ The optimized \gls{NMR} parameters from Section \ref{sec:06param} are the basis 
 
 \begin{table}[!htb]
     \centering
-    \caption{\texttt{NMRIMP} parameters.}
+    \caption{Imputation parameters.}
     \resizebox{0.9\width}{!}{\input{0-Tables/imp_pars.tex}}
     \label{tab:imp_pars}
 \end{table}
@@ -504,7 +504,7 @@ Figure \ref{fig:repro_gridded_vario} shows gridded continuous variogram reproduc
     \label{fig:repro_gridded_runs}
 \end{figure}
 
-\FloatBarrier
+% \FloatBarrier
 \section{Post Processing}
 \label{sec:06post}
 
