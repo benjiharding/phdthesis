@@ -470,6 +470,7 @@ Once factors are defined at all grid nodes, they are mapped from latent to obser
 
 Figure \ref{fig:repro_gridded_vario} shows gridded continuous variogram reproduction for the \gls{NMR} realizations in Gaussian units. The experimental variogram of the first imputed data realization and the average of \gls{SGS} realizations are shown for reference. There is reasonable agreement between the target model (black line), the imputed data (red dots) and the gridded realization average (red line). There is some deviation; however, these are the same deviations present from the inference of the network parameters (Figure \ref{fig:nmropt_repro_vario}). Indicator variogram reproduction in Figure \ref{fig:repro_gridded_ivario} shows similar deviations observed in the optimization process, though the gridded variograms reproduce the target model and imputed data reasonably well. Figure \ref{fig:repro_gridded_runs} shows gridded cumulative run-length frequency reproduction for both the \gls{NMR} and \gls{SGS} realizations, respectively. The expected value of the \gls{SGS} realizations is shown as the solid black line. As expected, the \gls{NMR} realizations show increased continuity over \gls{SGS} for all connected steps up to a run length of 6 composites. This increase in downhole continuity is consistent with observations made when designing the Gaussian pool (Figure \ref{fig:data_sgs_runs}).
 
+
 \begin{figure}[htb!]
     \centering
     \includegraphics[scale=0.60, max size={\textwidth}{\textheight}]{./0-Figures/06-Ch6/repro_gridded_vario.png}
