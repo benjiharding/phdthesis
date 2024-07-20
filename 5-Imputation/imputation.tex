@@ -5,7 +5,7 @@
 \label{ch:05impute}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-This chapter presents a novel algorithm for imputing latent factors called \acrfull{SGRI}. Imputation of latent factors addresses a problem where all values are missing or unknown. Conditioning gridded realizations of latent factors requires assigning valid latent values at the data locations. The goal is to impute latent factors with a unique covariance structure that, when combined with the inferred \gls{NMR} mapping, returns the true observed values at the data locations within a tolerance. Traditionally, this problem has been approached through Gibbs sampling, though there are noted challenges in achieving stable convergence with spatially correlated variables \citep{silva2018enhanced}. \gls{SGRI} is a simple approach that combines \gls{SGS}, rejection sampling and exact data matching. Conditional moments are calculated with \gls{SGS}, ensuring the spatial relationships are correct and iterative rejection sampling ensures the collocated multivariate relationships are correct. Realizations of latent factors are generated and become conditioning data for gridded realizations. When mapped to observed space, the realizations reproduce non-Gaussian spatial features specified by the \gls{NMR} and uni- and multivariate statistics. A small synthetic example continued from Chapter \ref{ch:04implement} demonstrates imputing latent factors, conditional simulation and mapping the latent space to observed space.
+This chapter presents a novel algorithm for imputing latent factors called \acrfull{SGRI}. Imputation of latent factors addresses a problem where all values are missing or unknown. Conditioning gridded realizations of latent factors requires assigning valid latent values at the data locations. The goal is to impute latent factors with a unique covariance structure that, when combined with the inferred \gls{NMR} mapping, returns the true observed values at the data locations within a tolerance. Traditionally, this problem has been approached through Gibbs sampling, though there are noted challenges in achieving stable convergence with spatially correlated variables \citep{silva2018enhanced}. \gls{SGRI} is a straightforward approach that combines \gls{SGS}, rejection sampling and exact data matching. Conditional moments are calculated with \gls{SGS}, ensuring the spatial relationships are correct and iterative rejection sampling ensures the collocated multivariate relationships are correct. Realizations of latent factors are generated and become conditioning data for gridded realizations. When mapped to observed space, the realizations reproduce non-Gaussian spatial features specified by the \gls{NMR} and uni- and multivariate statistics. A small synthetic example continued from Chapter \ref{ch:04implement} demonstrates imputing latent factors, conditional simulation and mapping the latent space to observed space.
 
 \FloatBarrier
 \section{Imputation Concepts}
@@ -39,7 +39,7 @@ The Gibbs sampler \citep{geman1984stochastic} is an iterative simulation algorit
     \item Return $y^{(t)}$
 \end{enumerate}
 
-Over a sufficient number of iterations, the sampled vector converges on the joint distribution. In a geostatistical context, the Gibbs sampler is based on the fact that the distribution of a Gaussian vector $Y$ conditioned on other values is Gaussian; the mean and variance of this distribution are calculated by simple kriging \citep{emery2014simulating}. The Gibbs sampler simulates both conditional and unconditional vectors. Conditional Gibbs simulation is commonly used for latent variable assignment in truncated-Gaussian techniques \citep{armstrong2011plurigaussian,silva2017multiple} where latent values must respect both the mapping between categorical and continuous space and match the categorical observations when truncated. Imputation of latent factors in the context of this work does not require satisfying inequality constraints at the data locations. However, it does require satisfying the mapping condition between observed and latent space.
+Over a sufficient number of iterations, the sampled vector converges on the joint distribution. In a geostatistical context, the Gibbs sampler is based on the fact that the distribution of a Gaussian vector $\mathbf{Y}$ conditioned on other values is Gaussian; the mean and variance of this distribution are calculated by simple kriging \citep{emery2014simulating}. The Gibbs sampler simulates both conditional and unconditional vectors. Conditional Gibbs simulation is commonly used for latent variable assignment in truncated-Gaussian techniques \citep{armstrong2011plurigaussian,silva2017multiple} where latent values must respect both the mapping between categorical and continuous space and match the categorical observations when truncated. Imputation of latent factors in the context of this work does not require satisfying inequality constraints at the data locations. However, it does require satisfying the mapping condition between observed and latent space.
 
 \cite{silva2018enhanced} documents Gibbs sampler convergence issues related to restricting the search neighbourhood for updating the marginal conditional distributions. Considering all $n$ data requires the inversion of a rank $n-1$ covariance matrix which becomes unpractical with increasing $n$. Restricting the search to reduce the size of the covariance results in an approximation of the conditional moments and affects algorithm convergence \citep{emery2014simulating, lauzon2020sequential} as realization quantiles diverge to extreme highs and lows with increasing iterations. \cite{lantuejoul2012simulation} proposed the propagative Gibbs sampler to avoid the matrix inversion requirement, though \cite{silva2018enhanced} shows convergence issues are still present with greater than two latent variables and complex truncation rules. These convergence challenges motivate the development of a new simulation algorithm for the imputation of latent geologic variables. The \gls{SGRI} algorithm also utilizes a restricted search neighbourhood to calculate conditional moments. However, the relaxed constraints relative to imputation for truncated Gaussian methods allow for stable convergence.
 
@@ -48,7 +48,7 @@ Over a sufficient number of iterations, the sampled vector converges on the join
 \section{Sequential Gaussian Rejection Imputation}
 \label{sec:05sgri}
 
-Generating Gaussian \gls{NMR} realizations requires inference of the latent factors at the data locations. These imputed factors become conditioning data for simulation on a regular grid. The problem involves assigning $M$ unknown latent Gaussian values with the correct spatial structure at the data locations. When mapped through the \gls{NMR}, these imputed values must also reproduce the observed regionalized random variable $Z(\mathbf{u})$. This solution is non-unique, and multiple combinations of latent factors could reproduce the observed values. In order to correctly transfer this latent uncertainty, a multiple imputation \citep{barnett2015multivariate} approach is adopted where each realization of $Z(\mathbf{u})$ is generated with a unique imputed realization, $\mathbf{y}$.
+Generating \gls{NMR} realizations requires imputation of latent factors at the data locations. These imputed factors become conditioning data for simulation on a regular grid. The problem involves assigning $M$ unknown latent Gaussian values with the correct spatial structure at the data locations. When mapped through the \gls{NMR}, these imputed values must also reproduce the observed regionalized random variable $Z(\mathbf{u})$. This solution is non-unique, and multiple combinations of latent factors could reproduce the observed values. In order to correctly transfer this latent uncertainty, a multiple imputation \citep{barnett2015multivariate} approach is adopted where each realization of $Z(\mathbf{u})$ is generated with a unique imputed realization, $\mathbf{y}$.
 
 \Gls{SGRI} is an iterative simulation algorithm for imputing continuous latent Gaussian variables subject to a mapping constraint $\mathcal{F}_{\theta}\left(\mathbf{y}\right)=\mathbf{z} \pm \alpha$, where $\alpha$ is a data matching tolerance. \Gls{SGRI} first iteratively samples all univariate conditional distributions of the $M$-dimensional latent distribution until the mapped value is within a coarse tolerance with the observed value. After the simulation meets the coarse tolerance, a polishing step iteratively perturbs each initial imputed value until the mapped value is within a second, finer tolerance with the observed value. At any point during the perturbation, the sample is rejected if the new value does not decrease the error between observed and imputed. The rejection component of the algorithm is not rejection sampling in the strict statistical sense but rather a constraint to ensure the solution remains within a space of feasible solutions. Initial sampling of the conditional distributions ensures the correct covariance structure for each latent factor, and iterative polishing ensures data reproduction. Though \cite{armstrong2011plurigaussian} suggests rejection sampling is not feasible for latent imputation, the relaxed constraints relative to imputation for truncated-Gaussian techniques allow for stable algorithm convergence.
 
@@ -68,7 +68,7 @@ The three general steps of the \gls{SGRI} algorithm are as follows:
     \item Iteratively refine the solution from (2) until $\left|\mathcal{F}_{\theta}(\tilde{\mathbf{y}}(\mathbf{u}_{i})) - z(\mathbf{u}_{i})\right|$ is within a specified second tolerance.
 \end{enumerate}
 
-The normal score transform within the latent to observed mapping function $\mathcal{F}_{\theta}$ is slightly different than in the context of network parameter inference in Chapter \ref{ch:04implement}. The \gls{SGRI} algorithm constructs a reference distribution for mapping trial latent vectors, $\tilde{\mathbf{y}}(\mathbf{u}_{i})$,  to a scalar value in observed space, $\tilde{z}(\mathbf{u}_{i})$. The reference distribution facilitates the normal score transform of a single NMR output value. The table is constructed by mapping a $10^{6}$ x $M$ dimensional table of standard normal independent factors through  $\mathcal{F}_{\theta}$, resulting in an exhaustive table of outputs of unitless, raw activation values. This output table is normal score transformed, and $\tilde{z}(\mathbf{u}_{i})$ values are calculated by linearly interpolating the normal score array. The notation $\mathcal{F}_{\theta}(\tilde{\mathbf{y}}(\mathbf{u}_{i}))$ implies a scalar Gaussian deviate. In the following sections, the subscript $i$ replaces the location vector $\mathbf{u}_{i}$ to simplify notation.
+The normal score transform within the latent to observed mapping function $\mathcal{F}_{\theta}$ is slightly different from the context of network parameter inference in Chapter \ref{ch:04implement}. The \gls{SGRI} algorithm constructs a reference distribution for mapping trial latent vectors, $\tilde{\mathbf{y}}(\mathbf{u}_{i})$,  to a scalar value in observed space, $\tilde{z}(\mathbf{u}_{i})$. The reference distribution facilitates the normal score transform of a single NMR output value. The table is constructed by mapping a $10^{6}$ x $M$ dimensional table of standard normal independent factors through  $\mathcal{F}_{\theta}$, resulting in an exhaustive table of outputs of unitless, raw activation values. This output table is normal score transformed, and $\tilde{z}(\mathbf{u}_{i})$ values are calculated by linearly interpolating the normal score array. The notation $\mathcal{F}_{\theta}(\tilde{\mathbf{y}}(\mathbf{u}_{i}))$ implies a scalar Gaussian deviate. In the following sections, the subscript $i$ replaces the location vector $\mathbf{u}_{i}$ to simplify notation.
 
 % \subsection{Factor Precedence}
 % \label{subsec:05precedence}
@@ -110,7 +110,7 @@ The algorithm begins by determining a random (unconstrained) or semi-random (con
      & \sum_{j=1}^{N_{m,i}} \lambda_{m,j,i} \times C_{m,j,k} = C_{m,k,i} \ \ \forall k \in N_{m,i}
 \end{align}
 
-Where $N_{m,i}$ is the neighbourhood about location $i$ using search anisotropy derived from $Y_{m}$; this could either be all neighbours or a restricted search around location $i$. $C_{m,j,k}$ is the covariance between spatial locations $j$ and $k$ for latent variable $m$. The system of equations is solved $M$ times under the assumption of zero mean and unit variance, resulting in a vector of conditional means and standard deviations. Retaining all conditional moments allows fast, repeated simulation of spatially correlated latent values in the coarse search phase.
+\lowercase{Where} $N_{m,i}$ is the neighbourhood about location $i$ using search anisotropy derived from $Y_{m}$; this could either be all neighbours or a restricted search around location $i$. $C_{m,j,k}$ is the covariance between spatial locations $j$ and $k$ for latent variable $m$. The system of equations is solved $M$ times under the assumption of zero mean and unit variance, resulting in a vector of conditional means and standard deviations. Retaining all conditional moments allows fast, repeated simulation of spatially correlated latent values in the coarse search phase.
 
 \subsection{Coarse Search}
 \label{subsec:05coarse}
@@ -121,7 +121,7 @@ The coarse search begins after calculating the $M$ conditional moments at locati
     \tilde{\mathbf{y}}_{i}^{(j)} & = \{ y_{1, i}^{(j)}, y_{2, i}^{(j)}, \dots, y_{M, i}^{(j)}\}
 \end{align}
 
-Where $r_{\in[0,1]}$ is a uniform random number between 0 and 1. Simulated $\tilde{y}_{m, i}^{(j)}$ values are practically constrained $\in[-5, 5]$. The trial observed value is calculated by mapping $\mathcal{F}_{\theta}(\tilde{\mathbf{y}}_{i})$. Coarse imputation error, $e_{1}$, is the absolute difference between the trial value, $\tilde{z}_{i}^{(j)}$, and the true observed data value:
+\lowercase{Where} $r_{\in[0,1]}$ is a uniform random number between 0 and 1. Simulated $\tilde{y}_{m, i}^{(j)}$ values are practically constrained $\in[-5, 5]$. The trial observed value is calculated by mapping $\mathcal{F}_{\theta}(\tilde{\mathbf{y}}_{i})$. Coarse imputation error, $e_{1}$, is the absolute difference between the trial value, $\tilde{z}_{i}^{(j)}$, and the true observed data value:
 \begin{align}
     \tilde{z}_{i}^{(j)} & = \mathcal{F}_{\theta}(\tilde{\mathbf{y}}_{i}^{(j)}) \\
     e_{1}               & = |\tilde{z}_{i}^{(j)} - z_{i}|
@@ -134,7 +134,7 @@ Where $r_{\in[0,1]}$ is a uniform random number between 0 and 1. Simulated $\til
     \end{cases}
 \end{equation}
 
-If the error, $e_{1}$, is less than the first rejection tolerance, $\alpha_{1}$, the trial vector $\tilde{\mathbf{y}}_{i}^{(j)}$ is retained as the initial latent vector at the $i^{th}$ location, otherwise it is rejected. If the coarse search fails to converge after the specified number of iterations, the sample $\tilde{y}_{m, i}^{(j)}$ is flagged for resimulation. The values of both $\tilde{y}_{m, i}^{(j)}$ and a small neighbourhood of nearest samples are reset. Resimulating the nearest neighbours prevents situations where local conditioning leads to non-convergence. This scenario is possible with adjacent, opposite, extreme values in a drillhole, such as at a vein's or high-grade structure's boundary. Resimulation uses a default of 10 nearest neighbours. Practice shows that $\approx 0.1$ is a reasonable rejection tolerance for $\alpha_{1}$. Exact reproduction with the observed value is not expected during this step as the multivariate relationship between $M$ collocated factors has not been addressed. Any exact matching now would be disturbed in subsequent polishing steps.
+If the error, $e_{1}$, is less than the first rejection tolerance, $\alpha_{1}$, the trial vector $\tilde{\mathbf{y}}_{i}^{(j)}$ is retained as the initial latent vector at the $i^{th}$ location, otherwise it is rejected. If the coarse search fails to converge after the specified number of iterations, the sample $\tilde{y}_{m, i}^{(j)}$ is flagged for resimulation. The values of both $\tilde{y}_{m, i}^{(j)}$ and a small neighbourhood of the nearest samples are reset. Resimulating the nearest neighbours prevents situations where local conditioning leads to non-convergence. This scenario is possible with adjacent, opposite, extreme values in a drillhole, such as at a vein's or high-grade structure's boundary. Resimulation uses a default of 10 nearest neighbours. Practice shows that $\approx 0.1$ is a reasonable rejection tolerance for $\alpha_{1}$. Exact reproduction with the observed value is not expected during this step as the multivariate relationship between $M$ collocated factors has not been addressed. Any exact matching now would be disturbed in subsequent polishing steps.
 
 
 \subsection{Solution Polishing}
@@ -162,10 +162,10 @@ If the target delta falls within the sensitivity of one or more factors, $b<0$, 
 \begin{algorithm}
     \caption{SGRI pseudo code.}\label{alg:sgri}
     \begin{algorithmic}[1]
-        \State initialize search parameters based on covariance
+        \State Initialize search parameters based on covariance
         \For{$\ell = 1, \dots, L$} \Comment{Main loop over realizations}
-        \State establish a random or semi-random path through data
-        \State $\text{nresim} = 0$
+        \State establish random or semi-random path through data
+        \State $nresim = 0$
         \For{$i = 1, \dots, ndata$} \Comment{Loop over data locations}
         \For{$m = 1, \dots, M$} \Comment{Loop over factors at $i^{th}$ location}
         \State establish search neighbourhood $N_{m,i}$
@@ -184,7 +184,7 @@ If the target delta falls within the sensitivity of one or more factors, $b<0$, 
         \EndIf
         \EndWhile \Comment{End coarse search}
         \If{$e_{1} > \alpha_{1}$}
-        \State $\text{nresim} = \text{nresim} + 1$
+        \State $nresim = nresim + 1$
         \State cycle data loop
         \EndIf
         \State $j = 0$
@@ -205,8 +205,8 @@ If the target delta falls within the sensitivity of one or more factors, $b<0$, 
         \EndIf
         \EndWhile \Comment{End solution polishing}
         \EndFor \Comment{End loop over data locations}
-        \If{$\text{nresim} > 0$}
-        \State resimulate at nresim locations
+        \If{$nresim > 0$}
+        \State resimulate at $nresim$ locations
         \EndIf
         \EndFor \Comment{End loop over realizations}
     \end{algorithmic}
