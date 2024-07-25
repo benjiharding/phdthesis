@@ -48,7 +48,7 @@
 \usepackage{array}
 \usepackage{tcolorbox} % text box
 \usepackage{tikz} % flow chart
-\usetikzlibrary{arrows.meta}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning}
 \tikzset{%
   >={Latex[width=2mm,length=2mm]},
   % Specifications for style of nodes:
