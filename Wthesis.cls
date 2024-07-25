@@ -52,9 +52,11 @@
 \tikzset{%
   >={Latex[width=2mm,length=2mm]},
   % Specifications for style of nodes:
-            base/.style = {rectangle, rounded corners, draw=black,
-                        minimum width=2cm, minimum height=1cm, 
-                        text centered, text width=2cm,},
+            base/.style = {
+                rectangle, rounded corners, draw=black,
+                minimum width=2cm, minimum height=1cm, 
+                text centered, text width=2cm, fill=black!5
+                },
 }
 % extras for pseudocode
 \usepackage{algorithm}
