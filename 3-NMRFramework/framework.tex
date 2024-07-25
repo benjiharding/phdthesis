@@ -43,7 +43,7 @@ The first component is specifying the goals of the model. These goals, or object
     \begin{tikzpicture}[node distance=1.5cm, align=center]
 
         % Specification of styles
-        \tikzstyle{accept1Block} = [rectangle, rounded corners, minimum width=3cm, minimum height=1.0cm,text centered, draw=black]
+        \tikzstyle{accept1Block} = [rectangle, rounded corners, minimum width=4cm, minimum height=1.0cm,text centered, draw=black]
 
         % Specification of nodes (position, etc.)
         \node (start) [base] {Define Objectives};
@@ -62,15 +62,20 @@ The first component is specifying the goals of the model. These goals, or object
         \draw [->] (poolBlock) -- (inferBlock);
         \draw [->] (inferBlock) -- (accept1Block);
         \draw [->] (accept1Block) -- node[anchor=east] {yes} (latentBlock);
-        \draw [->] (accept1Block.west) -- ++(-0.5,0) -- ++(0,3.3) -- ++(0,0.7) -- node[xshift=-1.5cm, yshift=-2cm] {no} (poolBlock.west);
-        \draw [->] (accept1Block.west) -- ++(-0.5,0) -- ++(0,1.3) -- ++(0,0.7) -- (inferBlock.west);
+        \draw [->] (accept1Block.west) -- ++(-0.5,0) node[midway, above] {no} coordinate(almostleft) |- (poolBlock.170);
+        \draw [->] (almostleft|-inferBlock.170) -- (inferBlock.170);
         \draw [->] (latentBlock) -- (accept2Block);
         \draw [->] (accept2Block) -- node[anchor=east] {yes} (simBlock);
-        \draw [->] (accept2Block.west) -- ++(-0.5,0) -- ++(0,1.3) -- ++(0,0.7) -- node[xshift=-1.5cm, yshift=-1cm] {no} (latentBlock.west);
+        \draw [->] (accept2Block.west) -- ++(-1.5,0) node[midway, above] {no} coordinate(almostleft) |-(poolBlock.190);
+        \draw [->] (almostleft|-latentBlock.west) -- (latentBlock.west);
+        \draw [->] (almostleft|-inferBlock.190) -- (inferBlock.190);
         \draw [->] (simBlock) -- (mapBlock);
         \draw [->] (mapBlock) -- (accept3Block);
         \draw [->] (accept3Block) -- node[anchor=east] {yes} (end);
-        \draw [->] (accept3Block.west) -- ++(-0.5,0) -- ++(0,3.55) -- ++(0,0.7) -- node[xshift=-1.5cm, yshift=-2cm] {no} (simBlock.west);
+        \draw [->] (accept3Block.east) -- ++(1.0,0) node[midway, above] {no} coordinate(almostright) |- (poolBlock.east);
+        \draw [->] (almostright|-simBlock.east) -- (simBlock.east);
+        \draw [->] (almostright|-latentBlock.east) -- (latentBlock.east);
+        \draw [->] (almostright|-inferBlock.east) -- (inferBlock.east);
     \end{tikzpicture}
     \caption{High level flow chart illustrating the key components of the \gls{NMR} framework. There are multiple junctions where previous steps can be revisited and refined. }
     \label{fig:nmr_framework}
