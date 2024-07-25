@@ -36,33 +36,37 @@ The following components summarize the overall structure of the \gls{NMR} framew
     \item Latent factor simulation and mapping: conditional simulation of the imputed latent factors from (4) and mapping to observed space with parameters from (3).
 \end{enumerate}
 
-The first component is specifying the goals of the model. These goals, or objectives, are quantified by two-point spatial statistics and higher-order statistics. The second component involves choosing the covariance structure of each latent factor to mix. These choices depend strongly on the modeling goals. The third component involves inferring the parameters of the mixing function, which results in the model meeting the objective targets. The fourth component involves generating synthetic realizations of the factors. The fifth component is conditionally simulating the factors on a modeling grid and mapping them to observed space. This mapping results in gridded realizations that reproduce the observed data and the objective targets away from the data. Figure \ref{fig:nmr_framework} shows the complete \gls{NMR} framework as a flow chart. 
+The first component is specifying the goals of the model. These goals, or objectives, are quantified by two-point spatial statistics and higher-order statistics. The second component involves choosing the covariance structure of each latent factor to mix. These choices depend strongly on the modeling goals. The third component involves inferring the parameters of the mixing function, which results in the model meeting the objective targets. The fourth component involves generating synthetic realizations of the factors. The fifth component is conditionally simulating the factors on a modeling grid and mapping them to observed space. This mapping results in gridded realizations that reproduce the observed data and the objective targets away from the data. Figure \ref{fig:nmr_framework} shows the complete \gls{NMR} framework as a flow chart. There are three junctions in the workflow where the practitioner must decide if there is acceptable reproduction of desired statistics. Given the interconnected nature of the framework, if acceptable reproduction is not achieved, one may have to revisit one or multiple previous steps. This interconnectedness is highlighted by reverse-flow arrows leading to multiple actions in Figure \ref{fig:nmr_framework}. 
+
+
 
 \begin{figure}[htb!]
     \centering
     \begin{tikzpicture}[node distance=1.5cm, align=center]
 
         % Specification of styles
-        \tikzstyle{accept1Block} = [rectangle, rounded corners, minimum width=4cm, minimum height=1.0cm,text centered, draw=black]
+        \tikzstyle{acceptBlock} = [rectangle, rounded corners, minimum width=4cm, minimum height=1.0cm,text centered, draw=black, fill=red!15]
+        \tikzstyle{actionBlock} = [rectangle, rounded corners, text width=2.5cm, minimum height=1.0cm,text centered, draw=black, fill=black!5]
 
         % Specification of nodes (position, etc.)
         \node (start) [base] {Define Objectives};
-        \node (poolBlock) [base, below of=start, yshift=-0.50cm] {Define Latent Pool};
-        \node (inferBlock) [base, below of=poolBlock, yshift=-0.50cm] {Infer Parameters};
-        \node (accept1Block) [accept1Block, below of=inferBlock, yshift=-0.50cm] {Acceptable Objective Reproduction?};
-        \node (latentBlock) [base, below of=accept1Block, yshift=-0.50cm] {Latent Imputation};
-        \node (accept2Block) [accept1Block, below of=latentBlock, yshift=-0.50cm] {Acceptable Latent Reproduction?};
-        \node (simBlock) [base, below of=accept2Block, yshift=-0.50cm] {Gridded Latent Simulation};
-        \node (mapBlock) [base, below of=simBlock, yshift=-0.75cm] {Map Latent to Observed Space};
-        \node (accept3Block) [accept1Block, below of=mapBlock, yshift=-0.50cm] {Acceptable Gridded Reproduction?};
-        \node (end) [base, below of=accept3Block, yshift=-0.50cm] {Final Gridded Realizations};
+        \node (poolBlock) [base, below of=start, yshift=-0.0cm] {Define Latent Pool};
+        \node (inferBlock) [base, below of=poolBlock, yshift=-0.0cm] {Infer Parameters};
+        \node (accept1Block) [acceptBlock, below of=inferBlock, yshift=-0.0cm] {Acceptable Objective Reproduction?};
+        \node (latentBlock) [base, below of=accept1Block, yshift=-0.75cm] {Latent Imputation};
+        \node (accept2Block) [acceptBlock, below of=latentBlock, yshift=-0.0cm] {Acceptable Latent Reproduction?};
+        \node (simBlock) [actionBlock, below of=accept2Block, yshift=-0.75cm] {Gridded Latent Simulation};
+        \node (mapBlock) [actionBlock, below of=simBlock, yshift=-0.0cm] {Map Latent to Observed Space};
+        \node (accept3Block) [acceptBlock, below of=mapBlock, yshift=-0.0cm] {Acceptable Gridded Reproduction?};
+        \node (end) [actionBlock, below of=accept3Block, yshift=-0.75cm] {Final Gridded Realizations};
 
         % Specification of lines between nodes specified above
         \draw [->] (start) -- (poolBlock);
         \draw [->] (poolBlock) -- (inferBlock);
         \draw [->] (inferBlock) -- (accept1Block);
         \draw [->] (accept1Block) -- node[anchor=east] {\textbf{yes}} (latentBlock);
-        \draw [->] (accept1Block.west) -- ++(-0.75,0) node[midway, above] {\textbf{no}} coordinate(almostleft) |- (poolBlock.170);
+        \draw [->] (accept1Block.west) -- ++(-0.75,0) node[midway, above] {\textbf{no}} coordinate(almostleft) |- (start.west);
+        \draw [->] (almostleft|-poolBlock.170) -- (poolBlock.170);
         \draw [->] (almostleft|-inferBlock.170) -- (inferBlock.170);
         \draw [->] (latentBlock) -- (accept2Block);
         \draw [->] (accept2Block) -- node[anchor=east] {\textbf{yes}} (simBlock);
@@ -77,12 +81,11 @@ The first component is specifying the goals of the model. These goals, or object
         \draw [->] (almostright|-latentBlock.east) -- (latentBlock.east);
         \draw [->] (almostright|-inferBlock.east) -- (inferBlock.east);
     \end{tikzpicture}
-    \caption{High level flow chart illustrating the key components of the \gls{NMR} framework. There are multiple junctions where previous steps can be revisited and refined. }
+    \caption{High level flow chart illustrating the key components of the \gls{NMR} framework. There are multiple junctions where previous steps can be revisited and refined. Reverse-flow arrows leading to multiple actions emphasize the interconnected nature of each component.}
     \label{fig:nmr_framework}
 \end{figure}
 
 The remaining sections of this chapter discuss the calculation of high-order statistics and their use for measures of non-Gaussianity, details regarding the components of the \gls{NMR} framework, and finally, a small synthetic example of the complete \gls{NMR} workflow with highly structured extreme values.
-
 
 \FloatBarrier
 \section{Connectivity and Non‐Gaussianity}
@@ -279,22 +282,19 @@ The \gls{NMR} approximates the forward mapping function from latent to observed 
 \begin{figure}[htb!]
     \centering
     \begin{tikzpicture}[node distance=1.5cm, align=center]
-        \tikzstyle{mapBlock} = [rectangle, rounded corners, minimum width=3cm, minimum      height=1cm,text centered, draw=black]
-        \tikzstyle{incBlock} = [rectangle, rounded corners, minimum width=2.0cm, minimum height=1cm,text centered, draw=black]
+        \tikzstyle{mapBlock} = [rectangle, rounded corners, minimum width=3cm, minimum      height=1cm,text centered, draw=black, fill=black!5]
         % Specification of nodes (position, etc.)
         \node (start)       [base, ] {$M + 1$ Prior Latent Models};
         \node (updateBlock) [base, right of=start, xshift=1.5cm] {Update $\theta_{i}$};
         \node (mapBlock)    [mapBlock, right of=updateBlock,xshift=1.5cm, yshift=1.25cm] {$\mathcal{F}_{\theta_{i}}(\mathbf{Y}(\mathbf{u}))=Z(\mathbf{u})$};
-        \node (incBlock)    [incBlock, right of=updateBlock,xshift=1.5cm, yshift=-1.25cm] {$i=i+1$};
+        % \node (incBlock)    [incBlock, right of=updateBlock,xshift=1.5cm, yshift=-1.25cm] {$i=i+1$};
         \node (evalBlock)   [base, right of=mapBlock, xshift=1.5cm, yshift=-1.25cm] {Evaluate Objective Function};
         \node (finishBlock) [base, right of=evalBlock,xshift=1.5cm, ] {Finish if $i=i^{MAX}$ or $fobj=0.0$};
         % Specification of lines between nodes specified above
-        % with aditional nodes for description 
         \draw [->] (start) -- (updateBlock);
         \draw [->] (updateBlock) |- (mapBlock);
         \draw [->] (mapBlock) -| (evalBlock);
-        \draw [->] (evalBlock) |- (incBlock);
-        \draw [->] (incBlock) -| (updateBlock);
+        \draw [->] (evalBlock) -- ++(0,-1.25) node[xshift=-3.0cm, yshift=0.3cm] {$i=i+1$} coordinate(almostleft) -| (updateBlock.south);
         \draw [->] (evalBlock) -- (finishBlock);
     \end{tikzpicture}
     \caption{Flowchart showing an overview of the optimization workflow for determining the parameter vector $\theta$.}
