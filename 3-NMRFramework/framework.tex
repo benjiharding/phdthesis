@@ -38,9 +38,7 @@ The following components summarize the overall structure of the \gls{NMR} framew
 
 The first component is specifying the goals of the model. These goals, or objectives, are quantified by two-point spatial statistics and higher-order statistics. The second component involves choosing the covariance structure of each latent factor to mix. These choices depend strongly on the modeling goals. The third component involves inferring the parameters of the mixing function, which results in the model meeting the objective targets. The fourth component involves generating synthetic realizations of the factors. The fifth component is conditionally simulating the factors on a modeling grid and mapping them to observed space. This mapping results in gridded realizations that reproduce the observed data and the objective targets away from the data. Figure \ref{fig:nmr_framework} shows the complete \gls{NMR} framework as a flow chart. There are three junctions in the workflow where the practitioner must decide if there is acceptable reproduction of desired statistics. Given the interconnected nature of the framework, if acceptable reproduction is not achieved, one may have to revisit one or multiple previous steps. This interconnectedness is highlighted by reverse-flow arrows leading to multiple actions in Figure \ref{fig:nmr_framework}. 
 
-
-
-\begin{figure}[htb!]
+\begin{figure}[htbp]
     \centering
     \begin{tikzpicture}[node distance=1.5cm, align=center]
 
